@@ -38,14 +38,15 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, isPending } = useSession();
-  const user = session?.user;
-
-
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
 
+  console.log("Session User:", user);
+console.log("Profile Image URL:", user?.image); 
   // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -72,7 +73,6 @@ export default function Navbar() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-
   return (
     <motion.header
       initial={{ opacity: 0, y: -15 }}
@@ -85,7 +85,6 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-
         {/* logo */}
         <BrandLogo></BrandLogo>
 
@@ -143,6 +142,8 @@ export default function Navbar() {
                   <Image
                     src={user.image}
                     alt={user.name || "User profile"}
+                       width={36}
+    height={36}
                     className="h-9 w-9 rounded-full border border-[#E9DFDC] object-cover"
                   />
                 ) : (
@@ -166,23 +167,38 @@ export default function Navbar() {
               <AnimatePresence>
                 {isProfileOpen && (
                   <motion.div
-                    initial={{  opacity: 0,  y: 10,scale: 0.97,  }}
-                    animate={{opacity: 1,   y: 0,  scale: 1,
-                    }}
-                    exit={{ opacity: 0,  y: 10,    scale: 0.97,
-                    }}
+                    initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.97 }}
                     transition={{ duration: 0.18 }}
                     className="absolute right-0 top-14 w-64 overflow-hidden rounded-xl border border-[#EFE4E2] bg-white shadow-xl"
                   >
                     {/* User Information */}
-                    <div className="border-b border-[#F1EAE6] px-4 py-4">
-                      <p className="truncate text-sm font-semibold text-[#393237]">
-                        {user.name}
-                      </p>
+                    {/* User Information */}
+                    <div className="flex items-center gap-3 border-b border-[#F1EAE6] px-4 py-4">
+                      {user.image ? (
+                        <Image
+                          src={user.image}
+                          alt={user.name || "User profile"}
+                          width={44}
+                          height={44}
+                          className="h-11 w-11 rounded-full border border-[#E9DFDC] object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F8EFF0] text-[#772D43]">
+                          <FiUser />
+                        </div>
+                      )}
 
-                      <p className="truncate text-xs text-[#999096]">
-                        {user.email}
-                      </p>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-[#393237]">
+                          {user.name}
+                        </p>
+
+                        <p className="truncate text-xs text-[#999096]">
+                          {user.email}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Dropdown Links */}
@@ -208,9 +224,7 @@ export default function Navbar() {
                       <div className="my-2 border-t border-[#F1EAE6]" />
 
                       {/* Logout */}
-                      <button
-                       className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
-                      >
+                      <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50">
                         <FiLogOut className="h-4 w-4" />
                         Logout
                       </button>
@@ -307,6 +321,8 @@ export default function Navbar() {
                       <Image
                         src={user.image}
                         alt={user.name || "User profile"}
+                           width={36}
+    height={36}
                         className="h-11 w-11 rounded-full border border-[#EFE4E2] object-cover"
                       />
                     ) : (
@@ -347,7 +363,8 @@ export default function Navbar() {
 
                   {/* Logout */}
                   <button
-                    type="button"                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                   >
                     <FiLogOut />
                     Logout
