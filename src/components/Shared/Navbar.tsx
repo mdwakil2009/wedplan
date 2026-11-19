@@ -20,6 +20,7 @@ import {
 import { useSession, authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import BrandLogo from "./BrandLogo";
+import { Button } from "../ui/button";
 
 // Navigation links
 const navLinks = [
@@ -41,12 +42,12 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  
+
   const { data: session, isPending } = useSession();
   const user = session?.user;
 
   console.log("Session User:", user);
-console.log("Profile Image URL:", user?.image); 
+  console.log("Profile Image URL:", user?.image);
   // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -71,6 +72,26 @@ console.log("Profile Image URL:", user?.image);
     }
 
     return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      const { error } = await authClient.signOut();
+
+      if (error) {
+        console.error("Logout failed:", error);
+        return;
+      }
+
+      setIsProfileOpen(false);
+      setIsMobileOpen(false);
+
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -142,8 +163,8 @@ console.log("Profile Image URL:", user?.image);
                   <Image
                     src={user.image}
                     alt={user.name || "User profile"}
-                       width={36}
-    height={36}
+                    width={36}
+                    height={36}
                     className="h-9 w-9 rounded-full border border-[#E9DFDC] object-cover"
                   />
                 ) : (
@@ -224,7 +245,11 @@ console.log("Profile Image URL:", user?.image);
                       <div className="my-2 border-t border-[#F1EAE6]" />
 
                       {/* Logout */}
-                      <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+                      >
                         <FiLogOut className="h-4 w-4" />
                         Logout
                       </button>
@@ -321,8 +346,8 @@ console.log("Profile Image URL:", user?.image);
                       <Image
                         src={user.image}
                         alt={user.name || "User profile"}
-                           width={36}
-    height={36}
+                        width={36}
+                        height={36}
                         className="h-11 w-11 rounded-full border border-[#EFE4E2] object-cover"
                       />
                     ) : (
@@ -362,11 +387,13 @@ console.log("Profile Image URL:", user?.image);
                   </Link>
 
                   {/* Logout */}
+                  {/* Logout */}
                   <button
                     type="button"
-                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
                   >
-                    <FiLogOut />
+                    <FiLogOut className="h-4 w-4" />
                     Logout
                   </button>
                 </>
