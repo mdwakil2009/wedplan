@@ -52,24 +52,29 @@ export default function SignInPage() {
 
     });
 
-    console.log("User Data:", userData);
-    console.log("Signup Data:", data);
-
     if (error) {
+      setIsLoading(false);
+
       toast.add({
-        title: "Signup failed!",
+        title: "Sign in failed!",
         description: error.message ?? "Something went wrong.",
       });
       return;
     }
 
     if (data) {
+      const role =
+        data.user.role === "admin" || data.user.role === "vendor"
+          ? data.user.role
+          : "customer";
+
       toast.add({
-        title: "Account created successfully!",
-        description: `Selected account type`,
+        title: "Signed in successfully!",
+        description: "Taking you to your dashboard.",
       });
 
-      router.push("/");
+      router.push(`/dashboard/${role}`);
+      router.refresh();
     }
   };
   return (
@@ -360,7 +365,7 @@ export default function SignInPage() {
             {/* SIGN UP LINK */}
             <div className="mt-2.5 border-t border-[#EDE2E5] pt-2.5 text-center">
               <p className="text-[11px] text-[#817780]">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link
                   href="/sign-up"
                   className="font-semibold text-[#772D43] hover:underline"

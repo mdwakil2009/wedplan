@@ -105,10 +105,8 @@ export default function SignUpPage() {
       email: userData.email as string,
       password: userData.password as string,
       image: imageUrl ?? undefined,
+      role,
     });
-
-    console.log("User Data:", userData);
-    console.log("Signup Data:", data);
 
     if (error) {
       toast.add({
@@ -121,10 +119,11 @@ export default function SignUpPage() {
     if (data) {
       toast.add({
         title: "Account created successfully!",
-        description: `Selected account type: ${role}.`,
+        description: `Your ${role} account is ready.`,
       });
 
-      router.push("/");
+      router.push(`/dashboard/${role}`);
+      router.refresh();
     }
   };
 

@@ -20,7 +20,7 @@ import {
 import { useSession, authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import BrandLogo from "./BrandLogo";
-import { Button } from "../ui/button";
+
 
 // Navigation links
 const navLinks = [
@@ -46,8 +46,11 @@ export default function Navbar() {
   const { data: session, isPending } = useSession();
   const user = session?.user;
 
-  console.log("Session User:", user);
-  console.log("Profile Image URL:", user?.image);
+  const role =
+    user?.role === "admin" || user?.role === "vendor" ? user.role : "customer";
+
+  const dashboardHref = `/dashboard/${role}`;
+  const profileHref = `/dashboard/${role}/profile`;
   // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -225,7 +228,7 @@ export default function Navbar() {
                     {/* Dropdown Links */}
                     <div className="p-2">
                       <Link
-                        href="/dashboard"
+                        href={dashboardHref}
                         onClick={() => setIsProfileOpen(false)}
                         className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0] hover:text-[#772D43]"
                       >
@@ -233,14 +236,16 @@ export default function Navbar() {
                         Dashboard
                       </Link>
 
-                      <Link
-                        href="/dashboard/profile"
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0] hover:text-[#772D43]"
-                      >
-                        <FiSettings className="h-4 w-4" />
-                        Profile Settings
-                      </Link>
+                      {role !== "admin" && (
+                        <Link
+                          href={profileHref}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0] hover:text-[#772D43]"
+                        >
+                          <FiSettings className="h-4 w-4" />
+                          Profile Settings
+                        </Link>
+                      )}
 
                       <div className="my-2 border-t border-[#F1EAE6]" />
 
@@ -368,7 +373,7 @@ export default function Navbar() {
                   </div>
 
                   <Link
-                    href="/dashboard"
+                    href={dashboardHref}
                     onClick={() => setIsMobileOpen(false)}
                     className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0]"
                   >
@@ -377,14 +382,16 @@ export default function Navbar() {
                   </Link>
 
                   {/* Profile Settings */}
-                  <Link
-                    href="/dashboard/profile"
-                    onClick={() => setIsMobileOpen(false)}
-                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0]"
-                  >
-                    <FiSettings />
-                    Profile Settings
-                  </Link>
+                  {role !== "admin" && (
+                    <Link
+                      href={profileHref}
+                      onClick={() => setIsMobileOpen(false)}
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0]"
+                    >
+                      <FiSettings />
+                      Profile Settings
+                    </Link>
+                  )}
 
                   {/* Logout */}
                   {/* Logout */}
