@@ -1,7 +1,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import {
   FiPlusCircle,
   FiImage,
@@ -10,6 +12,7 @@ import {
   FiUploadCloud,
   FiCamera,
   FiFileText,
+  FiCheck,
 } from "react-icons/fi";
 
 import { Button } from "@/components/ui/button";
@@ -41,9 +44,28 @@ const categories = [
   "Wedding Fashion",
 ];
 
+// Animation
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const containerAnimation = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
 export default function AddServicePage() {
   const [images, setImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Prevent multiple submissions
+  const submitLock = useRef(false);
 
   // Multiple image upload
   const handleImageChange = (
@@ -64,12 +86,18 @@ export default function AddServicePage() {
       });
     }
 
-    setImages([...images, ...validFiles]);
+    if (validFiles.length === 0) {
+      event.target.value = "";
+      return;
+    }
 
-    setPreviewImages([
-      ...previewImages,
-      ...validFiles.map((file) => URL.createObjectURL(file)),
-    ]);
+    setImages((prev) => [...prev, ...validFiles]);
+
+    const newPreviews = validFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    setPreviewImages((prev) => [...prev, ...newPreviews]);
 
     event.target.value = "";
   };
@@ -78,22 +106,24 @@ export default function AddServicePage() {
   const handleRemoveImage = (index: number) => {
     URL.revokeObjectURL(previewImages[index]);
 
-    setImages(images.filter((_, i) => i !== index));
+    setImages((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
 
-    setPreviewImages(
-      previewImages.filter((_, i) => i !== index)
+    setPreviewImages((prev) =>
+      prev.filter((_, i) => i !== index)
     );
   };
 
   // Form submit
-  const handleSubmit = (
+  const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
-    const fromData = new FormData(event.currentTarget)
-    const userData = Object.fromEntries(fromData.entries())
-    console.log(userData)
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const userData = Object.fromEntries(formData.entries());
 
     if (images.length === 0) {
       toast.add({
@@ -104,303 +134,552 @@ export default function AddServicePage() {
       return;
     }
 
-    toast.add({
-      title: "Service form is ready",
-      description: "Backend and image upload will be connected next.",
-    });
+    if (submitLock.current) return;
+
+    submitLock.current = true;
+    setIsSubmitting(true);
+
+    try {
+      // Step 1: Upload images to ImgBB
+      const imageUrls = await Promise.all(
+        images.map(async (image) => {
+          const imageFormData = new FormData();
+
+          imageFormData.append("image", image);
+
+          const imageResponse = await fetch(
+            `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMAGBB_API_KEY}`,
+            {
+              method: "POST",
+              body: imageFormData,
+            }
+          );
+
+          const imageResult = await imageResponse.json();
+
+          if (!imageResponse.ok || !imageResult.success) {
+            throw new Error("Image upload failed");
+          }
+
+          return imageResult.data.url;
+        })
+      );
+
+      // Step 2: Save service data to MongoDB
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/services`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...userData,
+            price: Number(userData.price),
+            images: imageUrls,
+            status: "pending",
+            createdAt: new Date(),
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message);
+      }
+
+      toast.add({
+        title: "Service added successfully!",
+        description: "Your service is submitted for admin approval.",
+      });
+
+      console.log(result);
+
+      // Reset form
+      form.reset();
+
+      previewImages.forEach((url) =>
+        URL.revokeObjectURL(url)
+      );
+
+      setImages([]);
+      setPreviewImages([]);
+    } catch (error) {
+      console.log(error);
+
+      toast.add({
+        title: "Failed to add service",
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      submitLock.current = false;
+      setIsSubmitting(false);
+    }
+  };
+
+  // Reset form
+  const handleReset = () => {
+    previewImages.forEach((url) =>
+      URL.revokeObjectURL(url)
+    );
+
+    setImages([]);
+    setPreviewImages([]);
   };
 
   return (
     <div className="min-h-full bg-white">
-      <div className="mx-auto w-full max-w-5xl space-y-5 p-4 sm:p-5">
+      <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
 
         {/* Page Header */}
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#F8EFF0] px-3 py-1 text-[11px] font-semibold tracking-wider text-[#772D43]">
-            <FiPlusCircle size={13} />
+        <motion.div
+          variants={containerAnimation}
+          initial="hidden"
+          animate="visible"
+          className="space-y-3"
+        >
+          <motion.div
+            variants={fadeUp}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-2 rounded-full border border-[#EAD9DE] bg-[#F8EFF0] px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#772D43]"
+          >
+            <FiPlusCircle size={14} />
             VENDOR DASHBOARD
-          </div>
+          </motion.div>
 
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-[#292329] sm:text-2xl">
+          <motion.div variants={fadeUp}>
+            <h1 className="text-2xl font-bold tracking-tight text-[#292329] sm:text-3xl">
               Add Your Service
             </h1>
 
-            <p className="mt-1 text-sm text-[#817780]">
-              Showcase your wedding service and connect with couples.
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#817780]">
+              Showcase your wedding service, share your work,
+              and connect with couples planning their special day.
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        {/* Main Form */}
-        <Card className="overflow-hidden rounded-xl border-[#EDE2E5] bg-white shadow-sm">
+        {/* Main Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 25, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{
+            duration: 0.5,
+            delay: 0.1,
+            ease: "easeOut",
+          }}
+        >
+          <Card className="overflow-hidden rounded-2xl border-[#E9DFE2] bg-white shadow-[0_4px_24px_rgba(80,30,45,0.04)]">
 
-          {/* Card Header */}
-          <div className="border-b border-[#F0E7E8] bg-[#FFFCF9] px-4 py-3 sm:px-5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F8EFF0] text-[#772D43]">
-                <FiFileText size={17} />
-              </div>
-
-              <div>
-                <h2 className="text-sm font-semibold text-[#292329]">
-                  Service Information
-                </h2>
-
-                <p className="text-[11px] text-[#817780]">
-                  Fill in your service details
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <CardContent className="p-4 sm:p-5">
-            <form onSubmit={handleSubmit} className="space-y-5">
-
-              {/* Service Name */}
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="serviceName"
-                  className="text-xs font-medium text-[#292329]"
+            {/* Card Header */}
+            <div className="border-b border-[#F0E7E8] bg-gradient-to-r from-[#FFFCF9] to-[#FAF5F6] px-5 py-5 sm:px-7">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: 5, scale: 1.05 }}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F8EFF0] text-[#772D43]"
                 >
-                  Service Name <span className="text-[#772D43]">*</span>
-                </Label>
-
-                <Input
-                  id="serviceName"
-                  name="serviceName"
-                  placeholder="e.g. Dream Wedding Photography"
-                  required
-                  className="h-10 rounded-lg border-[#EDE2E5] px-3 text-sm focus-visible:border-[#772D43] focus-visible:ring-[#772D43]/15"
-                />
-              </div>
-
-              {/* Category & Price */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-                {/* Category */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-[#292329]">
-                    Service Category <span className="text-[#772D43]">*</span>
-                  </Label>
-
-                  <Select name="category" required>
-                    <SelectTrigger className="h-10 w-full rounded-lg border-[#EDE2E5] bg-white text-sm focus:ring-[#772D43]/15">
-                      <SelectValue placeholder="Choose category" />
-                    </SelectTrigger>
-
-                    <SelectContent className="rounded-lg border-[#EDE2E5] bg-white">
-                      {categories.map((category) => (
-                        <SelectItem
-                          key={category}
-                          value={category}
-                          className="cursor-pointer text-sm focus:bg-[#F8EFF0] focus:text-[#772D43] data-[state=checked]:text-[#772D43]"
-                        >
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Price */}
-                <div className="space-y-1.5">
-                  <Label
-                    htmlFor="price"
-                    className="text-xs font-medium text-[#292329]"
-                  >
-                    Price (BDT) <span className="text-[#772D43]">*</span>
-                  </Label>
-
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    min="1"
-                    placeholder="Enter price"
-                    required
-                    className="h-10 rounded-lg border-[#EDE2E5] px-3 text-sm focus-visible:border-[#772D43] focus-visible:ring-[#772D43]/15"
-                  />
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="location"
-                  className="text-xs font-medium text-[#292329]"
-                >
-                  Service Location <span className="text-[#772D43]">*</span>
-                </Label>
-
-                <div className="relative">
-                  <FiMapPin
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A18D96]"
-                    size={15}
-                  />
-
-                  <Input
-                    id="location"
-                    name="location"
-                    placeholder="e.g. Dhaka, Bangladesh"
-                    required
-                    className="h-10 rounded-lg border-[#EDE2E5] pl-9 text-sm focus-visible:border-[#772D43] focus-visible:ring-[#772D43]/15"
-                  />
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="description"
-                  className="text-xs font-medium text-[#292329]"
-                >
-                  Service Description <span className="text-[#772D43]">*</span>
-                </Label>
-
-                <Textarea
-                  id="description"
-                  name="description"
-                  placeholder="Describe your service, experience and packages..."
-                  required
-                  className="min-h-28 resize-none rounded-lg border-[#EDE2E5] p-3 text-sm leading-6 focus-visible:border-[#772D43] focus-visible:ring-[#772D43]/15"
-                />
-              </div>
-
-              {/* Image Upload */}
-              <div className="space-y-2">
-
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-medium text-[#292329]">
-                    Service Images <span className="text-[#772D43]">*</span>
-                  </Label>
-
-                  <span className="text-[11px] text-[#817780]">
-                    {images.length} uploaded
-                  </span>
-                </div>
-
-                {/* Upload Box */}
-                <label
-                  htmlFor="images"
-                  className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#E8D5DC] bg-[#FFFCF9] px-4 py-5 text-center transition hover:border-[#772D43] hover:bg-[#F8EFF0]/50"
-                >
-                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-[#F8EFF0] text-[#772D43]">
-                    <FiUploadCloud size={20} />
-                  </div>
-
-                  <p className="text-xs font-semibold text-[#292329]">
-                    Click to upload images
-                  </p>
-
-                  <p className="mt-1 text-[11px] text-[#817780]">
-                    Select multiple photos of your service
-                  </p>
-
-                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-[#772D43] px-3 py-1.5 text-xs font-medium text-white">
-                    <FiImage size={13} />
-                    Browse Images
-                  </div>
-
-                  <p className="mt-2 text-[10px] text-[#A18D96]">
-                    JPG, PNG, WEBP
-                  </p>
-
-                  <input
-                    id="images"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-
-                {/* Image Preview */}
-                {previewImages.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-
-                    {previewImages.map((preview, index) => (
-                      <div
-                        key={preview}
-                        className="group relative aspect-square overflow-hidden rounded-lg border border-[#EDE2E5] bg-[#FFFCF9]"
-                      >
-                        <img
-                          src={preview}
-                          alt={`Service image ${index + 1}`}
-                          className="h-full w-full object-cover"
-                        />
-
-                        {/* Remove Image */}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(index)}
-                          className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#772D43] shadow-sm transition hover:bg-[#772D43] hover:text-white"
-                          aria-label="Remove image"
-                        >
-                          <FiX size={13} />
-                        </button>
-
-                        {/* Image Number */}
-                        <div className="absolute bottom-1.5 left-1.5 rounded bg-black/50 px-1.5 py-0.5 text-[9px] text-white">
-                          {index + 1}
-                        </div>
-                      </div>
-                    ))}
-
-                  </div>
-                )}
-              </div>
-
-              {/* Review Notice */}
-              <div className="flex gap-2.5 rounded-lg border border-[#EDE2E5] bg-[#FFFCF9] p-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F8EFF0] text-[#772D43]">
-                  <FiCamera size={15} />
-                </div>
+                  <FiFileText size={19} />
+                </motion.div>
 
                 <div>
-                  <p className="text-xs font-semibold text-[#292329]">
-                    Admin Review
-                  </p>
+                  <h2 className="text-sm font-bold text-[#292329] sm:text-base">
+                    Service Information
+                  </h2>
 
-                  <p className="mt-0.5 text-[11px] leading-5 text-[#817780]">
-                    Your service will be reviewed before becoming visible to customers.
+                  <p className="mt-0.5 text-xs text-[#817780]">
+                    Fill in your service details below
                   </p>
                 </div>
               </div>
+            </div>
 
-              {/* Buttons */}
-              <div className="flex flex-col-reverse gap-2 border-t border-[#F0E7E8] pt-4 sm:flex-row sm:justify-end">
+            <CardContent className="p-5 sm:p-7">
+              <motion.form
+                onSubmit={handleSubmit}
+                variants={containerAnimation}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+              >
 
-                <Button
-                  type="reset"
-                  variant="outline"
-                  className="h-9 rounded-lg border-[#EDE2E5] px-4 text-xs text-[#817780] hover:bg-[#FFFCF9]"
-                  onClick={() => {
-                    previewImages.forEach((url) =>
-                      URL.revokeObjectURL(url)
-                    );
-
-                    setImages([]);
-                    setPreviewImages([]);
-                  }}
+                {/* Service Name */}
+                <motion.div
+                  variants={fadeUp}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-2"
                 >
-                  Reset
-                </Button>
+                  <Label
+                    htmlFor="serviceName"
+                    className="text-sm font-semibold text-[#292329]"
+                  >
+                    Service Name
+                    <span className="ml-1 text-[#772D43]">*</span>
+                  </Label>
 
-                <Button
-                  type="submit"
-                  className="h-9 rounded-lg bg-[#772D43] px-4 text-xs text-white hover:bg-[#612336]"
+                  <Input
+                    id="serviceName"
+                    name="serviceName"
+                    placeholder="e.g. Dream Wedding Photography"
+                    required
+                    disabled={isSubmitting}
+                    className="h-11 rounded-xl border-[#E8DDE1] bg-white px-3.5 text-sm transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                  />
+                </motion.div>
+
+                {/* Category & Price */}
+                <motion.div
+                  variants={fadeUp}
+                  transition={{ duration: 0.4 }}
+                  className="grid grid-cols-1 gap-5 sm:grid-cols-2"
                 >
-                  <FiPlusCircle className="mr-1.5" size={15} />
-                  Submit Service
-                </Button>
 
-              </div>
+                  {/* Category */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-[#292329]">
+                      Service Category
+                      <span className="ml-1 text-[#772D43]">*</span>
+                    </Label>
 
-            </form>
-          </CardContent>
-        </Card>
+                    <Select
+                      name="category"
+                      required
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger className="h-11 w-full rounded-xl border-[#E8DDE1] bg-white text-sm transition-all hover:border-[#C9A5B1] focus:ring-4 focus:ring-[#772D43]/10">
+                        <SelectValue placeholder="Choose category" />
+                      </SelectTrigger>
+
+                      <SelectContent className="rounded-xl border-[#E8DDE1] bg-white">
+                        {categories.map((category) => (
+                          <SelectItem
+                            key={category}
+                            value={category}
+                            className="cursor-pointer text-sm focus:bg-[#F8EFF0] focus:text-[#772D43]"
+                          >
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Price */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="price"
+                      className="text-sm font-semibold text-[#292329]"
+                    >
+                      Price (BDT)
+                      <span className="ml-1 text-[#772D43]">*</span>
+                    </Label>
+
+                    <Input
+                      id="price"
+                      name="price"
+                      type="number"
+                      min="1"
+                      placeholder="Enter your price"
+                      required
+                      disabled={isSubmitting}
+                      className="h-11 rounded-xl border-[#E8DDE1] px-3.5 text-sm transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Location */}
+                <motion.div
+                  variants={fadeUp}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="location"
+                    className="text-sm font-semibold text-[#292329]"
+                  >
+                    Service Location
+                    <span className="ml-1 text-[#772D43]">*</span>
+                  </Label>
+
+                  <div className="relative">
+                    <FiMapPin
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A18D96]"
+                      size={16}
+                    />
+
+                    <Input
+                      id="location"
+                      name="location"
+                      placeholder="e.g. Dhaka, Bangladesh"
+                      required
+                      disabled={isSubmitting}
+                      className="h-11 rounded-xl border-[#E8DDE1] pl-10 text-sm transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Description */}
+                <motion.div
+                  variants={fadeUp}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="description"
+                    className="text-sm font-semibold text-[#292329]"
+                  >
+                    Service Description
+                    <span className="ml-1 text-[#772D43]">*</span>
+                  </Label>
+
+                  <Textarea
+                    id="description"
+                    name="description"
+                    placeholder="Describe your service, experience, packages and what makes your service special..."
+                    required
+                    disabled={isSubmitting}
+                    className="min-h-32 resize-none rounded-xl border-[#E8DDE1] p-3.5 text-sm leading-6 transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                  />
+                </motion.div>
+
+                {/* Image Upload */}
+                <motion.div
+                  variants={fadeUp}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-3"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <Label className="text-sm font-semibold text-[#292329]">
+                      Service Images
+                      <span className="ml-1 text-[#772D43]">*</span>
+                    </Label>
+
+                    <motion.span
+                      key={images.length}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="rounded-full bg-[#F8EFF0] px-2.5 py-1 text-[11px] font-medium text-[#772D43]"
+                    >
+                      {images.length} selected
+                    </motion.span>
+                  </div>
+
+                  {/* Upload Box */}
+                  <motion.label
+                    htmlFor="images"
+                    whileHover={{
+                      scale: 1.005,
+                      borderColor: "#772D43",
+                    }}
+                    whileTap={{ scale: 0.99 }}
+                    className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E8D5DC] bg-[#FFFCF9] px-5 py-8 text-center transition-all duration-300 hover:bg-[#F8EFF0]/60 sm:py-10"
+                  >
+                    <motion.div
+                      whileHover={{ y: -4, rotate: -5 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                      className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F8EFF0] text-[#772D43] transition-colors group-hover:bg-[#772D43] group-hover:text-white"
+                    >
+                      <FiUploadCloud size={22} />
+                    </motion.div>
+
+                    <p className="text-sm font-semibold text-[#292329]">
+                      Click to upload images
+                    </p>
+
+                    <p className="mt-1.5 max-w-xs text-xs leading-5 text-[#817780]">
+                      Select multiple photos showcasing your
+                      wedding service
+                    </p>
+
+                    <motion.div
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#772D43] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#612336]"
+                    >
+                      <FiImage size={14} />
+                      Browse Images
+                    </motion.div>
+
+                    <p className="mt-3 text-[10px] tracking-wide text-[#A18D96]">
+                      JPG, PNG, WEBP
+                    </p>
+
+                    <input
+                      id="images"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      disabled={isSubmitting}
+                      className="hidden"
+                    />
+                  </motion.label>
+
+                  {/* Image Preview */}
+                  <AnimatePresence mode="popLayout">
+                    {previewImages.length > 0 && (
+                      <motion.div
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                      >
+                        {previewImages.map((preview, index) => (
+                          <motion.div
+                            key={preview}
+                            layout
+                            initial={{
+                              opacity: 0,
+                              scale: 0.8,
+                              y: 15,
+                            }}
+                            animate={{
+                              opacity: 1,
+                              scale: 1,
+                              y: 0,
+                            }}
+                            exit={{
+                              opacity: 0,
+                              scale: 0.7,
+                              y: 10,
+                            }}
+                            transition={{
+                              duration: 0.25,
+                            }}
+                            whileHover={{ y: -3 }}
+                            className="group relative aspect-square overflow-hidden rounded-xl border border-[#E9DFE2] bg-[#FFFCF9] shadow-sm"
+                          >
+                            <img
+                              src={preview}
+                              alt={`Service image ${index + 1}`}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+
+                            {/* Image Overlay */}
+                            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+
+                            {/* Remove Button */}
+                            <motion.button
+                              type="button"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() =>
+                                handleRemoveImage(index)
+                              }
+                              disabled={isSubmitting}
+                              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-[#772D43] opacity-100 shadow-md transition-colors hover:bg-[#772D43] hover:text-white sm:opacity-0 sm:group-hover:opacity-100"
+                              aria-label="Remove image"
+                            >
+                              <FiX size={14} />
+                            </motion.button>
+
+                            {/* Image Number */}
+                            <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-sm">
+                              <FiImage size={10} />
+                              {index + 1}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+
+                {/* Review Notice */}
+                <motion.div
+                  variants={fadeUp}
+                  transition={{ duration: 0.4 }}
+                  className="flex gap-3 rounded-xl border border-[#E9DFE2] bg-[#FFFCF9] p-4"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F8EFF0] text-[#772D43]">
+                    <FiCamera size={17} />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-[#292329]">
+                      Admin Review
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-[#817780]">
+                      Your service will be reviewed by our admin
+                      team before becoming visible to customers.
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Buttons */}
+                <motion.div
+                  variants={fadeUp}
+                  className="flex flex-col-reverse gap-3 border-t border-[#F0E7E8] pt-5 sm:flex-row sm:justify-end"
+                >
+                  {/* Reset Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <Button
+                      type="reset"
+                      variant="outline"
+                      disabled={isSubmitting}
+                      onClick={handleReset}
+                      className="h-11 w-full rounded-xl border-[#E8DDE1] px-5 text-sm font-medium text-[#817780] transition-all duration-200 hover:border-[#C9A5B1] hover:bg-[#FFFCF9] sm:w-auto"
+                    >
+                      Reset Form
+                    </Button>
+                  </motion.div>
+
+                  {/* Submit Button */}
+                  <motion.div
+                    whileHover={
+                      isSubmitting
+                        ? {}
+                        : { scale: 1.02, y: -1 }
+                    }
+                    whileTap={
+                      isSubmitting
+                        ? {}
+                        : { scale: 0.97 }
+                    }
+                  >
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="h-11 w-full rounded-xl bg-[#772D43] px-6 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(119,45,67,0.15)] transition-all duration-200 hover:bg-[#612336] hover:shadow-[0_6px_18px_rgba(119,45,67,0.25)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              repeat: Infinity,
+                              duration: 1,
+                              ease: "linear",
+                            }}
+                            className="mr-2"
+                          >
+                            <FiUploadCloud size={16} />
+                          </motion.div>
+
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <FiPlusCircle
+                            className="mr-2"
+                            size={16}
+                          />
+                          Submit Service
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
+                </motion.div>
+
+              </motion.form>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
