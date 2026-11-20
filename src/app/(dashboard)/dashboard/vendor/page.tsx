@@ -2,81 +2,152 @@ import Link from "next/link";
 import {
   FiArrowRight,
   FiCalendar,
+  FiCheckCircle,
   FiCreditCard,
   FiPlusCircle,
   FiShoppingBag,
+  FiClock,
+  FiStar,
+  FiTrendingUp,
 } from "react-icons/fi";
 
 import { requireRole } from "@/lib/dashboard-auth";
 
 export const instant = false;
 
-const stats = [
-  {
-    label: "My Services",
-    value: "0",
-    icon: FiShoppingBag,
-    note: "Add your first service",
-  },
-  {
-    label: "Booking Requests",
-    value: "0",
-    icon: FiCalendar,
-    note: "No pending requests",
-  },
-  {
-    label: "Confirmed Bookings",
-    value: "0",
-    icon: FiCalendar,
-    note: "No confirmed bookings",
-  },
-  {
-    label: "Subscription",
-    value: "Free",
-    icon: FiCreditCard,
-    note: "No paid plan active",
-  },
-];
-
-const quickLinks = [
-  {
-    title: "Add a Service",
-    description: "Create a new service for customers",
-    href: "/dashboard/vendor/add-service",
-    icon: FiPlusCircle,
-  },
-  {
-    title: "Booking Requests",
-    description: "Review requests from customers",
-    href: "/dashboard/vendor/booking-requests",
-    icon: FiCalendar,
-  },
-  {
-    title: "Subscription",
-    description: "View your current plan",
-    href: "/dashboard/vendor/subscription",
-    icon: FiCreditCard,
-  },
-];
+interface Service {
+  _id: string;
+  serviceName?: string;
+  status?: string;
+  category?: string;
+  price?: number;
+}
 
 export default async function VendorOverviewPage() {
   const session = await requireRole("vendor");
 
+  const user = session.user as typeof session.user & {
+    subscriptionPlan?: string;
+  };
+
+  let services: Service[] = [];
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/my-services?email=${encodeURIComponent(
+        session.user.email
+      )}`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    if (res.ok) {
+      services = await res.json();
+    }
+  } catch (error) {
+    console.error("Failed to fetch vendor services:", error);
+  }
+
+  const totalServices = services.length;
+
+  const activeServices = services.filter(
+    (service) =>
+      service.status?.toLowerCase() === "active" ||
+      service.status?.toLowerCase() === "approved"
+  ).length;
+
+  const pendingServices = services.filter(
+    (service) => service.status?.toLowerCase() === "pending"
+  ).length;
+
+  const subscriptionPlan = user.subscriptionPlan || "Free";
+
+  const stats = [
+    {
+      label: "Total Services",
+      value: totalServices,
+      description: "Services you've created",
+      icon: FiShoppingBag,
+      color: "bg-blue-50 text-blue-600",
+    },
+    {
+      label: "Active Services",
+      value: activeServices,
+      description: "Approved services",
+      icon: FiCheckCircle,
+      color: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Pending Services",
+      value: pendingServices,
+      description: "Waiting for approval",
+      icon: FiClock,
+      color: "bg-amber-50 text-amber-600",
+    },
+    {
+      label: "Subscription",
+      value: subscriptionPlan,
+      description: "Your current membership",
+      icon: FiCreditCard,
+      color: "bg-purple-50 text-purple-600",
+    },
+  ];
+
+  const quickLinks = [
+    {
+      title: "Add New Service",
+      description: "Showcase a new wedding service to customers.",
+      href: "/dashboard/vendor/add-service",
+      icon: FiPlusCircle,
+      color: "bg-[#E4F3F1] text-[#378A88]",
+    },
+    {
+      title: "Booking Requests",
+      description: "Review and manage customer booking requests.",
+      href: "/dashboard/vendor/booking-requests",
+      icon: FiCalendar,
+      color: "bg-blue-50 text-blue-600",
+    },
+    {
+      title: "Manage Subscription",
+      description: "Explore plans and unlock premium benefits.",
+      href: "/dashboard/vendor/subscription",
+      icon: FiCreditCard,
+      color: "bg-purple-50 text-purple-600",
+    },
+  ];
+
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6 lg:p-8">
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#378A88]">
-          Vendor Workspace
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#193F5B] sm:text-3xl">
-          Overview
-        </h1>
-        <p className="mt-1.5 text-sm text-[#87939E]">
-          Welcome back, {session.user.name}. Manage your services and bookings
-          from here.
-        </p>
+    <div className="mx-auto w-full max-w-7xl space-y-7 p-4 sm:p-6 lg:p-8">
+
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#378A88]">
+            Vendor Workspace
+          </p>
+
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[#193F5B] sm:text-3xl">
+            Dashboard Overview
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-[#87939E]">
+            Welcome back, {session.user.name}. Here&apos;s an overview of your
+            wedding business.
+          </p>
+        </div>
+
+        <Link
+          href="/dashboard/vendor/add-service"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#378A88] px-5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-[#2C7472] hover:shadow-md"
+        >
+          <FiPlusCircle size={17} />
+          Add New Service
+        </Link>
       </div>
 
+      {/* Statistics */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
@@ -84,48 +155,79 @@ export default async function VendorOverviewPage() {
           return (
             <div
               key={stat.label}
-              className="group rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-[0_1px_2px_rgba(25,63,91,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C8D6E0] hover:shadow-[0_12px_28px_rgba(25,63,91,0.08)]"
+              className="group rounded-2xl border border-[#E5EBEF] bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] font-medium text-[#87939E]">
-                    {stat.label}
-                  </p>
-                  <p className="mt-2 text-3xl font-semibold tracking-tight text-[#193F5B]">
-                    {stat.value}
-                  </p>
+              <div className="flex items-center justify-between">
+                <div
+                  className={`flex size-11 items-center justify-center rounded-xl ${stat.color}`}
+                >
+                  <Icon size={20} />
                 </div>
 
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88] transition-colors duration-200 group-hover:bg-[#378A88] group-hover:text-white">
-                  <Icon className="size-5" />
-                </div>
+                <FiTrendingUp className="text-[#C1CDD5]" size={17} />
               </div>
 
-              <p className="mt-3 border-t border-[#EEF2F6] pt-3 text-[11px] text-[#87939E]">
-                {stat.note}
+              <p className="mt-5 text-sm font-medium text-[#87939E]">
+                {stat.label}
+              </p>
+
+              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-[#193F5B]">
+                {stat.value}
+              </h2>
+
+              <p className="mt-2 text-xs text-[#9AA6AF]">
+                {stat.description}
               </p>
             </div>
           );
         })}
       </div>
 
-      <section className="rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-[0_1px_2px_rgba(25,63,91,0.04)] sm:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold text-[#193F5B]">
-              Quick actions
+      {/* Welcome Banner */}
+      <section className="relative overflow-hidden rounded-2xl bg-[#193F5B] p-6 sm:p-8">
+        <div className="absolute -right-12 -top-16 size-56 rounded-full bg-[#378A88]/20 blur-3xl" />
+        <div className="absolute -bottom-20 left-1/3 size-48 rounded-full bg-white/5 blur-3xl" />
+
+        <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-[#B9E3DE]">
+              <FiStar size={13} />
+              Your Vendor Journey
+            </div>
+
+            <h2 className="mt-4 text-xl font-semibold text-white sm:text-2xl">
+              Build your wedding business with WedPlan
             </h2>
-            <p className="mt-1 text-xs text-[#87939E]">
-              The most useful vendor tools in one place.
+
+            <p className="mt-2 max-w-lg text-sm leading-6 text-white/65">
+              Manage your services, grow your visibility, and connect with
+              couples planning their special day.
             </p>
           </div>
 
-          <span className="hidden rounded-full bg-[#E4F3F1] px-2.5 py-1 text-[10px] font-semibold text-[#378A88] sm:inline-block">
-            Vendor
-          </span>
+          <Link
+            href="/dashboard/vendor/my-services"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-[#193F5B] transition hover:bg-[#E4F3F1]"
+          >
+            Manage Services
+            <FiArrowRight size={16} />
+          </Link>
+        </div>
+      </section>
+
+      {/* Quick Actions */}
+      <section>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold tracking-tight text-[#193F5B]">
+            Quick Actions
+          </h2>
+
+          <p className="mt-1 text-sm text-[#87939E]">
+            Everything you need to manage your vendor account.
+          </p>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {quickLinks.map((link) => {
             const Icon = link.icon;
 
@@ -133,19 +235,26 @@ export default async function VendorOverviewPage() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="group rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#378A88]/40 hover:bg-white hover:shadow-[0_10px_24px_rgba(25,63,91,0.07)]"
+                className="group rounded-2xl border border-[#E5EBEF] bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[#C9D9DF] hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-white text-[#378A88] ring-1 ring-[#E1E8ED] transition-colors duration-200 group-hover:bg-[#378A88] group-hover:text-white group-hover:ring-[#378A88]">
-                    <Icon className="size-4" />
+                  <div
+                    className={`flex size-11 items-center justify-center rounded-xl ${link.color}`}
+                  >
+                    <Icon size={20} />
                   </div>
-                  <FiArrowRight className="size-4 text-[#87939E] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#378A88]" />
+
+                  <FiArrowRight
+                    size={17}
+                    className="text-[#A5B1BA] transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[#378A88]"
+                  />
                 </div>
 
-                <p className="mt-3 text-xs font-semibold text-[#193F5B]">
+                <h3 className="mt-4 text-sm font-semibold text-[#193F5B]">
                   {link.title}
-                </p>
-                <p className="mt-1 text-[11px] leading-5 text-[#87939E]">
+                </h3>
+
+                <p className="mt-1.5 text-xs leading-5 text-[#87939E]">
                   {link.description}
                 </p>
               </Link>
@@ -154,12 +263,76 @@ export default async function VendorOverviewPage() {
         </div>
       </section>
 
-      <div className="flex items-start gap-3 rounded-xl border border-[#CFE7E4] bg-[#E4F3F1] px-4 py-3">
-        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#378A88]" />
-        <p className="text-[11px] leading-5 text-[#193F5B]">
-          Service and booking data will be connected in a later step.
-        </p>
-      </div>
+      {/* Service Summary */}
+      <section className="rounded-2xl border border-[#E5EBEF] bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-[#193F5B]">
+              Your Services
+            </h2>
+
+            <p className="mt-1 text-sm text-[#87939E]">
+              A quick look at your service portfolio.
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/vendor/my-services"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#378A88] transition hover:text-[#286B69]"
+          >
+            View All Services
+            <FiArrowRight size={15} />
+          </Link>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-xl bg-[#F8FAFC] p-4">
+            <p className="text-xs text-[#87939E]">Total Services</p>
+            <p className="mt-2 text-xl font-semibold text-[#193F5B]">
+              {totalServices}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-[#F0F8F6] p-4">
+            <p className="text-xs text-[#6E9690]">Approved</p>
+            <p className="mt-2 text-xl font-semibold text-[#378A88]">
+              {activeServices}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-[#FFF8ED] p-4">
+            <p className="text-xs text-[#B28B53]">Pending Approval</p>
+            <p className="mt-2 text-xl font-semibold text-[#B28B53]">
+              {pendingServices}
+            </p>
+          </div>
+        </div>
+
+        {totalServices === 0 && (
+          <div className="mt-5 rounded-xl border border-dashed border-[#DCE5EA] px-5 py-8 text-center">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
+              <FiShoppingBag size={21} />
+            </div>
+
+            <h3 className="mt-3 text-sm font-semibold text-[#193F5B]">
+              No services yet
+            </h3>
+
+            <p className="mt-1 text-xs text-[#87939E]">
+              Start building your portfolio by adding your first service.
+            </p>
+
+            <Link
+              href="/dashboard/vendor/add-service"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#378A88] px-4 py-2.5 text-xs font-medium text-white transition hover:bg-[#2C7472]"
+            >
+              <FiPlusCircle size={14} />
+              Create Your First Service
+            </Link>
+          </div>
+        )}
+      </section>
+
     </div>
   );
 }

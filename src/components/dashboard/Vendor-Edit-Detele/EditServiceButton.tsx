@@ -225,7 +225,9 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
           <div className="space-y-2">
             <Label>Category</Label>
 
-            <Select value={category} onValueChange={setCategory}>
+            <Select
+              value={category}
+              onValueChange={(value) => setCategory(value ?? "")}>
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>

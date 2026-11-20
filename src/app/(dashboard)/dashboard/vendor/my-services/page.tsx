@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 
 import {
   FiSearch,
   FiMapPin,
-  FiEdit2,
-  FiTrash2,
   FiPlus,
   FiImage,
   FiBriefcase,
@@ -19,6 +16,7 @@ import {
   FiArrowUpRight,
   FiChevronDown,
 } from "react-icons/fi";
+
 import EditServiceButton from "@/components/dashboard/Vendor-Edit-Detele/EditServiceButton";
 import DeleteServiceButton from "@/components/dashboard/Vendor-Edit-Detele/DeleteServiceButton";
 
@@ -34,30 +32,6 @@ interface Service {
   userEmail: string;
   createdAt: string;
 }
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 18,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.35,
-      ease: "easeOut" as const,
-    },
-  },
-};
 
 const dropdownOptions = {
   status: [
@@ -117,12 +91,7 @@ function CustomDropdown({
             onClick={() => setOpen(false)}
           />
 
-          <motion.div
-            initial={{ opacity: 0, y: -5, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-[#E1E8ED] bg-white p-1.5 shadow-lg shadow-[#378A88]/10"
-          >
+          <div className="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-[#E1E8ED] bg-white p-1.5 shadow-lg shadow-[#378A88]/10">
             {options.map((option) => (
               <button
                 key={option.value}
@@ -131,12 +100,16 @@ function CustomDropdown({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-[#2C7371] hover:text-white`}
+                className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  value === option.value
+                    ? "bg-[#E4F3F1] font-medium text-[#378A88]"
+                    : "text-[#5B7286] hover:bg-[#2C7371] hover:text-white"
+                }`}
               >
                 {option.label}
               </button>
             ))}
-          </motion.div>
+          </div>
         </>
       )}
     </div>
@@ -237,23 +210,15 @@ export default function MyServicesPage() {
   ).length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.35 }}
-      className="min-h-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8"
-    >
+    <div className="min-h-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-5">
+
         {/* Header */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"
-        >
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
             <div className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-[#378A88]" />
+
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#378A88]">
                 Vendor Workspace
               </p>
@@ -276,92 +241,76 @@ export default function MyServicesPage() {
             Add New Service
             <FiArrowUpRight size={14} />
           </Link>
-        </motion.div>
+        </div>
 
         {/* Stats */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-2 gap-3 sm:grid-cols-4"
-        >
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+
           {/* Total */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -3 }}
-            className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4"
-          >
+          <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
               <FiBriefcase size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">Total Services</p>
+            <p className="mt-3 text-xs text-[#87939E]">
+              Total Services
+            </p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-[#193F5B]">
               {services.length}
             </h2>
-          </motion.div>
+          </div>
 
           {/* Approved */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -3 }}
-            className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4"
-          >
+          <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-700">
               <FiCheckCircle size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">Approved</p>
+            <p className="mt-3 text-xs text-[#87939E]">
+              Approved
+            </p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-green-700">
               {approvedCount}
             </h2>
-          </motion.div>
+          </div>
 
           {/* Pending */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -3 }}
-            className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4"
-          >
+          <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
               <FiClock size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">Pending</p>
+            <p className="mt-3 text-xs text-[#87939E]">
+              Pending
+            </p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-amber-600">
               {pendingCount}
             </h2>
-          </motion.div>
+          </div>
 
           {/* Rejected */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -3 }}
-            className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4"
-          >
+          <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600">
               <FiXCircle size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">Rejected</p>
+            <p className="mt-3 text-xs text-[#87939E]">
+              Rejected
+            </p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-red-600">
               {rejectedCount}
             </h2>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Search & Filters */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
-          className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 sm:p-4"
-        >
+        <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+
             {/* Search */}
             <div className="relative w-full lg:max-w-md">
               <FiSearch
@@ -380,7 +329,8 @@ export default function MyServicesPage() {
 
             {/* Filters */}
             <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-              {/* Custom Status Dropdown */}
+
+              {/* Status Dropdown */}
               <CustomDropdown
                 value={statusFilter}
                 onChange={setStatusFilter}
@@ -388,7 +338,7 @@ export default function MyServicesPage() {
                 width="sm:min-w-[135px] w-full"
               />
 
-              {/* Custom Sorting Dropdown */}
+              {/* Sorting Dropdown */}
               <CustomDropdown
                 value={sortOrder}
                 onChange={setSortOrder}
@@ -420,7 +370,7 @@ export default function MyServicesPage() {
               </button>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading */}
         {loading && (
@@ -448,17 +398,15 @@ export default function MyServicesPage() {
           <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-center">
             <FiXCircle className="mx-auto text-red-500" size={24} />
 
-            <p className="mt-2 text-sm text-red-600">{error}</p>
+            <p className="mt-2 text-sm text-red-600">
+              {error}
+            </p>
           </div>
         )}
 
         {/* Empty */}
         {!loading && !error && services.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-dashed border-[#CFE7E4] bg-[#F8FAFC] px-5 py-12 text-center"
-          >
+          <div className="rounded-xl border border-dashed border-[#CFE7E4] bg-[#F8FAFC] px-5 py-12 text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
               <FiImage size={22} />
             </div>
@@ -478,7 +426,7 @@ export default function MyServicesPage() {
               <FiPlus size={15} />
               Add Service
             </Link>
-          </motion.div>
+          </div>
         )}
 
         {/* No Search Results */}
@@ -486,11 +434,7 @@ export default function MyServicesPage() {
           !error &&
           services.length > 0 &&
           filteredServices.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl border border-[#E1E8ED] bg-white px-5 py-10 text-center"
-            >
+            <div className="rounded-xl border border-[#E1E8ED] bg-white px-5 py-10 text-center">
               <FiSearch className="mx-auto text-[#87939E]" size={22} />
 
               <h3 className="mt-3 text-sm font-semibold text-[#193F5B]">
@@ -510,22 +454,15 @@ export default function MyServicesPage() {
               >
                 Clear filters
               </button>
-            </motion.div>
+            </div>
           )}
 
         {/* Services Grid */}
         {!loading && !error && filteredServices.length > 0 && (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-          >
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {filteredServices.map((service) => (
-              <motion.div
+              <div
                 key={service._id}
-                variants={itemVariants}
-                whileHover={{ y: -4 }}
                 className="group overflow-hidden rounded-xl border border-[#E1E8ED] bg-white transition-shadow duration-300 hover:border-[#C8D6E0] hover:shadow-lg hover:shadow-[#378A88]/5"
               >
                 {/* Image */}
@@ -561,6 +498,7 @@ export default function MyServicesPage() {
                     ) : (
                       <FiClock size={12} />
                     )}
+
                     {service.status}
                   </span>
 
@@ -575,6 +513,7 @@ export default function MyServicesPage() {
 
                 {/* Card Content */}
                 <div className="p-4">
+
                   {/* Category */}
                   <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#378A88]">
                     {service.category}
@@ -596,7 +535,9 @@ export default function MyServicesPage() {
                       <FiMapPin size={12} />
                     </div>
 
-                    <span className="line-clamp-1">{service.location}</span>
+                    <span className="line-clamp-1">
+                      {service.location}
+                    </span>
                   </div>
 
                   {/* Price */}
@@ -623,21 +564,24 @@ export default function MyServicesPage() {
                   {/* Actions */}
                   <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#E1E8ED] pt-3">
                     <EditServiceButton service={service} />
+
                     <DeleteServiceButton
                       serviceId={service._id}
                       onDelete={(deletedId) => {
-                        setServices((Services) =>
-                          Services.filter((item) => item._id !== deletedId),
+                        setServices((prevServices) =>
+                          prevServices.filter(
+                            (item) => item._id !== deletedId,
+                          ),
                         );
                       }}
                     />
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
