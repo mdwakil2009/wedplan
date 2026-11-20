@@ -19,6 +19,7 @@ import {
   FiArrowUpRight,
   FiChevronDown,
 } from "react-icons/fi";
+import EditServiceButton from "@/components/dashboard/EditServiceButton";
 
 interface Service {
   _id: string;
@@ -620,14 +621,7 @@ export default function MyServicesPage() {
 
                   {/* Actions */}
                   <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#E1E8ED] pt-3">
-                    <button
-                      disabled
-                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-[#E1E8ED] text-[11px] font-semibold text-[#5B7286] transition hover:bg-[#E4F3F1] disabled:cursor-not-allowed"
-                    >
-                      <FiEdit2 size={13} />
-                      Edit
-                    </button>
-
+                    <EditServiceButton service={service} />
                     <button
                       disabled
                       className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-red-100 text-[11px] font-semibold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed"
