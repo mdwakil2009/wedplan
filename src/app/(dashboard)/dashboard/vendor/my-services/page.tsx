@@ -19,7 +19,8 @@ import {
   FiArrowUpRight,
   FiChevronDown,
 } from "react-icons/fi";
-import EditServiceButton from "@/components/dashboard/EditServiceButton";
+import EditServiceButton from "@/components/dashboard/Vendor-Edit-Detele/EditServiceButton";
+import DeleteServiceButton from "@/components/dashboard/Vendor-Edit-Detele/DeleteServiceButton";
 
 interface Service {
   _id: string;
@@ -622,13 +623,14 @@ export default function MyServicesPage() {
                   {/* Actions */}
                   <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#E1E8ED] pt-3">
                     <EditServiceButton service={service} />
-                    <button
-                      disabled
-                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-red-100 text-[11px] font-semibold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed"
-                    >
-                      <FiTrash2 size={13} />
-                      Delete
-                    </button>
+                    <DeleteServiceButton
+                      serviceId={service._id}
+                      onDelete={(deletedId) => {
+                        setServices((Services) =>
+                          Services.filter((item) => item._id !== deletedId),
+                        );
+                      }}
+                    />
                   </div>
                 </div>
               </motion.div>
