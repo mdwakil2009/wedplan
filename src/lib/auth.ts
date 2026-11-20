@@ -6,15 +6,19 @@ const client = new MongoClient(process.env.MONGODB_URL as string);
 const db = client.db("WedPlan");
 
 export const auth = betterAuth({
-  user: {
-    additionalFields: {
-      role: {
-        type: ["admin", "vendor", "customer"],
-        input: true,
-        defaultValue: "customer",
-      },
+user: {
+  changeEmail: {
+    enabled: true,
+  },
+
+  additionalFields: {
+    role: {
+      type: ["admin", "vendor", "customer"],
+      input: true,
+      defaultValue: "customer",
     },
   },
+},
   databaseHooks: {
     user: {
       create: {
