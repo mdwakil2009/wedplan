@@ -12,13 +12,13 @@ import {
   FiUploadCloud,
   FiCamera,
   FiFileText,
-  FiCheck,
 } from "react-icons/fi";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSession } from "@/lib/auth-client";
 
 import {
   Select,
@@ -60,6 +60,7 @@ const containerAnimation = {
 };
 
 export default function AddServicePage() {
+    const { data: session } = useSession();
   const [images, setImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -175,6 +176,7 @@ export default function AddServicePage() {
           },
           body: JSON.stringify({
             ...userData,
+             userEmail: session?.user?.email,
             price: Number(userData.price),
             images: imageUrls,
             status: "pending",
@@ -229,7 +231,7 @@ export default function AddServicePage() {
   };
 
   return (
-    <div className="min-h-full bg-white">
+    <div className="min-h-full">
       <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
 
         {/* Page Header */}
@@ -242,18 +244,18 @@ export default function AddServicePage() {
           <motion.div
             variants={fadeUp}
             transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 rounded-full border border-[#EAD9DE] bg-[#F8EFF0] px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#772D43]"
+            className="inline-flex items-center gap-2 rounded-full border border-[#CFE7E4] bg-[#E4F3F1] px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#378A88]"
           >
             <FiPlusCircle size={14} />
             VENDOR DASHBOARD
           </motion.div>
 
           <motion.div variants={fadeUp}>
-            <h1 className="text-2xl font-bold tracking-tight text-[#292329] sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-[#193F5B] sm:text-3xl">
               Add Your Service
             </h1>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[#817780]">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#87939E]">
               Showcase your wedding service, share your work,
               and connect with couples planning their special day.
             </p>
@@ -270,24 +272,24 @@ export default function AddServicePage() {
             ease: "easeOut",
           }}
         >
-          <Card className="overflow-hidden rounded-2xl border-[#E9DFE2] bg-white shadow-[0_4px_24px_rgba(80,30,45,0.04)]">
+          <Card className="overflow-hidden rounded-2xl border-[#E1E8ED] bg-white shadow-[0_4px_24px_rgba(80,30,45,0.04)]">
 
             {/* Card Header */}
-            <div className="border-b border-[#F0E7E8] bg-gradient-to-r from-[#FFFCF9] to-[#FAF5F6] px-5 py-5 sm:px-7">
+            <div className="border-b border-[#E1E8ED] bg-[#F8FAFC] px-5 py-5 sm:px-7">
               <div className="flex items-center gap-3">
                 <motion.div
                   whileHover={{ rotate: 5, scale: 1.05 }}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F8EFF0] text-[#772D43]"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]"
                 >
                   <FiFileText size={19} />
                 </motion.div>
 
                 <div>
-                  <h2 className="text-sm font-bold text-[#292329] sm:text-base">
+                  <h2 className="text-sm font-bold text-[#193F5B] sm:text-base">
                     Service Information
                   </h2>
 
-                  <p className="mt-0.5 text-xs text-[#817780]">
+                  <p className="mt-0.5 text-xs text-[#87939E]">
                     Fill in your service details below
                   </p>
                 </div>
@@ -311,10 +313,10 @@ export default function AddServicePage() {
                 >
                   <Label
                     htmlFor="serviceName"
-                    className="text-sm font-semibold text-[#292329]"
+                    className="text-sm font-semibold text-[#193F5B]"
                   >
                     Service Name
-                    <span className="ml-1 text-[#772D43]">*</span>
+                    <span className="ml-1 text-[#378A88]">*</span>
                   </Label>
 
                   <Input
@@ -323,7 +325,7 @@ export default function AddServicePage() {
                     placeholder="e.g. Dream Wedding Photography"
                     required
                     disabled={isSubmitting}
-                    className="h-11 rounded-xl border-[#E8DDE1] bg-white px-3.5 text-sm transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                    className="h-11 rounded-xl border-[#E1E8ED] bg-white px-3.5 text-sm transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                   />
                 </motion.div>
 
@@ -336,9 +338,9 @@ export default function AddServicePage() {
 
                   {/* Category */}
                   <div className="space-y-2">
-                    <Label className="text-sm font-semibold text-[#292329]">
+                    <Label className="text-sm font-semibold text-[#193F5B]">
                       Service Category
-                      <span className="ml-1 text-[#772D43]">*</span>
+                      <span className="ml-1 text-[#378A88]">*</span>
                     </Label>
 
                     <Select
@@ -346,16 +348,16 @@ export default function AddServicePage() {
                       required
                       disabled={isSubmitting}
                     >
-                      <SelectTrigger className="h-11 w-full rounded-xl border-[#E8DDE1] bg-white text-sm transition-all hover:border-[#C9A5B1] focus:ring-4 focus:ring-[#772D43]/10">
+                      <SelectTrigger className="h-11 w-full rounded-xl border-[#E1E8ED] bg-white text-sm transition-all hover:border-[#B9CEDA] focus:ring-4 focus:ring-[#378A88]/10">
                         <SelectValue placeholder="Choose category" />
                       </SelectTrigger>
 
-                      <SelectContent className="rounded-xl border-[#E8DDE1] bg-white">
+                      <SelectContent className="rounded-xl border-[#E1E8ED] bg-white">
                         {categories.map((category) => (
                           <SelectItem
                             key={category}
                             value={category}
-                            className="cursor-pointer text-sm focus:bg-[#F8EFF0] focus:text-[#772D43]"
+                            className="cursor-pointer text-sm focus:bg-[#E4F3F1] focus:text-[#378A88]"
                           >
                             {category}
                           </SelectItem>
@@ -368,10 +370,10 @@ export default function AddServicePage() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="price"
-                      className="text-sm font-semibold text-[#292329]"
+                      className="text-sm font-semibold text-[#193F5B]"
                     >
                       Price (BDT)
-                      <span className="ml-1 text-[#772D43]">*</span>
+                      <span className="ml-1 text-[#378A88]">*</span>
                     </Label>
 
                     <Input
@@ -382,7 +384,7 @@ export default function AddServicePage() {
                       placeholder="Enter your price"
                       required
                       disabled={isSubmitting}
-                      className="h-11 rounded-xl border-[#E8DDE1] px-3.5 text-sm transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                      className="h-11 rounded-xl border-[#E1E8ED] px-3.5 text-sm transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                     />
                   </div>
                 </motion.div>
@@ -395,15 +397,15 @@ export default function AddServicePage() {
                 >
                   <Label
                     htmlFor="location"
-                    className="text-sm font-semibold text-[#292329]"
+                    className="text-sm font-semibold text-[#193F5B]"
                   >
                     Service Location
-                    <span className="ml-1 text-[#772D43]">*</span>
+                    <span className="ml-1 text-[#378A88]">*</span>
                   </Label>
 
                   <div className="relative">
                     <FiMapPin
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A18D96]"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#87939E]"
                       size={16}
                     />
 
@@ -413,7 +415,7 @@ export default function AddServicePage() {
                       placeholder="e.g. Dhaka, Bangladesh"
                       required
                       disabled={isSubmitting}
-                      className="h-11 rounded-xl border-[#E8DDE1] pl-10 text-sm transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                      className="h-11 rounded-xl border-[#E1E8ED] pl-10 text-sm transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                     />
                   </div>
                 </motion.div>
@@ -426,10 +428,10 @@ export default function AddServicePage() {
                 >
                   <Label
                     htmlFor="description"
-                    className="text-sm font-semibold text-[#292329]"
+                    className="text-sm font-semibold text-[#193F5B]"
                   >
                     Service Description
-                    <span className="ml-1 text-[#772D43]">*</span>
+                    <span className="ml-1 text-[#378A88]">*</span>
                   </Label>
 
                   <Textarea
@@ -438,7 +440,7 @@ export default function AddServicePage() {
                     placeholder="Describe your service, experience, packages and what makes your service special..."
                     required
                     disabled={isSubmitting}
-                    className="min-h-32 resize-none rounded-xl border-[#E8DDE1] p-3.5 text-sm leading-6 transition-all duration-200 placeholder:text-[#B5A8AE] hover:border-[#C9A5B1] focus-visible:border-[#772D43] focus-visible:ring-4 focus-visible:ring-[#772D43]/10"
+                    className="min-h-32 resize-none rounded-xl border-[#E1E8ED] p-3.5 text-sm leading-6 transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                   />
                 </motion.div>
 
@@ -449,16 +451,16 @@ export default function AddServicePage() {
                   className="space-y-3"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <Label className="text-sm font-semibold text-[#292329]">
+                    <Label className="text-sm font-semibold text-[#193F5B]">
                       Service Images
-                      <span className="ml-1 text-[#772D43]">*</span>
+                      <span className="ml-1 text-[#378A88]">*</span>
                     </Label>
 
                     <motion.span
                       key={images.length}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="rounded-full bg-[#F8EFF0] px-2.5 py-1 text-[11px] font-medium text-[#772D43]"
+                      className="rounded-full bg-[#E4F3F1] px-2.5 py-1 text-[11px] font-medium text-[#378A88]"
                     >
                       {images.length} selected
                     </motion.span>
@@ -469,24 +471,24 @@ export default function AddServicePage() {
                     htmlFor="images"
                     whileHover={{
                       scale: 1.005,
-                      borderColor: "#772D43",
+                      borderColor: "#378A88",
                     }}
                     whileTap={{ scale: 0.99 }}
-                    className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E8D5DC] bg-[#FFFCF9] px-5 py-8 text-center transition-all duration-300 hover:bg-[#F8EFF0]/60 sm:py-10"
+                    className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#CFE7E4] bg-[#F8FAFC] px-5 py-8 text-center transition-all duration-300 hover:bg-[#E4F3F1]/60 sm:py-10"
                   >
                     <motion.div
                       whileHover={{ y: -4, rotate: -5 }}
                       transition={{ type: "spring", stiffness: 300 }}
-                      className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F8EFF0] text-[#772D43] transition-colors group-hover:bg-[#772D43] group-hover:text-white"
+                      className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E4F3F1] text-[#378A88] transition-colors group-hover:bg-[#378A88] group-hover:text-white"
                     >
                       <FiUploadCloud size={22} />
                     </motion.div>
 
-                    <p className="text-sm font-semibold text-[#292329]">
+                    <p className="text-sm font-semibold text-[#193F5B]">
                       Click to upload images
                     </p>
 
-                    <p className="mt-1.5 max-w-xs text-xs leading-5 text-[#817780]">
+                    <p className="mt-1.5 max-w-xs text-xs leading-5 text-[#87939E]">
                       Select multiple photos showcasing your
                       wedding service
                     </p>
@@ -494,13 +496,13 @@ export default function AddServicePage() {
                     <motion.div
                       whileHover={{ scale: 1.04 }}
                       whileTap={{ scale: 0.96 }}
-                      className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#772D43] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#612336]"
+                      className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#378A88] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#2C7371]"
                     >
                       <FiImage size={14} />
                       Browse Images
                     </motion.div>
 
-                    <p className="mt-3 text-[10px] tracking-wide text-[#A18D96]">
+                    <p className="mt-3 text-[10px] tracking-wide text-[#87939E]">
                       JPG, PNG, WEBP
                     </p>
 
@@ -548,7 +550,7 @@ export default function AddServicePage() {
                               duration: 0.25,
                             }}
                             whileHover={{ y: -3 }}
-                            className="group relative aspect-square overflow-hidden rounded-xl border border-[#E9DFE2] bg-[#FFFCF9] shadow-sm"
+                            className="group relative aspect-square overflow-hidden rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] shadow-sm"
                           >
                             <img
                               src={preview}
@@ -568,7 +570,7 @@ export default function AddServicePage() {
                                 handleRemoveImage(index)
                               }
                               disabled={isSubmitting}
-                              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-[#772D43] opacity-100 shadow-md transition-colors hover:bg-[#772D43] hover:text-white sm:opacity-0 sm:group-hover:opacity-100"
+                              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-[#378A88] opacity-100 shadow-md transition-colors hover:bg-[#378A88] hover:text-white sm:opacity-0 sm:group-hover:opacity-100"
                               aria-label="Remove image"
                             >
                               <FiX size={14} />
@@ -590,18 +592,18 @@ export default function AddServicePage() {
                 <motion.div
                   variants={fadeUp}
                   transition={{ duration: 0.4 }}
-                  className="flex gap-3 rounded-xl border border-[#E9DFE2] bg-[#FFFCF9] p-4"
+                  className="flex gap-3 rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F8EFF0] text-[#772D43]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
                     <FiCamera size={17} />
                   </div>
 
                   <div>
-                    <p className="text-sm font-semibold text-[#292329]">
+                    <p className="text-sm font-semibold text-[#193F5B]">
                       Admin Review
                     </p>
 
-                    <p className="mt-1 text-xs leading-5 text-[#817780]">
+                    <p className="mt-1 text-xs leading-5 text-[#87939E]">
                       Your service will be reviewed by our admin
                       team before becoming visible to customers.
                     </p>
@@ -611,7 +613,7 @@ export default function AddServicePage() {
                 {/* Buttons */}
                 <motion.div
                   variants={fadeUp}
-                  className="flex flex-col-reverse gap-3 border-t border-[#F0E7E8] pt-5 sm:flex-row sm:justify-end"
+                  className="flex flex-col-reverse gap-3 border-t border-[#E1E8ED] pt-5 sm:flex-row sm:justify-end"
                 >
                   {/* Reset Button */}
                   <motion.div
@@ -623,7 +625,7 @@ export default function AddServicePage() {
                       variant="outline"
                       disabled={isSubmitting}
                       onClick={handleReset}
-                      className="h-11 w-full rounded-xl border-[#E8DDE1] px-5 text-sm font-medium text-[#817780] transition-all duration-200 hover:border-[#C9A5B1] hover:bg-[#FFFCF9] sm:w-auto"
+                      className="h-11 w-full rounded-xl border-[#E1E8ED] px-5 text-sm font-medium text-[#87939E] transition-all duration-200 hover:border-[#B9CEDA] hover:bg-[#F8FAFC] sm:w-auto"
                     >
                       Reset Form
                     </Button>
@@ -645,7 +647,7 @@ export default function AddServicePage() {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="h-11 w-full rounded-xl bg-[#772D43] px-6 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(119,45,67,0.15)] transition-all duration-200 hover:bg-[#612336] hover:shadow-[0_6px_18px_rgba(119,45,67,0.25)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+                      className="h-11 w-full rounded-xl bg-[#378A88] px-6 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(55,138,136,0.2)] transition-all duration-200 hover:bg-[#2C7371] hover:shadow-[0_6px_18px_rgba(55,138,136,0.3)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                     >
                       {isSubmitting ? (
                         <>

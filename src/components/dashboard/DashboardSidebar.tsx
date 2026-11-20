@@ -27,7 +27,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { authClient, useSession } from "@/lib/auth-client";
 import DashboardSidebarHeader from "./DashboardSidebarHeader";
@@ -104,12 +103,7 @@ export function DashboardSidebar() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
 
-  const role: Role =
-    session?.user.role === "admin" ||
-    session?.user.role === "vendor" ||
-    session?.user.role === "customer"
-      ? session.user.role
-      : "customer";
+  const role: Role = (session?.user.role as Role) || "customer";
   const menuItems = roleBasedMenus[role];
   const homeHref = `/dashboard/${role}`;
 
@@ -131,22 +125,28 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-3">
+      <SidebarHeader className="px-3 pb-3 pt-5">
         <DashboardSidebarHeader />
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-2 text-[10px] font-semibold tracking-[0.16em] text-[#A08E95]">
+        <SidebarGroup className="px-3 pt-2">
+          <SidebarGroupLabel className="mb-1 px-2 text-[10px] font-semibold tracking-[0.18em] text-white/40">
             {role.toUpperCase()} MENU
           </SidebarGroupLabel>
 
           <SidebarGroupContent>
             {isPending ? (
               <div className="space-y-1.5 px-1">
-                <SidebarMenuSkeleton showIcon />
-                <SidebarMenuSkeleton showIcon />
-                <SidebarMenuSkeleton showIcon />
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="flex h-10 items-center gap-2 rounded-lg px-3"
+                  >
+                    <div className="size-4 animate-pulse rounded bg-white/10" />
+                    <div className="h-2.5 w-24 animate-pulse rounded bg-white/10" />
+                  </div>
+                ))}
               </div>
             ) : (
               <SidebarMenu className="gap-1">
@@ -160,13 +160,17 @@ export function DashboardSidebar() {
                         render={<Link href={item.href} />}
                         isActive={active}
                         tooltip={item.label}
-                        className={`h-10 rounded-lg px-3 text-[13px] font-medium transition-colors ${
+                        className={`h-10 rounded-lg px-3 text-[13px] font-medium transition-all duration-200 ${
                           active
-                            ? "bg-[#F8EFF0] text-[#772D43] shadow-[inset_2px_0_0_#772D43] hover:bg-[#F8EFF0] hover:text-[#772D43]"
-                            : "text-[#5C5158] hover:bg-[#FBF5F4] hover:text-[#772D43]"
+                            ? "bg-[#378A88] text-white shadow-[0_6px_16px_rgba(55,138,136,0.35)] hover:bg-[#378A88] hover:text-white"
+                            : "text-white/65 hover:bg-white/10 hover:text-white"
                         }`}
                       >
-                        <Icon className="size-4" />
+                        <Icon
+                          className={`size-4 ${
+                            active ? "text-white" : "text-white/60"
+                          }`}
+                        />
                         <span>{item.label}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -178,10 +182,10 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-[#F0E7E8] p-3">
+      <SidebarFooter className="gap-1 border-t border-white/10 p-3">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium text-[#817780] transition-colors hover:bg-[#FBF5F4] hover:text-[#772D43]"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white"
         >
           <FiArrowUpRight className="size-3.5" />
           Back to website
@@ -190,7 +194,7 @@ export function DashboardSidebar() {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[11px] font-medium text-red-600 transition-colors hover:bg-red-50"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[11px] font-medium text-[#FCA5A5] transition-colors hover:bg-white/10 hover:text-[#FECACA]"
         >
           <FiLogOut className="size-3.5" />
           Logout
