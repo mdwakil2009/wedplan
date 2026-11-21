@@ -68,12 +68,23 @@ export default function SignInPage() {
           ? data.user.role
           : "customer";
 
+      // If the user came from a protected page (for example service details),
+      // send them back there. Only relative paths are allowed.
+      const redirectParam = new URLSearchParams(
+        window.location.search
+      ).get("redirect");
+
+      const redirectTo =
+        redirectParam && redirectParam.startsWith("/")
+          ? redirectParam
+          : `/dashboard/${role}`;
+
       toast.add({
         title: "Signed in successfully!",
-        description: "Taking you to your dashboard.",
+        description: "Taking you to your page.",
       });
 
-      router.push(`/dashboard/${role}`);
+      router.push(redirectTo);
       router.refresh();
     }
   };
