@@ -36,4 +36,6 @@ export type Booking = {
   customer?: Customer | null;
   service?: Service | null;
   vendor?: Customer | null;
+
+  
 };

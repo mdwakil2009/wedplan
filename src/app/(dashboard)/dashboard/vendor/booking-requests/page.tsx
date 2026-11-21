@@ -1,4 +1,3 @@
-
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
@@ -6,6 +5,7 @@ import {
   FiCalendar,
   FiMapPin,
   FiMessageSquare,
+  FiShoppingBag,
 } from "react-icons/fi";
 
 import {
@@ -22,7 +22,11 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 
-import { getVendorBookings, getUserById } from "@/lib/action/api";
+import {
+  getVendorBookingsWithService,
+  getUserById,
+} from "@/lib/action/api";
+
 import type { Booking } from "@/lib/types/service";
 
 import BookingStatusButtons from "@/components/dashboard/Vendor-Edit-Detele/BookingStatusButtons";
@@ -36,7 +40,9 @@ export default async function VendorBookingRequestsPage() {
 
   if (session?.user?.id) {
     try {
-      const vendorBookings = await getVendorBookings(session.user.id);
+      const vendorBookings = await getVendorBookingsWithService(
+        session.user.id,
+      );
 
       bookings = await Promise.all(
         vendorBookings.map(async (booking: Booking) => {
@@ -124,6 +130,44 @@ export default async function VendorBookingRequestsPage() {
               </CardHeader>
 
               <CardContent className="space-y-4 px-5 pt-3 pb-4 sm:px-6">
+
+                {/* Booked Service Information */}
+                {booking.service && (
+                  <div className="flex flex-col gap-3 rounded-lg border border-[#D7EAE7] bg-[#F5FAF9] p-3 sm:flex-row">
+                    {/* Service Image */}
+                    <div className="h-40 w-full shrink-0 overflow-hidden rounded-lg sm:h-28 sm:w-36">
+                      <img
+                        src={booking.service.images?.[0]}
+                        alt={booking.service.serviceName}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+
+                    {/* Service Details */}
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#378A88]">
+                        Booked Service
+                      </p>
+
+                      <h3 className="text-base font-bold text-[#193F5B]">
+                        {booking.service.serviceName}
+                      </h3>
+
+                      <p className="text-xs text-slate-500">
+                        {booking.service.category}
+                      </p>
+
+                      <p className="text-sm font-bold text-[#378A88]">
+                        ৳{booking.service.price.toLocaleString()}
+                      </p>
+
+                      <p className="text-xs text-slate-500">
+                        Service Location: {booking.service.location}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Customer Profile */}
                 <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
                   <Avatar className="size-11 border-2 border-white shadow-sm">
@@ -150,6 +194,7 @@ export default async function VendorBookingRequestsPage() {
 
                 {/* Booking Details */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+
                   {/* Event Date */}
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
@@ -167,7 +212,7 @@ export default async function VendorBookingRequestsPage() {
                     </div>
                   </div>
 
-                  {/* Location */}
+                  {/* Event Location */}
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
                       <FiMapPin className="size-4" />
@@ -184,7 +229,7 @@ export default async function VendorBookingRequestsPage() {
                     </div>
                   </div>
 
-                  {/* Message */}
+                  {/* Customer Message */}
                   {booking.message && (
                     <div className="flex items-center gap-2.5">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">

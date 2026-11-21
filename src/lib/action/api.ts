@@ -82,3 +82,33 @@ export const getCustomerBookings = async (customerId: string) => {
 
   return response.json();
 };
+
+export const getVendorBookingsWithService = async (
+  vendorId: string,
+) => {
+  const response = await fetch(
+    `${BASE_URL}/vendor-bookings-with-service?vendorId=${vendorId}`,
+    {
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch vendor bookings");
+  }
+
+  return response.json();
+};
+
+//Admin Overview
+export const getAdminOverview = async () => {
+  const response = await fetch(`${BASE_URL}/admin-overview`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch admin overview");
+  }
+
+  return response.json();
+};

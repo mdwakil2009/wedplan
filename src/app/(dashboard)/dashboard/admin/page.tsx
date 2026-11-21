@@ -1,154 +1,245 @@
-import Link from "next/link";
+import { requireRole } from "@/lib/dashboard-auth";
+import { getAdminOverview } from "@/lib/action/api";
+
 import {
-  FiArrowRight,
-  FiBriefcase,
-  FiCreditCard,
   FiUsers,
+  FiUserCheck,
+  FiUser,
+  FiBriefcase,
+  FiClock,
+  FiDollarSign,
 } from "react-icons/fi";
 
-import { requireRole } from "@/lib/dashboard-auth";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 
-export const instant = false;
+export default async function AdminDashboardPage() {
+  await requireRole("admin");
 
-const stats = [
-  { label: "Total Users", value: "0", icon: FiUsers, note: "No users yet" },
-  { label: "Vendors", value: "0", icon: FiBriefcase, note: "No vendors yet" },
-  {
-    label: "Services",
-    value: "0",
-    icon: FiBriefcase,
-    note: "No services yet",
-  },
-  {
-    label: "Transactions",
-    value: "0",
-    icon: FiCreditCard,
-    note: "No transactions yet",
-  },
-];
+  let stats = {
+    totalUsers: 0,
+    totalVendors: 0,
+    totalCustomers: 0,
+    totalServices: 0,
+    pendingServices: 0,
+    totalTransactions: 0,
+  };
 
-const quickLinks = [
-  {
-    title: "Manage Users",
-    description: "Review accounts and their roles",
-    href: "/dashboard/admin/users",
-    icon: FiUsers,
-  },
-  {
-    title: "Manage Services",
-    description: "Review services added by vendors",
-    href: "/dashboard/admin/manage-services",
-    icon: FiBriefcase,
-  },
-  {
-    title: "Transactions",
-    description: "Follow payments across the platform",
-    href: "/dashboard/admin/transactions",
-    icon: FiCreditCard,
-  },
-];
+  try {
+    stats = await getAdminOverview();
+  } catch (error) {
+    console.error("Failed to fetch admin overview:", error);
+  }
 
-export default async function AdminOverviewPage() {
-  const session = await requireRole("admin");
+  const cards = [
+    {
+      title: "Total Users",
+      value: stats.totalUsers,
+      icon: FiUsers,
+      color: "bg-blue-50 text-blue-600",
+    },
+    {
+      title: "Total Vendors",
+      value: stats.totalVendors,
+      icon: FiUserCheck,
+      color: "bg-purple-50 text-purple-600",
+    },
+    {
+      title: "Total Customers",
+      value: stats.totalCustomers,
+      icon: FiUser,
+      color: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      title: "Total Services",
+      value: stats.totalServices,
+      icon: FiBriefcase,
+      color: "bg-orange-50 text-orange-600",
+    },
+    {
+      title: "Pending Services",
+      value: stats.pendingServices,
+      icon: FiClock,
+      color: "bg-amber-50 text-amber-600",
+    },
+    {
+      title: "Total Transactions",
+      value: stats.totalTransactions,
+      icon: FiDollarSign,
+      color: "bg-pink-50 text-pink-600",
+    },
+  ];
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto w-full max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
+
+      {/* Header */}
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#378A88]">
-          Admin Control Center
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#378A88]">
+          Admin Dashboard
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#193F5B] sm:text-3xl">
+
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#193F5B] sm:text-3xl">
           Overview
         </h1>
-        <p className="mt-1.5 text-sm text-[#87939E]">
-          Welcome back, {session.user.name}. Here is a summary of WedPlan.
+
+        <p className="mt-2 text-sm text-slate-500">
+          Monitor users, services and platform activities.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
           return (
-            <div
-              key={stat.label}
-              className="group rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-[0_1px_2px_rgba(25,63,91,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C8D6E0] hover:shadow-[0_12px_28px_rgba(25,63,91,0.08)]"
+            <Card
+              key={card.title}
+              className="rounded-2xl border-slate-200 shadow-sm transition hover:shadow-md"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] font-medium text-[#87939E]">
-                    {stat.label}
+              <CardContent className="flex items-center justify-between p-5">
+                <div>
+                  <p className="text-sm font-medium text-slate-500">
+                    {card.title}
                   </p>
-                  <p className="mt-2 text-3xl font-semibold tracking-tight text-[#193F5B]">
-                    {stat.value}
-                  </p>
+
+                  <h2 className="mt-2 text-3xl font-bold text-[#193F5B]">
+                    {card.value}
+                  </h2>
                 </div>
 
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88] transition-colors duration-200 group-hover:bg-[#378A88] group-hover:text-white">
+                <div
+                  className={`flex size-12 items-center justify-center rounded-xl ${card.color}`}
+                >
                   <Icon className="size-5" />
                 </div>
-              </div>
-
-              <p className="mt-3 border-t border-[#EEF2F6] pt-3 text-[11px] text-[#87939E]">
-                {stat.note}
-              </p>
-            </div>
+              </CardContent>
+            </Card>
           );
         })}
       </div>
 
-      <section className="rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-[0_1px_2px_rgba(25,63,91,0.04)] sm:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold text-[#193F5B]">
-              Quick actions
-            </h2>
-            <p className="mt-1 text-xs text-[#87939E]">
-              Jump to the area you want to manage.
-            </p>
+      {/* Platform Activity Overview */}
+      <Card className="overflow-hidden rounded-2xl border-0 bg-[#193F5B] text-white shadow-lg">
+        <CardContent className="p-5 sm:p-7">
+
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8BD0C8]">
+                Platform Insights
+              </p>
+
+              <h2 className="text-xl font-bold sm:text-2xl">
+                Platform Activity Overview
+              </h2>
+
+              <p className="max-w-md text-sm leading-6 text-slate-300">
+                Monitor your platform growth, user community, and service
+                approval activity from one place.
+              </p>
+            </div>
+
+            <div className="grid w-full grid-cols-2 gap-3 md:max-w-sm">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs text-slate-300">
+                  Total Community
+                </p>
+
+                <h3 className="mt-2 text-2xl font-bold">
+                  {stats.totalUsers}
+                </h3>
+
+                <p className="mt-1 text-xs text-[#8BD0C8]">
+                  Registered Users
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs text-slate-300">
+                  Service Listings
+                </p>
+
+                <h3 className="mt-2 text-2xl font-bold">
+                  {stats.totalServices}
+                </h3>
+
+                <p className="mt-1 text-xs text-[#F5C77E]">
+                  Total Services
+                </p>
+              </div>
+            </div>
           </div>
 
-          <span className="hidden rounded-full bg-[#E4F3F1] px-2.5 py-1 text-[10px] font-semibold text-[#378A88] sm:inline-block">
-            Admin
-          </span>
-        </div>
+          {/* Progress Overview */}
+          <div className="mt-7 grid gap-5 sm:grid-cols-2">
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          {quickLinks.map((link) => {
-            const Icon = link.icon;
+            {/* Vendor Community */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-200">
+                  Vendor Community
+                </span>
 
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="group rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#378A88]/40 hover:bg-white hover:shadow-[0_10px_24px_rgba(25,63,91,0.07)]"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-white text-[#378A88] ring-1 ring-[#E1E8ED] transition-colors duration-200 group-hover:bg-[#378A88] group-hover:text-white group-hover:ring-[#378A88]">
-                    <Icon className="size-4" />
-                  </div>
-                  <FiArrowRight className="size-4 text-[#87939E] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#378A88]" />
-                </div>
+                <span className="text-sm font-semibold text-[#8BD0C8]">
+                  {stats.totalVendors}
+                </span>
+              </div>
 
-                <p className="mt-3 text-xs font-semibold text-[#193F5B]">
-                  {link.title}
-                </p>
-                <p className="mt-1 text-[11px] leading-5 text-[#87939E]">
-                  {link.description}
-                </p>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-[#8BD0C8] transition-all"
+                  style={{
+                    width: `${
+                      stats.totalUsers
+                        ? (stats.totalVendors / stats.totalUsers) * 100
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-[#CFE7E4] bg-[#E4F3F1] px-4 py-3">
-        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#378A88]" />
-        <p className="text-[11px] leading-5 text-[#193F5B]">
-          Live user, service and transaction data will be connected in a later
-          step.
-        </p>
-      </div>
+              <p className="mt-2 text-xs text-slate-400">
+                Vendors registered on WedPlan
+              </p>
+            </div>
+
+            {/* Pending Services */}
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-200">
+                  Pending Approval
+                </span>
+
+                <span className="text-sm font-semibold text-[#F5C77E]">
+                  {stats.pendingServices}
+                </span>
+              </div>
+
+              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-[#F5C77E] transition-all"
+                  style={{
+                    width: `${
+                      stats.totalServices
+                        ? (stats.pendingServices / stats.totalServices) * 100
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+
+              <p className="mt-2 text-xs text-slate-400">
+                Services waiting for admin review
+              </p>
+            </div>
+
+          </div>
+        </CardContent>
+      </Card>
+
     </div>
   );
 }
