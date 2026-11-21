@@ -157,11 +157,11 @@ export default async function ServiceDetailsPage({
                 <h2 className="mb-3 text-sm font-semibold text-[#332229]">
                   Request a booking
                 </h2>
-
                 <BookingForm
                   serviceId={service._id}
                   serviceName={service.serviceName}
                   vendorEmail={service.userEmail}
+                  vendorId={service.vendorId}
                   role={role}
                   userEmail={session.user.email}
                 />

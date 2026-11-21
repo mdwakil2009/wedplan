@@ -26,12 +26,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { toast } from "@/components/ui/toast";
+import { createServices } from "@/lib/action/service";
 
 const categories = [
   "Photography & Videography",
@@ -53,16 +51,12 @@ export default function AddServicePage() {
   const submitLock = useRef(false);
 
   // Multiple image upload
-  const handleImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
 
     if (!files.length) return;
 
-    const validFiles = files.filter((file) =>
-      file.type.startsWith("image/")
-    );
+    const validFiles = files.filter((file) => file.type.startsWith("image/"));
 
     if (validFiles.length !== files.length) {
       toast.add({
@@ -78,9 +72,7 @@ export default function AddServicePage() {
 
     setImages((prev) => [...prev, ...validFiles]);
 
-    const newPreviews = validFiles.map((file) =>
-      URL.createObjectURL(file)
-    );
+    const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
 
     setPreviewImages((prev) => [...prev, ...newPreviews]);
 
@@ -91,19 +83,13 @@ export default function AddServicePage() {
   const handleRemoveImage = (index: number) => {
     URL.revokeObjectURL(previewImages[index]);
 
-    setImages((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
+    setImages((prev) => prev.filter((_, i) => i !== index));
 
-    setPreviewImages((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
+    setPreviewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Form submit
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const form = event.currentTarget;
@@ -137,7 +123,7 @@ export default function AddServicePage() {
             {
               method: "POST",
               body: imageFormData,
-            }
+            },
           );
 
           const imageResult = await imageResponse.json();
@@ -147,33 +133,19 @@ export default function AddServicePage() {
           }
 
           return imageResult.data.url;
-        })
+        }),
       );
 
       // Step 2: Save service data to MongoDB
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/services`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...userData,
-            userEmail: session?.user?.email,
-            price: Number(userData.price),
-            images: imageUrls,
-            status: "pending",
-            createdAt: new Date(),
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message);
-      }
+      const result = await createServices({
+        ...userData,
+        userEmail: session?.user?.email,
+        vendorId: session?.user?.id,
+        price: Number(userData.price),
+        images: imageUrls,
+        status: "pending",
+        createdAt: new Date(),
+      });
 
       toast.add({
         title: "Service added successfully!",
@@ -185,9 +157,7 @@ export default function AddServicePage() {
       // Reset form
       form.reset();
 
-      previewImages.forEach((url) =>
-        URL.revokeObjectURL(url)
-      );
+      previewImages.forEach((url) => URL.revokeObjectURL(url));
 
       setImages([]);
       setPreviewImages([]);
@@ -206,9 +176,7 @@ export default function AddServicePage() {
 
   // Reset form
   const handleReset = () => {
-    previewImages.forEach((url) =>
-      URL.revokeObjectURL(url)
-    );
+    previewImages.forEach((url) => URL.revokeObjectURL(url));
 
     setImages([]);
     setPreviewImages([]);
@@ -217,10 +185,8 @@ export default function AddServicePage() {
   return (
     <div className="min-h-full">
       <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
-
         {/* Page Header */}
         <div className="space-y-3">
-
           <div className="inline-flex items-center gap-2 rounded-full border border-[#CFE7E4] bg-[#E4F3F1] px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#378A88]">
             <FiPlusCircle size={14} />
             VENDOR DASHBOARD
@@ -232,21 +198,18 @@ export default function AddServicePage() {
             </h1>
 
             <p className="mt-2 max-w-xl text-sm leading-6 text-[#87939E]">
-              Showcase your wedding service, share your work,
-              and connect with couples planning their special day.
+              Showcase your wedding service, share your work, and connect with
+              couples planning their special day.
             </p>
           </div>
-
         </div>
 
         {/* Main Card */}
         <div>
           <Card className="overflow-hidden rounded-2xl border-[#E1E8ED] bg-white shadow-[0_4px_24px_rgba(80,30,45,0.04)]">
-
             {/* Card Header */}
             <div className="border-b border-[#E1E8ED] bg-[#F8FAFC] px-5 py-5 sm:px-7">
               <div className="flex items-center gap-3">
-
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
                   <FiFileText size={19} />
                 </div>
@@ -260,20 +223,13 @@ export default function AddServicePage() {
                     Fill in your service details below
                   </p>
                 </div>
-
               </div>
             </div>
 
             <CardContent className="p-5 sm:p-7">
-
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6"
-              >
-
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Service Name */}
                 <div className="space-y-2">
-
                   <Label
                     htmlFor="serviceName"
                     className="text-sm font-semibold text-[#193F5B]"
@@ -290,25 +246,18 @@ export default function AddServicePage() {
                     disabled={isSubmitting}
                     className="h-11 rounded-xl border-[#E1E8ED] bg-white px-3.5 text-sm transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                   />
-
                 </div>
 
                 {/* Category & Price */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-
                   {/* Category */}
                   <div className="space-y-2">
-
                     <Label className="text-sm font-semibold text-[#193F5B]">
                       Service Category
                       <span className="ml-1 text-[#378A88]">*</span>
                     </Label>
 
-                    <Select
-                      name="category"
-                      required
-                      disabled={isSubmitting}
-                    >
+                    <Select name="category" required disabled={isSubmitting}>
                       <SelectTrigger className="h-11 w-full rounded-xl border-[#E1E8ED] bg-white text-sm transition-all hover:border-[#B9CEDA] focus:ring-4 focus:ring-[#378A88]/10">
                         <SelectValue placeholder="Choose category" />
                       </SelectTrigger>
@@ -325,12 +274,10 @@ export default function AddServicePage() {
                         ))}
                       </SelectContent>
                     </Select>
-
                   </div>
 
                   {/* Price */}
                   <div className="space-y-2">
-
                     <Label
                       htmlFor="price"
                       className="text-sm font-semibold text-[#193F5B]"
@@ -349,14 +296,11 @@ export default function AddServicePage() {
                       disabled={isSubmitting}
                       className="h-11 rounded-xl border-[#E1E8ED] px-3.5 text-sm transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                     />
-
                   </div>
-
                 </div>
 
                 {/* Location */}
                 <div className="space-y-2">
-
                   <Label
                     htmlFor="location"
                     className="text-sm font-semibold text-[#193F5B]"
@@ -366,7 +310,6 @@ export default function AddServicePage() {
                   </Label>
 
                   <div className="relative">
-
                     <FiMapPin
                       className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#87939E]"
                       size={16}
@@ -380,14 +323,11 @@ export default function AddServicePage() {
                       disabled={isSubmitting}
                       className="h-11 rounded-xl border-[#E1E8ED] pl-10 text-sm transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                     />
-
                   </div>
-
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2">
-
                   <Label
                     htmlFor="description"
                     className="text-sm font-semibold text-[#193F5B]"
@@ -404,14 +344,11 @@ export default function AddServicePage() {
                     disabled={isSubmitting}
                     className="min-h-32 resize-none rounded-xl border-[#E1E8ED] p-3.5 text-sm leading-6 transition-all duration-200 placeholder:text-[#9BAAB6] hover:border-[#B9CEDA] focus-visible:border-[#378A88] focus-visible:ring-4 focus-visible:ring-[#378A88]/10"
                   />
-
                 </div>
 
                 {/* Image Upload */}
                 <div className="space-y-3">
-
                   <div className="flex flex-wrap items-center justify-between gap-2">
-
                     <Label className="text-sm font-semibold text-[#193F5B]">
                       Service Images
                       <span className="ml-1 text-[#378A88]">*</span>
@@ -420,7 +357,6 @@ export default function AddServicePage() {
                     <span className="rounded-full bg-[#E4F3F1] px-2.5 py-1 text-[11px] font-medium text-[#378A88]">
                       {images.length} selected
                     </span>
-
                   </div>
 
                   {/* Upload Box */}
@@ -428,7 +364,6 @@ export default function AddServicePage() {
                     htmlFor="images"
                     className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#CFE7E4] bg-[#F8FAFC] px-5 py-8 text-center transition-all duration-300 hover:border-[#378A88] hover:bg-[#E4F3F1]/60 sm:py-10"
                   >
-
                     <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E4F3F1] text-[#378A88] transition-colors group-hover:bg-[#378A88] group-hover:text-white">
                       <FiUploadCloud size={22} />
                     </div>
@@ -438,8 +373,7 @@ export default function AddServicePage() {
                     </p>
 
                     <p className="mt-1.5 max-w-xs text-xs leading-5 text-[#87939E]">
-                      Select multiple photos showcasing your
-                      wedding service
+                      Select multiple photos showcasing your wedding service
                     </p>
 
                     <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#378A88] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#2C7371]">
@@ -460,19 +394,16 @@ export default function AddServicePage() {
                       disabled={isSubmitting}
                       className="hidden"
                     />
-
                   </label>
 
                   {/* Image Preview */}
                   {previewImages.length > 0 && (
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-
                       {previewImages.map((preview, index) => (
                         <div
                           key={preview}
                           className="group relative aspect-square overflow-hidden rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] shadow-sm"
                         >
-
                           <img
                             src={preview}
                             alt={`Service image ${index + 1}`}
@@ -498,18 +429,14 @@ export default function AddServicePage() {
                             <FiImage size={10} />
                             {index + 1}
                           </div>
-
                         </div>
                       ))}
-
                     </div>
                   )}
-
                 </div>
 
                 {/* Review Notice */}
                 <div className="flex gap-3 rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4">
-
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
                     <FiCamera size={17} />
                   </div>
@@ -520,16 +447,14 @@ export default function AddServicePage() {
                     </p>
 
                     <p className="mt-1 text-xs leading-5 text-[#87939E]">
-                      Your service will be reviewed by our admin
-                      team before becoming visible to customers.
+                      Your service will be reviewed by our admin team before
+                      becoming visible to customers.
                     </p>
                   </div>
-
                 </div>
 
                 {/* Buttons */}
                 <div className="flex flex-col-reverse gap-3 border-t border-[#E1E8ED] pt-5 sm:flex-row sm:justify-end">
-
                   {/* Reset Button */}
                   <div>
                     <Button
@@ -552,34 +477,22 @@ export default function AddServicePage() {
                     >
                       {isSubmitting ? (
                         <>
-                          <FiUploadCloud
-                            size={16}
-                            className="mr-2"
-                          />
-
+                          <FiUploadCloud size={16} className="mr-2" />
                           Submitting...
                         </>
                       ) : (
                         <>
-                          <FiPlusCircle
-                            className="mr-2"
-                            size={16}
-                          />
-
+                          <FiPlusCircle className="mr-2" size={16} />
                           Submit Service
                         </>
                       )}
                     </Button>
                   </div>
-
                 </div>
-
               </form>
-
             </CardContent>
           </Card>
         </div>
-
       </div>
     </div>
   );

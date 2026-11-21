@@ -1,16 +1,12 @@
-
 "use server";
 
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
 import type { BookingState } from "@/lib/types/service";
+import { bookingAPI } from "./api";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-export async function createBooking(
-  formData: FormData
-): Promise<BookingState> {
+export async function createBooking(formData: FormData): Promise<BookingState> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -23,7 +19,6 @@ export async function createBooking(
       };
     }
 
-  
     if (session.user.role !== "customer") {
       return {
         success: false,
@@ -32,34 +27,33 @@ export async function createBooking(
     }
 
     const serviceId = String(formData.get("serviceId") || "");
+    const vendorId = String(formData.get("vendorId") || "");
     const eventDate = String(formData.get("eventDate") || "");
     const eventLocation = String(formData.get("eventLocation") || "").trim();
     const message = String(formData.get("message") || "").trim();
 
-
-    if (!serviceId || !eventDate || !eventLocation) {
+    console.log("Booking Form Data:", {
+      serviceId,
+      vendorId,
+      eventDate,
+      eventLocation,
+    });
+    if (!serviceId || !vendorId || !eventDate || !eventLocation) {
       return {
         success: false,
         message: "Please fill in all required fields.",
       };
     }
 
-  
-    const response = await fetch(`${BASE_URL}/bookings`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        serviceId,
-        customerId: session.user.id,
-        eventDate,
-        eventLocation,
-        message,
-      }),
+    // API call
+    const { response, data } = await bookingAPI({
+      serviceId,
+      vendorId,
+      customerId: session.user.id,
+      eventDate,
+      eventLocation,
+      message,
     });
-
-    const data = await response.json();
 
     if (!response.ok || !data.success) {
       return {

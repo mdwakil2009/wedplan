@@ -15,13 +15,14 @@ import {
 } from "react-icons/fi";
 
 import { toast } from "@/components/ui/toast";
-import { createBooking } from "@/lib/action/booking";
+import { createBooking } from "@/lib/action/createBooking";
 import type { BookingState } from "@/lib/types/service";
 
 type BookingFormProps = {
   serviceId: string;
   serviceName: string;
   vendorEmail: string;
+  vendorId: string;
   role: string;
   userEmail: string;
 };
@@ -30,6 +31,7 @@ export default function BookingForm({
   serviceId,
   serviceName,
   vendorEmail,
+  vendorId,
   role,
   userEmail,
 }: BookingFormProps) {
@@ -39,12 +41,9 @@ export default function BookingForm({
   const isAdmin = role === "admin";
 
   const isOwner =
-    role === "vendor" &&
-    userEmail.toLowerCase() === vendorEmail.toLowerCase();
+    role === "vendor" && userEmail.toLowerCase() === vendorEmail.toLowerCase();
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setIsSubmitting(true);
@@ -130,6 +129,7 @@ export default function BookingForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <input type="hidden" name="serviceId" value={serviceId} />
+      <input type="hidden" name="vendorId" value={vendorId} />
 
       <div className="rounded-xl border border-[#F0E1E4] bg-[#FFF8F7] px-4 py-3">
         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A38E94]">
