@@ -67,3 +67,18 @@ export const updateBookingStatus = async (
     message: data.message,
   };
 };
+
+export const getCustomerBookings = async (customerId: string) => {
+  const response = await fetch(
+    `${BASE_URL}/customer-bookings?customerId=${customerId}`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch customer bookings");
+  }
+
+  return response.json();
+};

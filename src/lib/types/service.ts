@@ -6,7 +6,7 @@ export type Service = {
   location: string;
   description: string;
   userEmail: string;
-  vendorId: string; 
+  vendorId: string;
   images: string[];
   status: string;
   createdAt: string;
@@ -34,4 +34,6 @@ export type Booking = {
   status: "pending" | "accepted" | "rejected" | "cancelled";
   createdAt?: string;
   customer?: Customer | null;
+  service?: Service | null;
+  vendor?: Customer | null;
 };
