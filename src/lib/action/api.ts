@@ -19,7 +19,7 @@ export async function bookingAPI(bookingData: object) {
     data,
   };
 }
-
+//customer bookings
 export const getVendorBookings = async (vendorId: string) => {
   const response = await fetch(
     `${BASE_URL}/vendor-bookings?vendorId=${vendorId}`,
@@ -34,7 +34,7 @@ export const getVendorBookings = async (vendorId: string) => {
 
   return response.json();
 };
-
+//user info
 export const getUserById = async (userId: string) => {
   const response = await fetch(`${BASE_URL}/users/${userId}`, {
     cache: "no-store",
@@ -45,4 +45,25 @@ export const getUserById = async (userId: string) => {
   }
 
   return response.json();
+};
+
+// Update Booking Status
+export const updateBookingStatus = async (
+  bookingId: string,
+  status: "accepted" | "rejected"
+) => {
+  const response = await fetch(`${BASE_URL}/bookings/${bookingId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  const data = await response.json();
+
+  return {
+    success: response.ok && data.success,
+    message: data.message,
+  };
 };
