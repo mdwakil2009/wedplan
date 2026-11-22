@@ -17,6 +17,13 @@ user: {
       input: true,
       defaultValue: "customer",
     },
+
+    isBlocked: {
+      type: "boolean",
+      required: false,
+      defaultValue: false,
+      input: false,
+    },
   },
 },
   databaseHooks: {

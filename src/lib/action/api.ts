@@ -1,9 +1,29 @@
 "use server";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 
+async function checkActiveUser() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
+  if (session.user.isBlocked) {
+    redirect("/blocked");
+  }
+
+  return session;
+}
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export async function bookingAPI(bookingData: object) {
+  await checkActiveUser();
+
   const response = await fetch(`${BASE_URL}/bookings`, {
     method: "POST",
     headers: {
@@ -108,6 +128,39 @@ export const getAdminOverview = async () => {
 
   if (!response.ok) {
     throw new Error("Failed to fetch admin overview");
+  }
+
+  return response.json();
+};
+
+// Get all users for Admin
+export const getAdminUsers = async () => {
+  const response = await fetch(`${BASE_URL}/admin-users`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch admin users");
+  }
+
+  return response.json();
+};
+
+// Admin Block / Unblock User
+export const updateUserStatus = async (
+  id: string,
+  isBlocked: boolean
+) => {
+  const response = await fetch(`${BASE_URL}/admin-users/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ isBlocked }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update user status");
   }
 
   return response.json();
