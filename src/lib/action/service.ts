@@ -1,7 +1,6 @@
 import type { Service } from "@/lib/types/service";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 export async function createServices(serviceData: object) {
   const response = await fetch(`${BASE_URL}/services`, {
     method: "POST",
@@ -13,9 +12,11 @@ export async function createServices(serviceData: object) {
 
   const data = await response.json();
 
-  return data;
+  return {
+    ...data,
+    status: response.status,
+  };
 }
-
 export const getServices = async (): Promise<Service[]> => {
   const response = await fetch(`${BASE_URL}/services`, {
     cache: "no-store",

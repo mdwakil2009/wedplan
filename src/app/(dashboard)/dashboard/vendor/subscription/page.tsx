@@ -1,74 +1,178 @@
-import { FiCheck, FiCreditCard } from "react-icons/fi";
+import { FiCheck, FiCreditCard, FiStar } from "react-icons/fi";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { getUserById } from "@/lib/action/api";
 
-const features = [
-  "Unlimited service listings",
-  "Priority placement in search",
+const freeFeatures = [
+  "Maximum 3 active services",
+  "Basic vendor dashboard",
   "Booking request management",
-  "Transaction history",
 ];
 
-export default function VendorSubscriptionPage() {
+const premiumFeatures = [
+  "Unlimited active services",
+  "Premium vendor badge",
+  "All free plan features",
+  "Priority placement in search",
+];
+
+export default async function VendorSubscriptionPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return null;
+  }
+
+  const user = await getUserById(session.user.id);
+
+  const isPremium = user.subscriptionPlan === "premium";
+
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
+      {/* Header */}
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#378A88]">
-          Vendor
+          Vendor Dashboard
         </p>
+
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#193F5B] sm:text-3xl">
-          Subscription
+          Subscription Plans
         </h1>
+
         <p className="mt-1.5 text-sm text-[#87939E]">
-          View your current plan and available vendor features.
+          Choose the right plan to grow your wedding business.
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[#E1E8ED] bg-white shadow-[0_1px_2px_rgba(25,63,91,0.04)]">
-        <div className="border-b border-[#E1E8ED] bg-[#F8FAFC] p-5 sm:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
-                <FiCreditCard className="size-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#87939E]">
-                  Current Plan
-                </p>
-                <p className="text-xl font-semibold text-[#193F5B]">Free</p>
-              </div>
-            </div>
+      {/* Current Plan */}
+      <div className="flex items-center gap-3 rounded-xl border border-[#CFE7E4] bg-[#E4F3F1] p-4">
+        <FiCreditCard className="size-5 text-[#378A88]" />
 
-            <span className="rounded-full bg-[#C8F09A] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#193F5B]">
-              Active
-            </span>
-          </div>
-        </div>
-
-        <div className="p-5 sm:p-6">
-          <p className="text-xs leading-5 text-[#87939E]">
-            You are using the free vendor plan. Paid plans will be available
-            soon.
+        <div>
+          <p className="text-xs font-medium text-[#87939E]">
+            Your Current Plan
           </p>
 
-          <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
-            {features.map((feature) => (
-              <li
-                key={feature}
-                className="flex items-center gap-2.5 rounded-lg border border-[#E1E8ED] bg-[#F8FAFC] px-3 py-2.5 text-xs font-medium text-[#193F5B]"
-              >
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#E4F3F1] text-[#378A88]">
-                  <FiCheck className="size-3" />
+          <p className="text-xl font-semibold text-[#193F5B]">
+            {isPremium ? "Premium" : "Free"}
+          </p>
+        </div>
+
+        <span
+          className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${
+            isPremium
+              ? "bg-[#C8F09A] text-[#193F5B]"
+              : "bg-[#E4F3F1] text-[#378A88]"
+          }`}
+        >
+          {isPremium ? "Premium Member" : "Free Plan"}
+        </span>
+      </div>
+
+      {/* Plans */}
+      <div className="grid gap-5 md:grid-cols-2">
+        {/* Free Plan */}
+        <div className="rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-sm sm:p-6">
+          <div>
+            <h2 className="text-lg font-semibold text-[#193F5B]">
+              Free Plan
+            </h2>
+
+            <p className="mt-1 text-sm text-[#87939E]">
+              Start growing your wedding business.
+            </p>
+          </div>
+
+          <div className="mt-5">
+            <span className="text-3xl font-bold text-[#193F5B]">
+              ৳0
+            </span>
+
+            <span className="text-sm text-[#87939E]"> / forever</span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {freeFeatures.map((feature) => (
+              <div key={feature} className="flex items-center gap-2">
+                <FiCheck className="size-4 shrink-0 text-[#378A88]" />
+
+                <span className="text-sm text-[#526779]">
+                  {feature}
                 </span>
-                {feature}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          <button
+            disabled
+            className="mt-6 w-full cursor-not-allowed rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] px-4 py-3 text-sm font-semibold text-[#87939E]"
+          >
+            Current Plan
+          </button>
+        </div>
+
+        {/* Premium Plan */}
+        <div className="relative rounded-2xl border-2 border-[#378A88] bg-white p-5 shadow-sm sm:p-6">
+          <span className="absolute -top-3 right-5 rounded-full bg-[#378A88] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Recommended
+          </span>
+
+          <div className="flex items-center gap-2">
+            <FiStar className="size-5 text-[#378A88]" />
+
+            <h2 className="text-lg font-semibold text-[#193F5B]">
+              Premium Plan
+            </h2>
+          </div>
+
+          <p className="mt-1 text-sm text-[#87939E]">
+            Unlock more opportunities for your business.
+          </p>
+
+          <div className="mt-5">
+            <span className="text-3xl font-bold text-[#193F5B]">
+              ৳999
+            </span>
+
+            <span className="text-sm text-[#87939E]"> / month</span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {premiumFeatures.map((feature) => (
+              <div key={feature} className="flex items-center gap-2">
+                <FiCheck className="size-4 shrink-0 text-[#378A88]" />
+
+                <span className="text-sm text-[#526779]">
+                  {feature}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Dynamic Premium Button */}
+          <button
+            disabled={isPremium}
+            className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
+              isPremium
+                ? "cursor-not-allowed bg-[#E4F3F1] text-[#378A88]"
+                : "bg-[#378A88] text-white hover:bg-[#2D7472]"
+            }`}
+          >
+            {isPremium
+              ? "Current Premium Plan"
+              : "Upgrade to Premium"}
+          </button>
         </div>
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-[#CFE7E4] bg-[#E4F3F1] px-4 py-3">
-        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#378A88]" />
-        <p className="text-[11px] leading-5 text-[#193F5B]">
-          Subscription upgrades and payments will be connected in a later step.
+      {/* Notice */}
+      <div className="rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4">
+        <p className="text-xs leading-5 text-[#87939E]">
+          Premium subscription payment will be processed securely through
+          Stripe. Your Premium access will be activated after successful
+          payment verification.
         </p>
       </div>
     </div>

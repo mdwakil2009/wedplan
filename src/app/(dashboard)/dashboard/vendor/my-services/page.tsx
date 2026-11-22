@@ -17,8 +17,8 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 
-import EditServiceButton from "@/components/dashboard/Vendor-Edit-Detele/EditServiceButton";
-import DeleteServiceButton from "@/components/dashboard/Vendor-Edit-Detele/DeleteServiceButton";
+import EditServiceButton from "@/components/dashboard/Vendor/EditServiceButton";
+import DeleteServiceButton from "@/components/dashboard/Vendor/DeleteServiceButton";
 
 interface Service {
   _id: string;
@@ -212,7 +212,6 @@ export default function MyServicesPage() {
   return (
     <div className="min-h-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-5">
-
         {/* Header */}
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
@@ -245,16 +244,13 @@ export default function MyServicesPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-
           {/* Total */}
           <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 transition-shadow hover:shadow-md sm:p-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
               <FiBriefcase size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">
-              Total Services
-            </p>
+            <p className="mt-3 text-xs text-[#87939E]">Total Services</p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-[#193F5B]">
               {services.length}
@@ -267,9 +263,7 @@ export default function MyServicesPage() {
               <FiCheckCircle size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">
-              Approved
-            </p>
+            <p className="mt-3 text-xs text-[#87939E]">Approved</p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-green-700">
               {approvedCount}
@@ -282,9 +276,7 @@ export default function MyServicesPage() {
               <FiClock size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">
-              Pending
-            </p>
+            <p className="mt-3 text-xs text-[#87939E]">Pending</p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-amber-600">
               {pendingCount}
@@ -297,9 +289,7 @@ export default function MyServicesPage() {
               <FiXCircle size={16} />
             </div>
 
-            <p className="mt-3 text-xs text-[#87939E]">
-              Rejected
-            </p>
+            <p className="mt-3 text-xs text-[#87939E]">Rejected</p>
 
             <h2 className="mt-0.5 text-2xl font-bold text-red-600">
               {rejectedCount}
@@ -310,7 +300,6 @@ export default function MyServicesPage() {
         {/* Search & Filters */}
         <div className="rounded-xl border border-[#E1E8ED] bg-white p-3.5 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-
             {/* Search */}
             <div className="relative w-full lg:max-w-md">
               <FiSearch
@@ -329,7 +318,6 @@ export default function MyServicesPage() {
 
             {/* Filters */}
             <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-
               {/* Status Dropdown */}
               <CustomDropdown
                 value={statusFilter}
@@ -398,9 +386,7 @@ export default function MyServicesPage() {
           <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-center">
             <FiXCircle className="mx-auto text-red-500" size={24} />
 
-            <p className="mt-2 text-sm text-red-600">
-              {error}
-            </p>
+            <p className="mt-2 text-sm text-red-600">{error}</p>
           </div>
         )}
 
@@ -513,7 +499,6 @@ export default function MyServicesPage() {
 
                 {/* Card Content */}
                 <div className="p-4">
-
                   {/* Category */}
                   <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#378A88]">
                     {service.category}
@@ -535,9 +520,7 @@ export default function MyServicesPage() {
                       <FiMapPin size={12} />
                     </div>
 
-                    <span className="line-clamp-1">
-                      {service.location}
-                    </span>
+                    <span className="line-clamp-1">{service.location}</span>
                   </div>
 
                   {/* Price */}
@@ -569,9 +552,7 @@ export default function MyServicesPage() {
                       serviceId={service._id}
                       onDelete={(deletedId) => {
                         setServices((prevServices) =>
-                          prevServices.filter(
-                            (item) => item._id !== deletedId,
-                          ),
+                          prevServices.filter((item) => item._id !== deletedId),
                         );
                       }}
                     />

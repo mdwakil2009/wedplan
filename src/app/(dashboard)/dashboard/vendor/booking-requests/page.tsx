@@ -8,28 +8,17 @@ import {
   FiShoppingBag,
 } from "react-icons/fi";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { Badge } from "@/components/ui/badge";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import {
-  getVendorBookingsWithService,
-  getUserById,
-} from "@/lib/action/api";
+import { getVendorBookingsWithService, getUserById } from "@/lib/action/api";
 
 import type { Booking } from "@/lib/types/service";
 
-import BookingStatusButtons from "@/components/dashboard/Vendor-Edit-Detele/BookingStatusButtons";
+import BookingStatusButtons from "@/components/dashboard/Vendor/BookingStatusButtons";
 
 export default async function VendorBookingRequestsPage() {
   const session = await auth.api.getSession({
@@ -130,7 +119,6 @@ export default async function VendorBookingRequestsPage() {
               </CardHeader>
 
               <CardContent className="space-y-4 px-5 pt-3 pb-4 sm:px-6">
-
                 {/* Booked Service Information */}
                 {booking.service && (
                   <div className="flex flex-col gap-3 rounded-lg border border-[#D7EAE7] bg-[#F5FAF9] p-3 sm:flex-row">
@@ -194,7 +182,6 @@ export default async function VendorBookingRequestsPage() {
 
                 {/* Booking Details */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-
                   {/* Event Date */}
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
@@ -202,9 +189,7 @@ export default async function VendorBookingRequestsPage() {
                     </div>
 
                     <div className="min-w-0">
-                      <p className="text-[11px] text-slate-400">
-                        Event Date
-                      </p>
+                      <p className="text-[11px] text-slate-400">Event Date</p>
 
                       <p className="truncate text-sm font-semibold text-[#193F5B]">
                         {booking.eventDate}
