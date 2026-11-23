@@ -239,3 +239,38 @@ export const deleteAdminService = async (id: string) => {
 
   return response.json();
 };
+
+// Create Stripe Checkout Session
+export async function createCheckoutSession(userId: string, email: string) {
+  console.log("Checkout Data:", userId, email);
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/create-checkout-session`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, email }),
+    },
+  );
+
+  const data = await response.json();
+
+  console.log("Checkout Response:", data);
+
+  return data;
+}
+//verify payment
+export async function verifyPayment(sessionId: string) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    },
+  );
+
+  return response.json();
+}

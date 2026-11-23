@@ -1,7 +1,10 @@
+export const instant = false;
+
 import { FiCheck, FiCreditCard, FiStar } from "react-icons/fi";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getUserById } from "@/lib/action/api";
+import UpgradeButton from "@/components/dashboard/Vendor/UpgradeButton";
 
 const freeFeatures = [
   "Maximum 3 active services",
@@ -16,7 +19,17 @@ const premiumFeatures = [
   "Priority placement in search",
 ];
 
-export default async function VendorSubscriptionPage() {
+export default async function VendorSubscriptionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ canceled?: string }>;
+}) {
+  const { canceled } = await searchParams;
+
+  if (canceled) {
+    console.log("Order canceled. Continue browsing.");
+  }
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -76,9 +89,7 @@ export default async function VendorSubscriptionPage() {
         {/* Free Plan */}
         <div className="rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-sm sm:p-6">
           <div>
-            <h2 className="text-lg font-semibold text-[#193F5B]">
-              Free Plan
-            </h2>
+            <h2 className="text-lg font-semibold text-[#193F5B]">Free Plan</h2>
 
             <p className="mt-1 text-sm text-[#87939E]">
               Start growing your wedding business.
@@ -86,11 +97,9 @@ export default async function VendorSubscriptionPage() {
           </div>
 
           <div className="mt-5">
-            <span className="text-3xl font-bold text-[#193F5B]">
-              ৳0
-            </span>
+            <span className="text-3xl font-bold text-[#193F5B]">৳0</span>
 
-            <span className="text-sm text-[#87939E]"> / forever</span>
+            <span className="text-sm text-[#87939E]">/ forever</span>
           </div>
 
           <div className="mt-5 space-y-3">
@@ -98,9 +107,7 @@ export default async function VendorSubscriptionPage() {
               <div key={feature} className="flex items-center gap-2">
                 <FiCheck className="size-4 shrink-0 text-[#378A88]" />
 
-                <span className="text-sm text-[#526779]">
-                  {feature}
-                </span>
+                <span className="text-sm text-[#526779]">{feature}</span>
               </div>
             ))}
           </div>
@@ -132,11 +139,9 @@ export default async function VendorSubscriptionPage() {
           </p>
 
           <div className="mt-5">
-            <span className="text-3xl font-bold text-[#193F5B]">
-              ৳999
-            </span>
+            <span className="text-3xl font-bold text-[#193F5B]">৳999</span>
 
-            <span className="text-sm text-[#87939E]"> / month</span>
+            <span className="text-sm text-[#87939E]">/ month</span>
           </div>
 
           <div className="mt-5 space-y-3">
@@ -144,26 +149,25 @@ export default async function VendorSubscriptionPage() {
               <div key={feature} className="flex items-center gap-2">
                 <FiCheck className="size-4 shrink-0 text-[#378A88]" />
 
-                <span className="text-sm text-[#526779]">
-                  {feature}
-                </span>
+                <span className="text-sm text-[#526779]">{feature}</span>
               </div>
             ))}
           </div>
 
-          {/* Dynamic Premium Button */}
-          <button
-            disabled={isPremium}
-            className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
-              isPremium
-                ? "cursor-not-allowed bg-[#E4F3F1] text-[#378A88]"
-                : "bg-[#378A88] text-white hover:bg-[#2D7472]"
-            }`}
-          >
-            {isPremium
-              ? "Current Premium Plan"
-              : "Upgrade to Premium"}
-          </button>
+          {/* Premium Button */}
+          {isPremium ? (
+            <button
+              disabled
+              className="mt-6 w-full cursor-not-allowed rounded-xl bg-[#E4F3F1] px-4 py-3 text-sm font-semibold text-[#378A88]"
+            >
+              Current Premium Plan
+            </button>
+          ) : (
+            <UpgradeButton
+              userId={session.user.id}
+              email={session.user.email}
+            />
+          )}
         </div>
       </div>
 
@@ -171,8 +175,8 @@ export default async function VendorSubscriptionPage() {
       <div className="rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4">
         <p className="text-xs leading-5 text-[#87939E]">
           Premium subscription payment will be processed securely through
-          Stripe. Your Premium access will be activated after successful
-          payment verification.
+          Stripe. Your Premium access will be activated after successful payment
+          verification.
         </p>
       </div>
     </div>
