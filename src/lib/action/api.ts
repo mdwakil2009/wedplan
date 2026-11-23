@@ -274,3 +274,31 @@ export async function verifyPayment(sessionId: string) {
 
   return response.json();
 }
+
+
+// Get JWT Token on Server
+async function getServerJWTToken() {
+  const data = await auth.api.getToken({
+    headers: await headers(),
+  });
+
+  return data.token;
+}
+
+// Get Admin Transactions
+export const getAdminTransactions = async () => {
+  const token = await getServerJWTToken();
+
+  const response = await fetch(`${BASE_URL}/admin-transactions`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch admin transactions");
+  }
+
+  return response.json();
+};
