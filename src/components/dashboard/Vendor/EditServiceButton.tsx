@@ -24,7 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { updateService } from "@/lib/action/service";
+import { toast } from "@/components/ui/toast";
 interface Service {
   _id: string;
   serviceName: string;
@@ -100,9 +101,60 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
 
     if (files.length === 0) return;
 
-    const previews = files.map((file) => URL.createObjectURL(file));
+    // Only JPG, PNG and WEBP images
+    const validFiles = files.filter((file) =>
+      ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+    );
 
-    setNewImages((previous) => [...previous, ...files]);
+    if (validFiles.length !== files.length) {
+      toast.add({
+        title: "Invalid image",
+        description: "Only JPG, PNG and WEBP images are allowed.",
+      });
+    }
+
+    // Maximum 5MB
+    const sizeValidFiles = validFiles.filter(
+      (file) => file.size <= 5 * 1024 * 1024,
+    );
+
+    if (sizeValidFiles.length !== validFiles.length) {
+      toast.add({
+        title: "Image too large",
+        description: "Each image must be smaller than 5MB.",
+      });
+    }
+
+    // Maximum 5 images (Previous + New)
+    const remainingSlots = 5 - existingImages.length - newImages.length;
+
+    if (remainingSlots <= 0) {
+      toast.add({
+        title: "Image limit reached",
+        description: "You can upload a maximum of 5 images.",
+      });
+
+      event.target.value = "";
+      return;
+    }
+
+    const finalFiles = sizeValidFiles.slice(0, remainingSlots);
+
+    if (finalFiles.length < sizeValidFiles.length) {
+      toast.add({
+        title: "Image limit reached",
+        description: "You can upload a maximum of 5 images.",
+      });
+    }
+
+    if (finalFiles.length === 0) {
+      event.target.value = "";
+      return;
+    }
+
+    setNewImages((previous) => [...previous, ...finalFiles]);
+
+    const previews = finalFiles.map((file) => URL.createObjectURL(file));
 
     setNewPreviews((previous) => [...previous, ...previews]);
 
@@ -149,45 +201,47 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
 
     setLoading(true);
 
-    const uploadedImages = await Promise.all(
-      newImages.map((image) => uploadImage(image)),
-    );
+    try {
+      const uploadedImages = await Promise.all(
+        newImages.map((image) => uploadImage(image)),
+      );
 
-    const allImages = [...existingImages, ...uploadedImages];
+      const allImages = [...existingImages, ...uploadedImages];
 
-    const updatedService = {
-      serviceName,
-      category,
-      price: Number(price),
-      location,
-      description,
-      images: allImages,
-    };
+      const updatedService = {
+        serviceName,
+        category,
+        price: Number(price),
+        location,
+        description,
+        images: allImages,
+      };
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/services/${service._id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedService),
-      },
-    );
+      const result = await updateService(service._id, updatedService);
 
-    const result = await res.json();
+      if (result.success) {
+        toast.add({
+          title: "Service updated",
+          description: "Your service has been updated successfully.",
+        });
 
-    if (res.ok) {
-      setIsOpen(false);
-
-      window.location.reload();
-    } else {
-      alert(result.message || "Service update failed");
+        setIsOpen(false);
+        window.location.reload();
+      } else {
+        toast.add({
+          title: "Update failed",
+          description: result.message || "Service update failed.",
+        });
+      }
+    } catch (error) {
+      toast.add({
+        title: "Something went wrong",
+        description: "Please try again later.",
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
-
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       {/* Edit Button */}
@@ -227,7 +281,8 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
 
             <Select
               value={category}
-              onValueChange={(value) => setCategory(value ?? "")}>
+              onValueChange={(value) => setCategory(value ?? "")}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -373,7 +428,7 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
               <input
                 id="images"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 multiple
                 onChange={handleImageChange}
                 className="hidden"

@@ -31,7 +31,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/toast";
 import { createServices } from "@/lib/action/service";
 import ServiceLimitDialog from "@/components/dashboard/Vendor/ServiceLimitDialog";
-
+import { useRouter } from "next/navigation";
 
 const categories = [
   "Photography & Videography",
@@ -44,7 +44,7 @@ const categories = [
 
 export default function AddServicePage() {
   const { data: session } = useSession();
-
+  const router = useRouter();
   const [images, setImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,60 +54,82 @@ export default function AddServicePage() {
   const submitLock = useRef(false);
 
   // Multiple image upload
-  const handleImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  // Multiple image upload
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
 
     if (!files.length) return;
 
+    // Only image files
     const validFiles = files.filter((file) =>
-      file.type.startsWith("image/"),
+      ["image/jpeg", "image/png", "image/webp"].includes(file.type),
     );
 
     if (validFiles.length !== files.length) {
       toast.add({
         title: "Invalid image",
-        description: "Please select only image files.",
+        description: "Only JPG, PNG and WEBP images are allowed.",
       });
     }
 
-    if (validFiles.length === 0) {
+    // Maximum 5MB
+    const sizeValidFiles = validFiles.filter(
+      (file) => file.size <= 5 * 1024 * 1024,
+    );
+
+    if (sizeValidFiles.length !== validFiles.length) {
+      toast.add({
+        title: "Image too large",
+        description: "Each image must be smaller than 5MB.",
+      });
+    }
+
+    // Maximum 5 images
+    const remainingSlots = 5 - images.length;
+
+    if (remainingSlots <= 0) {
+      toast.add({
+        title: "Image limit reached",
+        description: "You can upload a maximum of 5 images.",
+      });
+
       event.target.value = "";
       return;
     }
 
-    setImages((prev) => [...prev, ...validFiles]);
+    const finalFiles = sizeValidFiles.slice(0, remainingSlots);
 
-    const newPreviews = validFiles.map((file =>
-      URL.createObjectURL(file)
-    ));
+    if (finalFiles.length < sizeValidFiles.length) {
+      toast.add({
+        title: "Image limit reached",
+        description: "You can upload a maximum of 5 images.",
+      });
+    }
 
-    setPreviewImages((prev) => [
-      ...prev,
-      ...newPreviews,
-    ]);
+    if (finalFiles.length === 0) {
+      event.target.value = "";
+      return;
+    }
+
+    setImages((prev) => [...prev, ...finalFiles]);
+
+    const newPreviews = finalFiles.map((file) => URL.createObjectURL(file));
+
+    setPreviewImages((prev) => [...prev, ...newPreviews]);
 
     event.target.value = "";
   };
-
   // Remove image
   const handleRemoveImage = (index: number) => {
     URL.revokeObjectURL(previewImages[index]);
 
-    setImages((prev) =>
-      prev.filter((_, i) => i !== index),
-    );
+    setImages((prev) => prev.filter((_, i) => i !== index));
 
-    setPreviewImages((prev) =>
-      prev.filter((_, i) => i !== index),
-    );
+    setPreviewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Form submit
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const form = event.currentTarget;
@@ -173,21 +195,20 @@ export default function AddServicePage() {
 
       toast.add({
         title: "Service added successfully!",
-        description:
-          "Your service is submitted for admin approval.",
+        description: "Your service is submitted for admin approval.",
       });
-
-      console.log(result);
 
       // Reset form
       form.reset();
 
-      previewImages.forEach((url) =>
-        URL.revokeObjectURL(url),
-      );
+      previewImages.forEach((url) => URL.revokeObjectURL(url));
 
       setImages([]);
       setPreviewImages([]);
+
+      // Go to My Services page
+      router.replace("/dashboard/vendor/my-services");
+      router.refresh();
     } catch (error) {
       console.log(error);
 
@@ -203,9 +224,7 @@ export default function AddServicePage() {
 
   // Reset form
   const handleReset = () => {
-    previewImages.forEach((url) =>
-      URL.revokeObjectURL(url),
-    );
+    previewImages.forEach((url) => URL.revokeObjectURL(url));
 
     setImages([]);
     setPreviewImages([]);
@@ -214,7 +233,6 @@ export default function AddServicePage() {
   return (
     <div className="min-h-full">
       <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
-
         {/* Page Header */}
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#CFE7E4] bg-[#E4F3F1] px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#378A88]">
@@ -228,8 +246,8 @@ export default function AddServicePage() {
             </h1>
 
             <p className="mt-2 max-w-xl text-sm leading-6 text-[#87939E]">
-              Showcase your wedding service, share your work, and
-              connect with couples planning their special day.
+              Showcase your wedding service, share your work, and connect with
+              couples planning their special day.
             </p>
           </div>
         </div>
@@ -237,7 +255,6 @@ export default function AddServicePage() {
         {/* Main Card */}
         <div>
           <Card className="overflow-hidden rounded-2xl border-[#E1E8ED] bg-white shadow-[0_4px_24px_rgba(80,30,45,0.04)]">
-
             {/* Card Header */}
             <div className="border-b border-[#E1E8ED] bg-[#F8FAFC] px-5 py-5 sm:px-7">
               <div className="flex items-center gap-3">
@@ -258,11 +275,7 @@ export default function AddServicePage() {
             </div>
 
             <CardContent className="p-5 sm:p-7">
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6"
-              >
-
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Service Name */}
                 <div className="space-y-2">
                   <Label
@@ -285,7 +298,6 @@ export default function AddServicePage() {
 
                 {/* Category & Price */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-
                   {/* Category */}
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold text-[#193F5B]">
@@ -293,11 +305,7 @@ export default function AddServicePage() {
                       <span className="ml-1 text-[#378A88]">*</span>
                     </Label>
 
-                    <Select
-                      name="category"
-                      required
-                      disabled={isSubmitting}
-                    >
+                    <Select name="category" required disabled={isSubmitting}>
                       <SelectTrigger className="h-11 w-full rounded-xl border-[#E1E8ED] bg-white text-sm transition-all hover:border-[#B9CEDA] focus:ring-4 focus:ring-[#378A88]/10">
                         <SelectValue placeholder="Choose category" />
                       </SelectTrigger>
@@ -428,7 +436,7 @@ export default function AddServicePage() {
                     <input
                       id="images"
                       type="file"
-                      accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                       multiple
                       onChange={handleImageChange}
                       disabled={isSubmitting}
@@ -474,7 +482,7 @@ export default function AddServicePage() {
                     </div>
                   )}
                 </div>
-                                {/* Review Notice */}
+                {/* Review Notice */}
                 <div className="flex gap-3 rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-4">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E4F3F1] text-[#378A88]">
                     <FiCamera size={17} />
@@ -494,7 +502,6 @@ export default function AddServicePage() {
 
                 {/* Buttons */}
                 <div className="flex flex-col-reverse gap-3 border-t border-[#E1E8ED] pt-5 sm:flex-row sm:justify-end">
-
                   {/* Reset Button */}
                   <div>
                     <Button
@@ -539,7 +546,6 @@ export default function AddServicePage() {
           open={showLimitDialog}
           onOpenChange={setShowLimitDialog}
         />
-
       </div>
     </div>
   );

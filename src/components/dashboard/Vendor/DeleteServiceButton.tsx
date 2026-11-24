@@ -1,3 +1,4 @@
+
 "use client";
 
 import { FiTrash2 } from "react-icons/fi";
@@ -18,6 +19,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { deleteService } from "@/lib/action/service";
 
 interface DeleteServiceButtonProps {
   serviceId: string;
@@ -31,16 +33,9 @@ const DeleteServiceButton = ({
   // Delete Service Function
   const handleDelete = async () => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/services/${serviceId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const result = await deleteService(serviceId);
 
-      const data = await res.json();
-
-      if (res.ok && data.deletedCount > 0) {
+      if (result.success) {
         toast.add({
           title: "Service deleted",
           description: "Your service has been successfully deleted.",
@@ -50,7 +45,7 @@ const DeleteServiceButton = ({
       } else {
         toast.add({
           title: "Delete failed",
-          description: "Unable to delete this service. Please try again.",
+          description: result.message || "Unable to delete this service.",
         });
       }
     } catch (error) {

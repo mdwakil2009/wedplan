@@ -282,7 +282,7 @@ async function getServerJWTToken() {
     headers: await headers(),
   });
 
-  return data.token;
+  return data.token; 
 }
 
 // Get Admin Transactions
@@ -298,6 +298,28 @@ export const getAdminTransactions = async () => {
 
   if (!response.ok) {
     throw new Error("Failed to fetch admin transactions");
+  }
+
+  return response.json();
+};
+
+
+
+// Get My Services
+export const getMyServices = async () => {
+  await checkActiveUser();
+
+  const token = await getServerJWTToken();
+
+  const response = await fetch(`${BASE_URL}/my-services`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch my services");
   }
 
   return response.json();
