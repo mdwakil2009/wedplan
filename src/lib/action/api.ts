@@ -282,26 +282,26 @@ export const deleteAdminService = async (id: string) => {
 };
 
 // Create Stripe Checkout Session
-export async function createCheckoutSession(userId: string, email: string) {
-  console.log("Checkout Data:", userId, email);
+export async function createCheckoutSession() {
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/create-checkout-session`,
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenData.token}`,
       },
-      body: JSON.stringify({ userId, email }),
-    },
+    }
   );
 
   const data = await response.json();
 
-  console.log("Checkout Response:", data);
-
   return data;
 }
+
 //verify payment
 export async function verifyPayment(sessionId: string) {
   const response = await fetch(
