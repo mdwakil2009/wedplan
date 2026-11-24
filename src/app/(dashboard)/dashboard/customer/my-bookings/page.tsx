@@ -23,7 +23,7 @@ export default async function CustomerMyBookingsPage() {
 
   if (session?.user?.id) {
     try {
-      bookings = await getCustomerBookings(session.user.id);
+      bookings = await getCustomerBookings();
     } catch (error) {
       console.error("Failed to fetch customer bookings:", error);
     }
@@ -156,9 +156,7 @@ export default async function CustomerMyBookingsPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-400">
-                      Event Date
-                    </p>
+                    <p className="text-xs text-slate-400">Event Date</p>
 
                     <p className="text-sm font-medium text-[#193F5B]">
                       {booking.eventDate}
@@ -173,9 +171,7 @@ export default async function CustomerMyBookingsPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-400">
-                      Event Location
-                    </p>
+                    <p className="text-xs text-slate-400">Event Location</p>
 
                     <p className="text-sm font-medium text-[#193F5B]">
                       {booking.eventLocation}
@@ -190,33 +186,24 @@ export default async function CustomerMyBookingsPage() {
                   <FiMessageSquare className="mt-0.5 text-[#378A88]" />
 
                   <div>
-                    <p className="text-xs text-slate-400">
-                      Your Message
-                    </p>
+                    <p className="text-xs text-slate-400">Your Message</p>
 
-                    <p className="text-sm text-[#193F5B]">
-                      {booking.message}
-                    </p>
+                    <p className="text-sm text-[#193F5B]">{booking.message}</p>
                   </div>
                 </div>
               )}
 
               {/* Request Date */}
               <div className="mt-4 border-t border-slate-100 pt-3">
-                <p className="text-xs text-slate-400">
-                  Booking Request Date
-                </p>
+                <p className="text-xs text-slate-400">Booking Request Date</p>
 
                 <p className="text-sm text-slate-600">
                   {booking.createdAt
-                    ? new Date(booking.createdAt).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }
-                      )
+                    ? new Date(booking.createdAt).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })
                     : "Date unavailable"}
                 </p>
               </div>

@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import {
   FiArrowRight,
@@ -11,6 +12,8 @@ import {
   FiTrendingUp,
 } from "react-icons/fi";
 
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { requireRole } from "@/lib/dashboard-auth";
 
 export const instant = false;
@@ -30,23 +33,41 @@ export default async function VendorOverviewPage() {
     subscriptionPlan?: string;
   };
 
+  // Get JWT token from Better Auth
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
   let services: Service[] = [];
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/my-services?email=${encodeURIComponent(
-        session.user.email
-      )}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/my-services`,
       {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${tokenData.token}`,
+        },
         cache: "no-store",
       }
     );
 
     if (res.ok) {
-      services = await res.json();
+      const data = await res.json();
+
+      // Handle API response
+      services = Array.isArray(data) ? data : data.services || [];
+    } else {
+      const errorData = await res.json().catch(() => null);
+
+      console.error(
+        "Failed to fetch vendor services:",
+        res.status,
+        errorData
+      );
     }
   } catch (error) {
-    console.error("Failed to fetch vendor services:", error);
+    console.error("Vendor services fetch error:", error);
   }
 
   const totalServices = services.length;

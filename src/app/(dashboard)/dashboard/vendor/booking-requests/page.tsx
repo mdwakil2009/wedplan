@@ -1,15 +1,10 @@
+export const instant = false;
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
-import {
-  FiCalendar,
-  FiMapPin,
-  FiMessageSquare,
-  FiShoppingBag,
-} from "react-icons/fi";
+import { FiCalendar, FiMapPin, FiMessageSquare } from "react-icons/fi";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-
 import { Badge } from "@/components/ui/badge";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,17 +16,26 @@ import type { Booking } from "@/lib/types/service";
 import BookingStatusButtons from "@/components/dashboard/Vendor/BookingStatusButtons";
 
 export default async function VendorBookingRequestsPage() {
+  const requestHeaders = await headers();
+
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: requestHeaders,
   });
+
+  // Get Vendor JWT Token (Temporary Debugging)
+  const tokenData = await auth.api.getToken({
+    headers: requestHeaders,
+  });
+  console.log(tokenData.token);
+  console.log("Token exists:", !!tokenData.token);
+  console.log("Token type:", typeof tokenData.token);
+  console.log("Token parts:", tokenData.token?.split(".").length);
 
   let bookings: Booking[] = [];
 
   if (session?.user?.id) {
     try {
-      const vendorBookings = await getVendorBookingsWithService(
-        session.user.id,
-      );
+      const vendorBookings = await getVendorBookingsWithService();
 
       bookings = await Promise.all(
         vendorBookings.map(async (booking: Booking) => {
@@ -122,7 +126,6 @@ export default async function VendorBookingRequestsPage() {
                 {/* Booked Service Information */}
                 {booking.service && (
                   <div className="flex flex-col gap-3 rounded-lg border border-[#D7EAE7] bg-[#F5FAF9] p-3 sm:flex-row">
-                    {/* Service Image */}
                     <div className="h-40 w-full shrink-0 overflow-hidden rounded-lg sm:h-28 sm:w-36">
                       <img
                         src={booking.service.images?.[0]}
@@ -131,7 +134,6 @@ export default async function VendorBookingRequestsPage() {
                       />
                     </div>
 
-                    {/* Service Details */}
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-[#378A88]">
                         Booked Service
@@ -182,7 +184,6 @@ export default async function VendorBookingRequestsPage() {
 
                 {/* Booking Details */}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  {/* Event Date */}
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
                       <FiCalendar className="size-4" />
@@ -197,7 +198,6 @@ export default async function VendorBookingRequestsPage() {
                     </div>
                   </div>
 
-                  {/* Event Location */}
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
                       <FiMapPin className="size-4" />
@@ -214,7 +214,6 @@ export default async function VendorBookingRequestsPage() {
                     </div>
                   </div>
 
-                  {/* Customer Message */}
                   {booking.message && (
                     <div className="flex items-center gap-2.5">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">

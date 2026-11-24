@@ -36,14 +36,11 @@ type DropdownFilterProps = {
 const buttonStyle =
   "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50";
 
-const primaryButton =
-  `${buttonStyle} bg-[#378A88] text-white hover:bg-[#2D7472]`;
+const primaryButton = `${buttonStyle} bg-[#378A88] text-white hover:bg-[#2D7472]`;
 
-const outlineButton =
-  `${buttonStyle} border border-slate-200 bg-white text-slate-700 hover:bg-slate-50`;
+const outlineButton = `${buttonStyle} border border-slate-200 bg-white text-slate-700 hover:bg-slate-50`;
 
-const dangerButton =
-  `${buttonStyle} border border-red-200 bg-white text-red-600 hover:bg-red-50`;
+const dangerButton = `${buttonStyle} border border-red-200 bg-white text-red-600 hover:bg-red-50`;
 
 function DropdownFilter({
   label,
@@ -67,9 +64,7 @@ function DropdownFilter({
         </span>
 
         <svg
-          className={`h-4 w-4 transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -123,7 +118,10 @@ export default function AdminServicesTable({
     try {
       setLoadingId(id);
 
-      await updateServiceStatus(id, status);
+      await updateServiceStatus(
+        id,
+        status as "pending" | "approved" | "rejected",
+      );
 
       setServiceList((prev) =>
         prev.map((service) =>
@@ -131,8 +129,7 @@ export default function AdminServicesTable({
             ? {
                 ...service,
                 status,
-                isActive:
-                  status === "approved" ? service.isActive : false,
+                isActive: status === "approved" ? service.isActive : false,
               }
             : service,
         ),
@@ -154,10 +151,7 @@ export default function AdminServicesTable({
   };
 
   // Activate / Deactivate
-  const handleActive = async (
-    id: string,
-    currentActive: boolean,
-  ) => {
+  const handleActive = async (id: string, currentActive: boolean) => {
     const newActive = !currentActive;
 
     try {
@@ -167,17 +161,13 @@ export default function AdminServicesTable({
 
       setServiceList((prev) =>
         prev.map((service) =>
-          service._id === id
-            ? { ...service, isActive: newActive }
-            : service,
+          service._id === id ? { ...service, isActive: newActive } : service,
         ),
       );
 
       toast.add({
         title: "Availability Updated",
-        description: `Service is now ${
-          newActive ? "Active" : "Inactive"
-        }.`,
+        description: `Service is now ${newActive ? "Active" : "Inactive"}.`,
       });
     } catch {
       toast.add({
@@ -197,9 +187,7 @@ export default function AdminServicesTable({
 
       await deleteAdminService(id);
 
-      setServiceList((prev) =>
-        prev.filter((service) => service._id !== id),
-      );
+      setServiceList((prev) => prev.filter((service) => service._id !== id));
 
       toast.add({
         title: "Service Deleted",
@@ -218,9 +206,7 @@ export default function AdminServicesTable({
 
   // Categories
   const categories = [
-    ...new Set(
-      serviceList.map((service) => service.category).filter(Boolean),
-    ),
+    ...new Set(serviceList.map((service) => service.category).filter(Boolean)),
   ];
 
   // Search & Filter
@@ -230,8 +216,7 @@ export default function AdminServicesTable({
     const vendorName =
       service.vendorName || service.userName || "Unknown Vendor";
 
-    const vendorEmail =
-      service.vendorEmail || service.userEmail || "";
+    const vendorEmail = service.vendorEmail || service.userEmail || "";
 
     const matchesSearch =
       service.serviceName?.toLowerCase().includes(searchText) ||
@@ -241,8 +226,7 @@ export default function AdminServicesTable({
       vendorEmail.toLowerCase().includes(searchText);
 
     const matchesCategory =
-      categoryFilter === "all" ||
-      service.category === categoryFilter;
+      categoryFilter === "all" || service.category === categoryFilter;
 
     const matchesStatus =
       statusFilter === "all" ||
@@ -356,9 +340,7 @@ export default function AdminServicesTable({
                         <path d="m3 16 5-5 4 4 5-7 4 8" />
                       </svg>
 
-                      <span className="text-sm font-medium">
-                        No Image
-                      </span>
+                      <span className="text-sm font-medium">No Image</span>
                     </div>
                   )}
                 </div>
@@ -396,9 +378,7 @@ export default function AdminServicesTable({
 
                     <span className="text-slate-300">•</span>
 
-                    <span>
-                      {service.location || "Location unavailable"}
-                    </span>
+                    <span>{service.location || "Location unavailable"}</span>
                   </div>
 
                   {/* Vendor */}
@@ -407,9 +387,7 @@ export default function AdminServicesTable({
                       Vendor:
                     </span>{" "}
                     {vendorName}{" "}
-                    <span className="text-slate-400">
-                      ({vendorEmail})
-                    </span>
+                    <span className="text-slate-400">({vendorEmail})</span>
                   </p>
 
                   {/* Description */}
@@ -434,9 +412,7 @@ export default function AdminServicesTable({
 
                       <span
                         className={`text-xs font-semibold ${
-                          isActive
-                            ? "text-emerald-600"
-                            : "text-slate-500"
+                          isActive ? "text-emerald-600" : "text-slate-500"
                         }`}
                       >
                         {isActive ? "Active" : "Inactive"}
@@ -452,9 +428,7 @@ export default function AdminServicesTable({
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         disabled={isLoading}
-                        onClick={() =>
-                          handleStatus(service._id, "approved")
-                        }
+                        onClick={() => handleStatus(service._id, "approved")}
                         className={primaryButton}
                       >
                         {isLoading ? "Updating..." : "✓ Approve"}
@@ -462,9 +436,7 @@ export default function AdminServicesTable({
 
                       <button
                         disabled={isLoading}
-                        onClick={() =>
-                          handleStatus(service._id, "rejected")
-                        }
+                        onClick={() => handleStatus(service._id, "rejected")}
                         className={dangerButton}
                       >
                         ✕ Reject
@@ -477,9 +449,7 @@ export default function AdminServicesTable({
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         disabled={isLoading}
-                        onClick={() =>
-                          handleStatus(service._id, "rejected")
-                        }
+                        onClick={() => handleStatus(service._id, "rejected")}
                         className={dangerButton}
                       >
                         ✕ Reject
@@ -487,9 +457,7 @@ export default function AdminServicesTable({
 
                       <button
                         disabled={isLoading}
-                        onClick={() =>
-                          handleActive(service._id, isActive)
-                        }
+                        onClick={() => handleActive(service._id, isActive)}
                         className={primaryButton}
                       >
                         {isLoading
@@ -505,9 +473,7 @@ export default function AdminServicesTable({
                   {status === "rejected" && (
                     <button
                       disabled={isLoading}
-                      onClick={() =>
-                        handleStatus(service._id, "approved")
-                      }
+                      onClick={() => handleStatus(service._id, "approved")}
                       className={primaryButton}
                     >
                       {isLoading ? "Updating..." : "✓ Approve"}
@@ -545,9 +511,7 @@ export default function AdminServicesTable({
               </svg>
             </div>
 
-            <h3 className="font-semibold text-[#193F5B]">
-              No services found
-            </h3>
+            <h3 className="font-semibold text-[#193F5B]">No services found</h3>
 
             <p className="mt-1 text-sm text-slate-500">
               Try changing your search or filters.

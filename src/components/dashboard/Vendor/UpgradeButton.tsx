@@ -5,8 +5,7 @@ import { useState } from "react";
 import { createCheckoutSession } from "@/lib/action/api";
 
 export default function UpgradeButton({
-  userId,
-  email,
+ 
 }: {
   userId: string;
   email: string;
@@ -17,7 +16,7 @@ export default function UpgradeButton({
     try {
       setLoading(true);
 
-      const data = await createCheckoutSession(userId, email);
+      const data = await createCheckoutSession();
 
       if (data.success && data.url) {
         window.location.href = data.url;

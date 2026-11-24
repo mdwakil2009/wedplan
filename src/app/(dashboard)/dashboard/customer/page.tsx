@@ -1,3 +1,6 @@
+export const instant = false;
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import Link from "next/link";
 import {
   FiArrowRight,
@@ -16,10 +19,16 @@ import type { Booking } from "@/lib/types/service";
 export default async function CustomerOverviewPage() {
   const session = await requireRole("customer");
 
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
+  console.log("CUSTOMER JWT TOKEN:", tokenData.token);
+
   let bookings: Booking[] = [];
 
   try {
-    bookings = await getCustomerBookings(session.user.id);
+    bookings = await getCustomerBookings();
   } catch (error) {
     console.error("Failed to fetch customer bookings:", error);
   }

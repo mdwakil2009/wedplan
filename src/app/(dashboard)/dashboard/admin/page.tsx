@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { requireRole } from "@/lib/dashboard-auth";
 import { getAdminOverview } from "@/lib/action/api";
 
@@ -17,6 +19,12 @@ import {
 
 export default async function AdminDashboardPage() {
   await requireRole("admin");
+
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
+  console.log("ADMIN JWT TOKEN:", tokenData.token);
 
   let stats = {
     totalUsers: 0,
