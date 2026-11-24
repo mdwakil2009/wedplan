@@ -1,17 +1,19 @@
 
 export const instant = false;
 
-import { connection} from "next/server";
+import { connection } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 
+import { getMySubscription } from "@/lib/action/api";
+import PremiumStatus from "@/components/payment/premium-status";
+
 import {
   FiCheckCircle,
   FiArrowRight,
-  FiStar,
 } from "react-icons/fi";
 
 export default async function Success({
@@ -31,60 +33,56 @@ export default async function Success({
   // Check Payment
   if (
     session.status !== "complete" ||
-    session.payment_status !== "paid"
+    session.payment_status !== "paid" ||
+    session.mode !== "payment"
   ) {
     redirect("/");
   }
 
-  // Premium Activation
-  let isPremiumActivated = false;
-  let activationMessage = "Premium activation is pending.";
+  // Verify Current User
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
+  if (!tokenData?.token) {
+    redirect("/login");
+  }
+
+  const token = tokenData.token;
+
+  // Verify Payment
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        sessionId: session_id,
+      }),
+      cache: "no-store",
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Payment verification failed.");
+  }
+
+  // Initial Premium Status
+  let initialPremium = false;
 
   try {
-    // Get JWT Token
-    const tokenData = await auth.api.getToken({
-      headers: await headers(),
-    });
+    const subscriptionResult = await getMySubscription(token);
 
-    if (!tokenData?.token) {
-      throw new Error("Authentication token not found.");
-    }
-
-    // Verify Payment
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenData.token}`,
-        },
-        body: JSON.stringify({
-          sessionId: session_id,
-        }),
-        cache: "no-store",
-      }
-    );
-
-    const result = await response.json();
-
-    console.log("VERIFY STATUS:", response.status);
-    console.log("VERIFY RESPONSE:", result);
-
-    if (!response.ok || !result.success) {
-      activationMessage =
-        result.message || "Premium activation failed.";
-    } else {
-      isPremiumActivated = true;
-      activationMessage = "Your Premium membership is now active.";
-    }
+    initialPremium =
+      subscriptionResult.success &&
+      subscriptionResult.isPremium;
   } catch (error) {
-    console.error("Premium Activation Error:", error);
-
-    activationMessage =
-      error instanceof Error
-        ? error.message
-        : "Unable to activate Premium.";
+    console.error("Subscription Status Error:", error);
   }
 
   // Payment Information
@@ -113,15 +111,14 @@ export default async function Success({
           </h1>
 
           <p className="mt-1 text-xs text-[#87939E]">
-            {activationMessage}
+            Your payment has been received successfully.
           </p>
 
-          <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#FFF8E8] px-3 py-1 text-[11px] font-bold text-[#A47A28]">
-            <FiStar />
-            {isPremiumActivated
-              ? "PREMIUM MEMBER"
-              : "ACTIVATION PENDING"}
-          </span>
+          {/* Automatic Premium Status */}
+          <PremiumStatus
+            token={token}
+            initialPremium={initialPremium}
+          />
         </div>
 
         {/* Amount */}
@@ -145,6 +142,7 @@ export default async function Success({
 
           <div className="flex justify-between gap-3">
             <span className="text-[#87939E]">Plan</span>
+
             <span className="font-semibold text-[#A47A28]">
               Premium
             </span>
@@ -152,6 +150,7 @@ export default async function Success({
 
           <div className="flex justify-between gap-3">
             <span className="text-[#87939E]">User Email</span>
+
             <span className="break-all text-right text-[#193F5B]">
               {email || "N/A"}
             </span>
@@ -161,6 +160,7 @@ export default async function Success({
             <span className="text-[#87939E]">
               Transaction Date
             </span>
+
             <span className="text-right text-[#193F5B]">
               {date}
             </span>
@@ -168,6 +168,7 @@ export default async function Success({
 
           <div>
             <p className="text-[#87939E]">Transaction ID</p>
+
             <p className="mt-1 break-all text-[11px] text-[#193F5B]">
               {session.id}
             </p>
@@ -175,6 +176,7 @@ export default async function Success({
 
           <div className="flex justify-between border-t border-[#E1E8ED] pt-3">
             <span className="text-[#87939E]">Status</span>
+
             <span className="font-semibold text-green-600">
               Successful
             </span>
@@ -185,15 +187,10 @@ export default async function Success({
               Premium Activation
             </span>
 
-            <span
-              className={
-                isPremiumActivated
-                  ? "font-semibold text-green-600"
-                  : "font-semibold text-amber-600"
-              }
-            >
-              {isPremiumActivated ? "Activated" : "Pending"}
-            </span>
+            <PremiumStatus
+              token={token}
+              initialPremium={initialPremium}
+            />
           </div>
         </div>
 

@@ -365,3 +365,22 @@ export const getMyServices = async () => {
 
   return response.json();
 };
+// Get Vendor Subscription Status
+export const getMySubscription = async (token: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/my-subscription`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to get subscription status");
+  }
+
+  return response.json();
+};
