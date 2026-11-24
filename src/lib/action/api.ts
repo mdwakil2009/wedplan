@@ -24,14 +24,20 @@ async function checkActiveUser() {
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+
 // Booking API
 export async function bookingAPI(bookingData: object) {
   await checkActiveUser();
+
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
 
   const response = await fetch(`${BASE_URL}/bookings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${tokenData.token}`,
     },
     body: JSON.stringify(bookingData),
   });
@@ -43,20 +49,6 @@ export async function bookingAPI(bookingData: object) {
     data,
   };
 }
-
-// Get Vendor Bookings
-export const getVendorBookings = async (vendorId: string) => {
-  const response = await fetch(
-    `${BASE_URL}/vendor-bookings?vendorId=${vendorId}`,
-    { cache: "no-store" }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch vendor bookings");
-  }
-
-  return response.json();
-};
 
 // Get User Info
 export const getUserById = async (userId: string) => {
@@ -71,15 +63,21 @@ export const getUserById = async (userId: string) => {
   return response.json();
 };
 
+
 // Update Booking Status
 export const updateBookingStatus = async (
   bookingId: string,
   status: "accepted" | "rejected"
 ) => {
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
   const response = await fetch(`${BASE_URL}/bookings/${bookingId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${tokenData.token}`,
     },
     body: JSON.stringify({ status }),
   });
@@ -92,11 +90,21 @@ export const updateBookingStatus = async (
   };
 };
 
+
 // Get Customer Bookings
-export const getCustomerBookings = async (customerId: string) => {
+export const getCustomerBookings = async () => {
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
   const response = await fetch(
-    `${BASE_URL}/customer-bookings?customerId=${customerId}`,
-    { cache: "no-store" }
+    `${BASE_URL}/customer-bookings`,
+    {
+      headers: {
+        Authorization: `Bearer ${tokenData.token}`,
+      },
+      cache: "no-store",
+    }
   );
 
   if (!response.ok) {
@@ -106,13 +114,21 @@ export const getCustomerBookings = async (customerId: string) => {
   return response.json();
 };
 
+
 // Get Vendor Bookings With Service
-export const getVendorBookingsWithService = async (
-  vendorId: string
-) => {
+export const getVendorBookingsWithService = async () => {
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
   const response = await fetch(
-    `${BASE_URL}/vendor-bookings-with-service?vendorId=${vendorId}`,
-    { cache: "no-store" }
+    `${BASE_URL}/vendor-bookings-with-service`,
+    {
+      headers: {
+        Authorization: `Bearer ${tokenData.token}`,
+      },
+      cache: "no-store",
+    }
   );
 
   if (!response.ok) {
@@ -121,6 +137,31 @@ export const getVendorBookingsWithService = async (
 
   return response.json();
 };
+
+// Get Vendor Bookings
+export const getVendorBookings = async () => {
+  const tokenData = await auth.api.getToken({
+    headers: await headers(),
+  });
+
+  const response = await fetch(
+    `${BASE_URL}/vendor-bookings`,
+    {
+      headers: {
+        Authorization: `Bearer ${tokenData.token}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch vendor bookings");
+  }
+
+  return response.json();
+};
+
+
 
 // Admin Overview
 export const getAdminOverview = async () => {

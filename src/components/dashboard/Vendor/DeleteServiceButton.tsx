@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { Trash2 } from "lucide-react";
 
@@ -30,8 +31,14 @@ const DeleteServiceButton = ({
   serviceId,
   onDelete,
 }: DeleteServiceButtonProps) => {
+  const [loading, setLoading] = useState(false);
+
   // Delete Service Function
   const handleDelete = async () => {
+    if (loading) return;
+
+    setLoading(true);
+
     try {
       const result = await deleteService(serviceId);
 
@@ -53,11 +60,14 @@ const DeleteServiceButton = ({
         title: "Something went wrong",
         description: "Please try again later.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <AlertDialog>
+      {/* Delete Button */}
       <AlertDialogTrigger
         render={
           <Button
@@ -70,6 +80,7 @@ const DeleteServiceButton = ({
         }
       />
 
+      {/* Confirmation Dialog */}
       <AlertDialogContent className="rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl sm:max-w-[420px]">
         <AlertDialogHeader className="items-center text-center">
           <AlertDialogMedia className="mb-2 flex size-14 items-center justify-center rounded-2xl bg-red-50 text-red-500 ring-1 ring-red-100">
@@ -89,6 +100,7 @@ const DeleteServiceButton = ({
         <AlertDialogFooter className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
           <AlertDialogCancel
             variant="outline"
+            disabled={loading}
             className="h-10 w-full rounded-xl border-gray-200 bg-white text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto sm:min-w-[120px]"
           >
             Cancel
@@ -97,10 +109,11 @@ const DeleteServiceButton = ({
           <AlertDialogAction
             variant="destructive"
             onClick={handleDelete}
-            className="h-10 w-full rounded-xl bg-red-500 text-sm font-medium text-white shadow-sm transition hover:bg-red-600 sm:w-auto sm:min-w-[120px]"
+            disabled={loading}
+            className="h-10 w-full rounded-xl bg-red-500 text-sm font-medium text-white shadow-sm transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:min-w-[120px]"
           >
             <Trash2 size={15} />
-            Delete Service
+            {loading ? "Deleting..." : "Delete Service"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
