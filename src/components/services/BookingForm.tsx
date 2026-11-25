@@ -40,9 +40,11 @@ export default function BookingForm({
 
   const isAdmin = role === "admin";
 
-  const isOwner =
-    role === "vendor" && userEmail.toLowerCase() === vendorEmail.toLowerCase();
-
+const isOwner =
+  role === "vendor" &&
+  (userEmail || "").toLowerCase() ===
+    (vendorEmail || "").toLowerCase() &&
+  Boolean(userEmail && vendorEmail);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 

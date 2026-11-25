@@ -419,3 +419,13 @@ export async function getMySubscription(token: string) {
 
   return response.json();
 }
+//6 data featured services
+export const getFeaturedServices = async () => {
+  const res = await fetch(`${BASE_URL}/featured-services`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch featured services");
+  }
+
+  return res.json();
+};
