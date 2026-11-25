@@ -1,3 +1,4 @@
+
 "use client";
 
 import { getServices } from "@/lib/action/service";
@@ -93,15 +94,15 @@ export default function WeddingCategories() {
 
   if (loading) {
     return (
-      <section className="bg-[#FFFFFF] px-5 py-20 md:py-24">
+      <section className="bg-[#FFFFFF] px-5 py-20 transition-colors duration-300 dark:bg-[#1D2421] md:py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="mx-auto mb-12 h-10 w-64 animate-pulse bg-[#FFFFFF]" />
+          <div className="mx-auto mb-12 h-10 w-64 animate-pulse bg-[#E9E0D5] dark:bg-[#35413A]" />
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <div
                 key={index}
-                className="aspect-[4/3] animate-pulse bg-[#E9E0D5]"
+                className="aspect-[4/3] animate-pulse bg-[#E9E0D5] dark:bg-[#35413A]"
               />
             ))}
           </div>
@@ -111,7 +112,7 @@ export default function WeddingCategories() {
   }
 
   return (
-<section className="overflow-hidden bg-[#FFFFFF] px-5 pt-8 pb-16 md:pt-12 md:pb-24">
+    <section className="overflow-hidden bg-[#FFFFFF] px-5 pt-8 pb-16 transition-colors duration-300 dark:bg-[#1D2421] md:pt-12 md:pb-24">
       <div className="mx-auto max-w-7xl">
         {/* Section Heading */}
         <motion.div
@@ -121,15 +122,15 @@ export default function WeddingCategories() {
           viewport={{ once: true, amount: 0.3 }}
           className="mb-12 text-center"
         >
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#B77B65]">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#B77B65] dark:text-[#D9A58E]">
             Find Your Perfect Match
           </p>
 
-          <h2 className="font-serif text-3xl font-medium text-[#392B27] md:text-5xl">
+          <h2 className="font-serif text-3xl font-medium text-[#392B27] dark:text-[#F5FAF6] md:text-5xl">
             Explore Wedding Categories
           </h2>
 
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#85766F] md:text-base">
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#85766F] dark:text-[#B2BDB5] md:text-base">
             Discover beautiful wedding services and find the perfect
             professionals for your special day.
           </p>
@@ -197,7 +198,7 @@ export default function WeddingCategories() {
                         >
                           {/* Category Image */}
                           <div
-                            className={`w-full overflow-hidden bg-[#E9E0D5] ${imageHeight}`}
+                            className={`w-full overflow-hidden bg-[#E9E0D5] dark:bg-[#35413A] ${imageHeight}`}
                           >
                             <motion.img
                               src={category.image}
@@ -215,13 +216,13 @@ export default function WeddingCategories() {
                           </div>
 
                           {/* Category Name Below Image */}
-                          <div className="flex items-center justify-between border-b border-[#DEDCD5] py-3">
-                            <h3 className="font-serif text-lg font-medium text-[#392B27] transition-colors duration-300 group-hover:text-[#B77B65] md:text-xl">
+                          <div className="flex items-center justify-between border-b border-[#DEDCD5] py-3 transition-colors duration-300 dark:border-[#414C45]">
+                            <h3 className="font-serif text-lg font-medium text-[#392B27] transition-colors duration-300 group-hover:text-[#B77B65] dark:text-[#F5FAF6] dark:group-hover:text-[#D9A58E] md:text-xl">
                               {category.name}
                             </h3>
 
                             <motion.span
-                              className="shrink-0 text-[#B77B65]"
+                              className="shrink-0 text-[#B77B65] dark:text-[#D9A58E]"
                               whileHover={
                                 shouldReduceMotion
                                   ? undefined
@@ -247,11 +248,11 @@ export default function WeddingCategories() {
           </div>
         ) : (
           <div className="py-20 text-center">
-            <p className="font-serif text-2xl text-[#392B27]">
+            <p className="font-serif text-2xl text-[#392B27] dark:text-[#F5FAF6]">
               No Categories Available
             </p>
 
-            <p className="mt-2 text-sm text-[#85766F]">
+            <p className="mt-2 text-sm text-[#85766F] dark:text-[#B2BDB5]">
               Approved wedding services will appear here.
             </p>
           </div>
@@ -271,7 +272,7 @@ export default function WeddingCategories() {
           >
             <Link
               href="/services"
-              className="group inline-flex items-center gap-3 bg-[#B77B65] px-12 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:bg-[#392B27]"
+              className="group inline-flex items-center gap-3 bg-[#B77B65] px-12 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:bg-[#392B27] dark:bg-[#D9A58E] dark:text-[#1D2421] dark:hover:bg-[#F5FAF6]"
             >
               View More
               <FiArrowUpRight

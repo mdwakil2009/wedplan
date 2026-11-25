@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -59,6 +60,15 @@ export default function ProfileClient({
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Sync profile information when server props change
+  useEffect(() => {
+    setProfileName(safeName);
+    setProfileEmail(safeEmail);
+
+    setEditName(safeName);
+    setEditEmail(safeEmail);
+  }, [safeName, safeEmail]);
+
   // Generate initials safely
   const initials =
     (profileName || "")
@@ -116,14 +126,14 @@ export default function ProfileClient({
         return;
       }
 
-      // Name updated successfully
+      // Update local name
       setProfileName(trimmedName);
 
       // 2. Update Email if changed
-      if (trimmedEmail !== (profileEmail || "")) {
+      if (trimmedEmail !== profileEmail) {
         const emailResult = await authClient.changeEmail({
           newEmail: trimmedEmail,
-          callbackURL: "/dashboard/vendor/profile",
+          callbackURL: "/dashboard/customer/profile",
         });
 
         if (emailResult.error) {
@@ -359,7 +369,7 @@ export default function ProfileClient({
 
                 <Input
                   id="edit-name"
-                  value={editName || ""}
+                  value={editName}
                   onChange={(e) => {
                     setEditName(e.target.value);
                     setErrorMessage("");
@@ -389,7 +399,7 @@ export default function ProfileClient({
                 <Input
                   id="edit-email"
                   type="email"
-                  value={editEmail || ""}
+                  value={editEmail}
                   onChange={(e) => {
                     setEditEmail(e.target.value);
                     setErrorMessage("");
@@ -431,8 +441,8 @@ export default function ProfileClient({
                 onClick={handleSave}
                 disabled={
                   saving ||
-                  !(editName || "").trim() ||
-                  !(editEmail || "").trim()
+                  !editName.trim() ||
+                  !editEmail.trim()
                 }
                 className="rounded-xl bg-[#3A76EF] text-white hover:bg-[#2F63D4]"
               >

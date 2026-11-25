@@ -4,13 +4,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  FiFilter,
   FiMapPin,
   FiSearch,
   FiSliders,
   FiX,
+  FiArrowDown,
 } from "react-icons/fi";
 
 import ServiceCard from "@/components/services/ServiceCard";
@@ -28,7 +29,7 @@ type ServiceFilterProps = {
 };
 
 const selectItemClass =
-  "cursor-pointer rounded-lg text-gray-700 focus:bg-[#B76E79]/10 focus:text-[#965560] data-[highlighted]:bg-[#B76E79]/10 data-[highlighted]:text-[#965560]";
+  "cursor-pointer rounded-lg text-gray-700 focus:bg-[#B76E79]/10 focus:text-[#965560] data-[highlighted]:bg-[#B76E79]/10 data-[highlighted]:text-[#965560] dark:text-[#F5FAF6] dark:focus:bg-[#3B443D] dark:focus:text-[#D9A58E] dark:data-[highlighted]:bg-[#3B443D] dark:data-[highlighted]:text-[#D9A58E]";
 
 const categories = [
   "Photography & Videography",
@@ -49,6 +50,15 @@ const sortItems = {
   low: "Price: Low to High",
   high: "Price: High to Low",
 };
+
+const inputClass =
+  "h-[50px] w-full rounded-xl border border-white/25 bg-[#24171D]/60 pl-11 pr-4 text-[13px] font-medium text-white outline-none backdrop-blur-md transition-all duration-300 placeholder:font-normal placeholder:text-white/55 hover:border-white/45 hover:bg-[#24171D]/75 focus:border-[#E6B9B5] focus:bg-[#24171D]/80 focus:ring-4 focus:ring-[#E6B9B5]/15";
+
+const selectTriggerClass =
+  "!h-[50px] !w-full min-w-0 cursor-pointer rounded-xl border border-white/25 bg-[#24171D]/60 px-3.5 text-[13px] font-medium text-white backdrop-blur-md transition-all duration-300 hover:border-white/45 hover:bg-[#24171D]/75 focus:border-[#E6B9B6] focus:ring-4 focus:ring-[#E6B9B5]/15 [&>svg]:text-white/75";
+
+const labelClass =
+  "mb-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.17em] text-white/90";
 
 export default function ServiceFilter({ services }: ServiceFilterProps) {
   const searchParams = useSearchParams();
@@ -75,7 +85,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
     setCategory(matchedCategory || "all");
   }, [searchParams]);
 
-  // Category select থাকলে banner-এর নিচে service section-এ scroll
+  // URL-এ category থাকলে service results-এ scroll
   useEffect(() => {
     const selectedCategory = searchParams.get("category");
 
@@ -167,178 +177,241 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
 
   return (
     <div>
-      {/* Filter Section */}
-      <div className="rounded-3xl border border-[#F0E1E4] bg-white p-4 shadow-[0_24px_60px_rgba(87,36,51,0.09)] sm:p-6">
-        <div className="flex flex-col gap-3 border-b border-[#F6ECEE] pb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-[#FBF1F2] text-[#772D43]">
-              <FiFilter className="size-4" />
-            </span>
+      {/* Premium Wedding Search Banner */}
+      <section className="relative isolate overflow-hidden bg-[#24151B]">
+        <Image
+          src="/images/background.photo3.avif"
+          alt="Wedding background"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
 
-            <div>
-              <h2 className="text-sm font-semibold text-[#332229] sm:text-base">
-                Find your ideal service
-              </h2>
+        {/* Cinematic Image Overlay */}
+        <div className="absolute inset-0 bg-[#211018]/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1D1016]/85 via-[#2D1720]/65 to-[#24131B]/55" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#211319]/55 via-transparent to-[#211319]/20" />
 
-              <p className="mt-0.5 text-[11px] text-[#9A858B]">
-                Search by name, category and location.
+        {/* Soft Decoration */}
+        <div className="absolute -left-32 top-0 size-72 rounded-full bg-[#B76E79]/15 blur-[90px]" />
+        <div className="absolute -right-24 bottom-0 size-80 rounded-full bg-[#E8C7A9]/10 blur-[100px]" />
+
+        <div className="relative z-10 mx-auto flex min-h-[300px] max-w-7xl items-center px-4 py-12 sm:min-h-[310px] sm:px-6 sm:py-14 lg:min-h-[320px] lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
+            className="w-full"
+          >
+            {/* Banner Heading */}
+            <div className="mb-7 text-center sm:mb-8">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="mb-3 flex items-center justify-center gap-3"
+              >
+                <span className="h-px w-7 bg-[#E6B9B5]/80" />
+
+                <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-[#F0C9C5] sm:text-[10px]">
+                  Make Your Day Unforgettable
+                </span>
+
+                <span className="h-px w-7 bg-[#E6B9B5]/80" />
+              </motion.div>
+
+              <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl lg:text-[36px]">
+                Find Your Perfect{" "}
+                <span className="font-serif font-normal italic text-[#EBC3BD]">
+                  Wedding Services
+                </span>
+              </h1>
+
+              <p className="mx-auto mt-2 max-w-lg text-xs leading-5 text-white/75 sm:text-[13px]">
+                Discover trusted professionals to bring your dream wedding
+                to life.
               </p>
             </div>
-          </div>
 
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 self-start rounded-full border border-[#EBD8DC] px-3 py-1.5 text-[11px] font-semibold text-[#772D43] transition-colors hover:bg-[#FBF1F2] sm:self-auto"
-            >
-              <FiX className="size-3.5" />
-              Clear all
-            </button>
-          )}
-        </div>
+            {/* Search Filters */}
+            <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-5">
+              {/* Search */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 }}
+                className="min-w-0"
+              >
+                <label htmlFor="service-search" className={labelClass}>
+                  <FiSearch className="size-3.5 text-[#E6B9B5]" />
+                  Search Services
+                </label>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Search */}
-          <div className="min-w-0">
-            <label
-              htmlFor="service-search"
-              className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8B767C]"
-            >
-              Search
-            </label>
+                <div className="relative">
+                  <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#E6B9B5]" />
 
-            <div className="relative">
-              <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#B39CA1]" />
+                  <input
+                    id="service-search"
+                    type="text"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="What are you looking for?"
+                    className={inputClass}
+                  />
+                </div>
+              </motion.div>
 
-              <input
-                id="service-search"
-                type="text"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search service name..."
-                className="h-11 w-full rounded-xl border border-[#EDDEE0] bg-[#FFFCFC] pl-10 pr-4 text-sm text-[#332229] outline-none transition-all placeholder:text-[#B7A4A9] focus:border-[#B76E79] focus:bg-white focus:ring-4 focus:ring-[#B76E79]/10"
-              />
+              {/* Category */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.22 }}
+                className="min-w-0"
+              >
+                <label className={labelClass}>
+                  <FiSliders className="size-3.5 text-[#E6B9B5]" />
+                  Category
+                </label>
+
+                <Select
+                  value={category}
+                  items={categoryItems}
+                  onValueChange={(value) =>
+                    handleCategoryChange(value as string)
+                  }
+                >
+                  <SelectTrigger className={selectTriggerClass}>
+                    <SelectValue placeholder="All categories" />
+                  </SelectTrigger>
+
+                  <SelectContent className="rounded-xl border-[#EDDEE0] bg-white p-1 shadow-xl dark:border-[#414C45] dark:bg-[#29332E]">
+                    <SelectItem value="all" className={selectItemClass}>
+                      All categories
+                    </SelectItem>
+
+                    {categories.map((item) => (
+                      <SelectItem
+                        key={item}
+                        value={item}
+                        className={selectItemClass}
+                      >
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </motion.div>
+
+              {/* Location */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.29 }}
+                className="min-w-0"
+              >
+                <label htmlFor="service-location" className={labelClass}>
+                  <FiMapPin className="size-3.5 text-[#E6B9B5]" />
+                  Location
+                </label>
+
+                <div className="relative">
+                  <FiMapPin className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#E6B9B5]" />
+
+                  <input
+                    id="service-location"
+                    type="text"
+                    value={location}
+                    onChange={(event) => setLocation(event.target.value)}
+                    placeholder="Enter your location"
+                    className={inputClass}
+                  />
+                </div>
+              </motion.div>
+
+              {/* Sort */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.36 }}
+                className="min-w-0"
+              >
+                <label className={labelClass}>
+                  <FiSliders className="size-3.5 text-[#E6B9B5]" />
+                  Sort by Price
+                </label>
+
+                <Select
+                  value={sort}
+                  items={sortItems}
+                  onValueChange={(value) => setSort(value as string)}
+                >
+                  <SelectTrigger className={selectTriggerClass}>
+                    <SelectValue placeholder="Recommended" />
+                  </SelectTrigger>
+
+                  <SelectContent className="rounded-xl border-[#EDDEE0] bg-white p-1 shadow-xl dark:border-[#414C45] dark:bg-[#29332E]">
+                    <SelectItem
+                      value="recommended"
+                      className={selectItemClass}
+                    >
+                      Recommended
+                    </SelectItem>
+
+                    <SelectItem value="low" className={selectItemClass}>
+                      Price: Low to High
+                    </SelectItem>
+
+                    <SelectItem value="high" className={selectItemClass}>
+                      Price: High to Low
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </motion.div>
             </div>
-          </div>
 
-          {/* Category */}
-          <div className="min-w-0">
-            <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8B767C]">
-              Category
-            </label>
-
-            <Select
-              value={category}
-              items={categoryItems}
-              onValueChange={(value) =>
-                handleCategoryChange(value as string)
-              }
-            >
-              <SelectTrigger className="!h-11 !w-full min-w-0 cursor-pointer rounded-xl border border-[#EDDEE0] bg-[#FFFCFC] px-3.5 text-sm text-[#5F4C52] shadow-none outline-none transition-all focus:border-[#B76E79] focus:bg-white focus:ring-4 focus:ring-[#B76E79]/10">
-                <SelectValue placeholder="All categories" />
-              </SelectTrigger>
-
-              <SelectContent className="rounded-xl border-[#EDDEE0] bg-white p-1 shadow-lg">
-                <SelectItem value="all" className={selectItemClass}>
-                  All categories
-                </SelectItem>
-
-                {categories.map((item) => (
-                  <SelectItem
-                    key={item}
-                    value={item}
-                    className={selectItemClass}
-                  >
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Location */}
-          <div className="min-w-0">
-            <label
-              htmlFor="service-location"
-              className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8B767C]"
-            >
-              Location
-            </label>
-
-            <div className="relative">
-              <FiMapPin className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#B39CA1]" />
-
-              <input
-                id="service-location"
-                type="text"
-                value={location}
-                onChange={(event) => setLocation(event.target.value)}
-                placeholder="Search by location..."
-                className="h-11 w-full rounded-xl border border-[#EDDEE0] bg-[#FFFCFC] pl-10 pr-4 text-sm text-[#332229] outline-none transition-all placeholder:text-[#B7A4A9] focus:border-[#B76E79] focus:bg-white focus:ring-4 focus:ring-[#B76E79]/10"
-              />
+            {/* Bottom Hint */}
+            <div className="mt-5 flex items-center justify-center gap-2 text-[10px] text-white/65">
+              <FiArrowDown className="size-3.5" />
+              <span>
+                Explore our collection of wedding professionals
+              </span>
             </div>
-          </div>
-
-          {/* Sort */}
-          <div className="min-w-0">
-            <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8B767C]">
-              Sort by price
-            </label>
-
-            <Select
-              value={sort}
-              items={sortItems}
-              onValueChange={(value) => setSort(value as string)}
-            >
-              <SelectTrigger className="!h-11 !w-full min-w-0 cursor-pointer rounded-xl border border-[#EDDEE0] bg-[#FFFCFC] px-3.5 text-sm text-[#5F4C52] shadow-none outline-none transition-all focus:border-[#B76E79] focus:bg-white focus:ring-4 focus:ring-[#B76E79]/10">
-                <SelectValue placeholder="Recommended" />
-              </SelectTrigger>
-
-              <SelectContent className="rounded-xl border-[#EDDEE0] bg-white p-1 shadow-lg">
-                <SelectItem value="recommended" className={selectItemClass}>
-                  Recommended
-                </SelectItem>
-
-                <SelectItem value="low" className={selectItemClass}>
-                  Price: Low to High
-                </SelectItem>
-
-                <SelectItem value="high" className={selectItemClass}>
-                  Price: High to Low
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </section>
 
-      {/* Service Results Section */}
-      <div
+      {/* Service Results */}
+      <section
         ref={serviceSectionRef}
         id="service-results"
-        className="scroll-mt-24"
+        className="mx-auto max-w-7xl scroll-mt-24 px-4 pb-16 pt-10 transition-colors duration-300 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8"
       >
         {/* Result Summary */}
-        <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          className="flex flex-wrap items-end justify-between gap-3"
+        >
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B76E79]">
-              The collection
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B76E79] dark:text-[#D9A58E]">
+              The Collection
             </p>
 
-            <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#332229] sm:text-2xl">
-              {category === "all" ? "Wedding services" : category}
+            <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#332229] dark:text-[#F5FAF6] sm:text-2xl">
+              {category === "all" ? "Wedding Services" : category}
             </h2>
           </div>
 
-          <p className="text-xs text-[#9A858B]">
+          <p className="text-xs text-[#9A858B] dark:text-[#B2BDB5]">
             Showing{" "}
-            <span className="font-semibold text-[#772D43]">
+            <span className="font-semibold text-[#772D43] dark:text-[#D9A58E]">
               {filteredServices.length}
             </span>{" "}
             of {services.length} services
           </p>
-        </div>
+        </motion.div>
 
         {/* Service Cards */}
         {filteredServices.length > 0 ? (
@@ -346,11 +419,12 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
             {filteredServices.map((service, index) => (
               <motion.div
                 key={service._id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
                 transition={{
-                  duration: 0.35,
-                  delay: Math.min(index, 5) * 0.05,
+                  duration: 0.45,
+                  delay: (index % 3) * 0.08,
                   ease: "easeOut",
                 }}
                 className="h-full"
@@ -364,19 +438,19 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-5 rounded-3xl border border-dashed border-[#E7CFD4] bg-[#FFF8F7] px-6 py-16 text-center"
+            className="mt-5 rounded-3xl border border-dashed border-[#E7CFD4] bg-[#FFF8F7] px-6 py-16 text-center transition-colors duration-300 dark:border-[#414C45] dark:bg-[#29332E]"
           >
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-white text-[#B76E79] shadow-sm ring-1 ring-[#F0E1E4]">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-white text-[#B76E79] shadow-sm ring-1 ring-[#F0E1E4] dark:bg-[#35413A] dark:text-[#D9A58E] dark:ring-[#414C45]">
               <FiSliders className="size-7" />
             </div>
 
-            <h3 className="mt-5 text-lg font-semibold text-[#332229]">
+            <h3 className="mt-5 text-lg font-semibold text-[#332229] dark:text-[#F5FAF6]">
               {hasFilters
                 ? "No services match your filters"
                 : "No services are available yet"}
             </h3>
 
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#8B767C]">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#8B767C] dark:text-[#B2BDB5]">
               {hasFilters
                 ? "Try a different service name, category or location. You can also clear all filters to see every available service."
                 : "Approved wedding services will appear here as soon as vendors publish them. Please check back soon."}
@@ -386,7 +460,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#772D43] px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#5F2034]"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#772D43] px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#5F2034] dark:bg-[#D9A58E] dark:text-[#1D2421] dark:hover:bg-[#E8B9A5]"
               >
                 <FiX className="size-4" />
                 Clear all filters
@@ -394,14 +468,14 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
             ) : (
               <Link
                 href="/services"
-                className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9BCC2] px-5 py-2.5 text-xs font-semibold text-[#772D43] transition-colors hover:bg-white"
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9BCC2] px-5 py-2.5 text-xs font-semibold text-[#772D43] transition-colors hover:bg-white dark:border-[#59665D] dark:text-[#D9A58E] dark:hover:bg-[#35413A]"
               >
                 Check again
               </Link>
             )}
           </motion.div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

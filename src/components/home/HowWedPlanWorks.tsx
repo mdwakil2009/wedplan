@@ -58,11 +58,12 @@ const itemVariants = {
 
 export default function HowWedPlanWorks() {
   return (
-<section className="relative overflow-hidden bg-[#FFFFFF] px-5 pt-2 pb-12 sm:pt-3 sm:pb-14 md:pt-4 md:pb-16">
+    <section className="relative overflow-hidden bg-[#FFFFFF] px-5 pt-2 pb-12 transition-colors duration-300 dark:bg-[#1D2421] sm:pt-3 sm:pb-14 md:pt-4 md:pb-16">
 
       {/* Background Decorations */}
-      <div className="pointer-events-none absolute -right-32 -top-32 h-72 w-72 rounded-full border border-[#B77B65]/10" />
-      <div className="pointer-events-none absolute -bottom-40 -left-32 h-80 w-80 rounded-full border border-[#B77B65]/10" />
+      <div className="pointer-events-none absolute -right-32 -top-32 h-72 w-72 rounded-full border border-[#B77B65]/10 dark:border-[#D9A58E]/10" />
+
+      <div className="pointer-events-none absolute -bottom-40 -left-32 h-80 w-80 rounded-full border border-[#B77B65]/10 dark:border-[#D9A58E]/10" />
 
       <div className="relative mx-auto max-w-7xl">
 
@@ -74,16 +75,18 @@ export default function HowWedPlanWorks() {
           transition={{ duration: 0.7 }}
           className="mx-auto mb-10 max-w-2xl text-center md:mb-12"
         >
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#B77B65] sm:text-xs">
+          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#B77B65] dark:text-[#D9A58E] sm:text-xs">
             Your Journey Starts Here
           </p>
 
-          <h2 className="font-serif text-3xl font-medium leading-tight text-[#392B27] sm:text-4xl md:text-5xl">
+          <h2 className="font-serif text-3xl font-medium leading-tight text-[#392B27] dark:text-[#F5FAF6] sm:text-4xl md:text-5xl">
             How WedPlan{" "}
-            <span className="italic text-[#B77B65]">Works</span>
+            <span className="italic text-[#B77B65] dark:text-[#D9A58E]">
+              Works
+            </span>
           </h2>
 
-          <p className="mx-auto mt-4 max-w-xl text-xs leading-6 text-[#85766F] sm:text-sm sm:leading-7">
+          <p className="mx-auto mt-4 max-w-xl text-xs leading-6 text-[#85766F] dark:text-[#B2BDB5] sm:text-sm sm:leading-7">
             From discovering the perfect service to managing your booking,
             we make your wedding planning journey easier.
           </p>
@@ -107,31 +110,31 @@ export default function HowWedPlanWorks() {
                 className="relative text-center"
               >
                 {/* Icon */}
-                <div className="relative mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-[#D9A58E]/50 bg-[#FBF5F0] transition-all duration-300 hover:border-[#B77B65] hover:bg-[#F5E9E1] sm:h-[70px] sm:w-[70px]">
+                <div className="relative mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-[#D9A58E]/50 bg-[#FBF5F0] transition-all duration-300 hover:border-[#B77B65] hover:bg-[#F5E9E1] dark:border-[#D9A58E]/40 dark:bg-[#29332E] dark:hover:border-[#D9A58E] dark:hover:bg-[#35413A] sm:h-[70px] sm:w-[70px]">
                   <Icon
                     size={25}
                     strokeWidth={1.4}
-                    className="text-[#B77B65]"
+                    className="text-[#B77B65] dark:text-[#D9A58E]"
                   />
 
-                  <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#B77B65] text-[9px] font-semibold text-white">
+                  <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#B77B65] text-[9px] font-semibold text-white dark:bg-[#D9A58E] dark:text-[#1D2421]">
                     {step.number}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h3 className="font-serif text-xl font-medium text-[#392B27] sm:text-2xl">
+                <h3 className="font-serif text-xl font-medium text-[#392B27] dark:text-[#F5FAF6] sm:text-2xl">
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="mx-auto mt-3 max-w-xs text-xs leading-6 text-[#85766F] sm:text-sm sm:leading-7">
+                <p className="mx-auto mt-3 max-w-xs text-xs leading-6 text-[#85766F] dark:text-[#B2BDB5] sm:text-sm sm:leading-7">
                   {step.description}
                 </p>
 
                 {/* Connecting Line */}
                 {index !== steps.length - 1 && (
-                  <div className="absolute left-[calc(50%+58px)] top-8 hidden w-[calc(100%-75px)] border-t border-dashed border-[#D9A58E]/60 md:block" />
+                  <div className="absolute left-[calc(50%+58px)] top-8 hidden w-[calc(100%-75px)] border-t border-dashed border-[#D9A58E]/60 dark:border-[#D9A58E]/30 md:block" />
                 )}
               </motion.div>
             );

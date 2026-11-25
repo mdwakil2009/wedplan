@@ -1,19 +1,17 @@
 
-export const instant = false;
-
 import { connection } from "next/server";
-import { stripe } from "@/lib/stripe";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 
+import { stripe } from "@/lib/stripe";
 import { getMySubscription } from "@/lib/action/api";
-import PremiumStatus from "@/components/payment/premium-status";
 
 import {
   FiCheckCircle,
   FiArrowRight,
+  FiShield,
 } from "react-icons/fi";
 
 export default async function Success({
@@ -25,23 +23,15 @@ export default async function Success({
 
   const { session_id } = await searchParams;
 
-  if (!session_id) redirect("/");
-
-  // Retrieve Stripe Session
-  const session = await stripe.checkout.sessions.retrieve(session_id);
-
-  // Check Payment
-  if (
-    session.status !== "complete" ||
-    session.payment_status !== "paid" ||
-    session.mode !== "payment"
-  ) {
+  if (!session_id) {
     redirect("/");
   }
 
-  // Verify Current User
+  // 1. Authenticate current user
+  const requestHeaders = await headers();
+
   const tokenData = await auth.api.getToken({
-    headers: await headers(),
+    headers: requestHeaders,
   });
 
   if (!tokenData?.token) {
@@ -50,42 +40,91 @@ export default async function Success({
 
   const token = tokenData.token;
 
-  // Verify Payment
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        sessionId: session_id,
-      }),
-      cache: "no-store",
-    }
-  );
+  // 2. Retrieve Stripe session
+  let session;
 
-  const result = await response.json();
-
-  if (!response.ok || !result.success) {
-    throw new Error(result.message || "Payment verification failed.");
+  try {
+    session = await stripe.checkout.sessions.retrieve(session_id);
+  } catch (error) {
+    console.error("Stripe Session Error:", error);
+    redirect("/dashboard/vendor/subscription");
   }
 
-  // Initial Premium Status
-  let initialPremium = false;
+  // 3. Check Stripe payment
+  if (
+    session.status !== "complete" ||
+    session.payment_status !== "paid" ||
+    session.mode !== "payment"
+  ) {
+    redirect("/dashboard/vendor/subscription");
+  }
+
+  // 4. Verify payment and activate Premium in MongoDB
+  let verificationResult;
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sessionId: session_id,
+        }),
+        cache: "no-store",
+      }
+    );
+
+    verificationResult = await response.json();
+
+    if (
+      !response.ok ||
+      !verificationResult.success ||
+      verificationResult.premiumActivated !== true
+    ) {
+      console.error(
+        "Payment Verification Failed:",
+        verificationResult
+      );
+
+      throw new Error(
+        verificationResult.message ||
+          "Premium activation could not be confirmed."
+      );
+    }
+  } catch (error) {
+    console.error("Premium Activation Error:", error);
+
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Premium activation failed."
+    );
+  }
+
+  // 5. Confirm latest subscription from MongoDB
+  let isPremium = false;
 
   try {
     const subscriptionResult = await getMySubscription(token);
 
-    initialPremium =
+    isPremium =
       subscriptionResult.success &&
-      subscriptionResult.isPremium;
+      subscriptionResult.isPremium === true;
   } catch (error) {
     console.error("Subscription Status Error:", error);
   }
 
-  // Payment Information
+  if (!isPremium) {
+    throw new Error(
+      "Payment was successful, but Premium status could not be confirmed. Please refresh or contact support."
+    );
+  }
+
+  // 6. Payment information
   const amount = (
     (session.amount_total || 0) / 100
   ).toLocaleString("en-BD");
@@ -111,14 +150,13 @@ export default async function Success({
           </h1>
 
           <p className="mt-1 text-xs text-[#7A839B]">
-            Your payment has been received successfully.
+            Your payment has been received and Premium is activated.
           </p>
 
-          {/* Automatic Premium Status */}
-          <PremiumStatus
-            token={token}
-            initialPremium={initialPremium}
-          />
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-xs font-semibold text-green-700">
+            <FiShield className="size-4" />
+            Premium Activated
+          </div>
         </div>
 
         {/* Amount */}
@@ -175,7 +213,7 @@ export default async function Success({
           </div>
 
           <div className="flex justify-between border-t border-[#E7EBF5] pt-3">
-            <span className="text-[#7A839B]">Status</span>
+            <span className="text-[#7A839B]">Payment Status</span>
 
             <span className="font-semibold text-green-600">
               Successful
@@ -187,10 +225,9 @@ export default async function Success({
               Premium Activation
             </span>
 
-            <PremiumStatus
-              token={token}
-              initialPremium={initialPremium}
-            />
+            <span className="font-semibold text-green-600">
+              Confirmed
+            </span>
           </div>
         </div>
 
@@ -202,7 +239,6 @@ export default async function Success({
           Back to Dashboard
           <FiArrowRight />
         </Link>
-
       </div>
     </main>
   );

@@ -132,11 +132,11 @@ export default function FeaturedServices() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#FFFFFF] px-4 py-12 sm:px-6 sm:py-16 lg:px-12">
+    <section className="relative overflow-hidden bg-[#FFFFFF] px-4 py-12 transition-colors duration-300 dark:bg-[#1D2421] sm:px-6 sm:py-16 lg:px-12">
       {/* Background Decorations */}
-      <div className="pointer-events-none absolute -left-40 top-40 h-[300px] w-[300px] rounded-full bg-[#E7D6C5]/30 blur-[100px]" />
+      <div className="pointer-events-none absolute -left-40 top-40 h-[300px] w-[300px] rounded-full bg-[#E7D6C5]/30 blur-[100px] dark:bg-[#B77B65]/10" />
 
-      <div className="pointer-events-none absolute -right-40 bottom-20 h-[300px] w-[300px] rounded-full bg-[#E3CFC0]/30 blur-[100px]" />
+      <div className="pointer-events-none absolute -right-40 bottom-20 h-[300px] w-[300px] rounded-full bg-[#E3CFC0]/30 blur-[100px] dark:bg-[#D9A58E]/10" />
 
       <div className="relative mx-auto max-w-7xl">
         {/* Section Heading */}
@@ -144,7 +144,7 @@ export default function FeaturedServices() {
           {...getAnimation(headingVariants)}
           className="mb-9 text-center sm:mb-11"
         >
-          <div className="mb-3 inline-flex items-center gap-2 text-[#A17B61]">
+          <div className="mb-3 inline-flex items-center gap-2 text-[#A17B61] dark:text-[#D9A58E]">
             <motion.span
               animate={
                 shouldReduceMotion
@@ -167,27 +167,27 @@ export default function FeaturedServices() {
             </span>
           </div>
 
-          <h2 className="font-serif text-3xl font-normal leading-tight text-[#382B23] sm:text-4xl md:text-5xl">
+          <h2 className="font-serif text-3xl font-normal leading-tight text-[#382B23] dark:text-[#F5FAF6] sm:text-4xl md:text-5xl">
             The Art of a{" "}
-            <span className="italic text-[#A17B61]">
+            <span className="italic text-[#A17B61] dark:text-[#D9A58E]">
               Beautiful Wedding
             </span>
           </h2>
 
-          <p className="mx-auto mt-3 max-w-lg text-xs leading-6 text-[#82766B] sm:text-sm">
+          <p className="mx-auto mt-3 max-w-lg text-xs leading-6 text-[#82766B] dark:text-[#B2BDB5] sm:text-sm">
             Thoughtfully selected wedding services and exceptional
             professionals for your special celebration.
           </p>
 
           <div className="mt-5 flex items-center justify-center gap-3">
-            <span className="h-px w-9 bg-[#CBB29B]" />
+            <span className="h-px w-9 bg-[#CBB29B] dark:bg-[#65756A]" />
 
             <Heart
               size={12}
-              className="fill-[#A17B61] text-[#A17B61]"
+              className="fill-[#A17B61] text-[#A17B61] dark:fill-[#D9A58E] dark:text-[#D9A58E]"
             />
 
-            <span className="h-px w-9 bg-[#CBB29B]" />
+            <span className="h-px w-9 bg-[#CBB29B] dark:bg-[#65756A]" />
           </div>
         </motion.div>
 
@@ -199,13 +199,13 @@ export default function FeaturedServices() {
                 key={item}
                 className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-9"
               >
-                <div className="h-[220px] animate-pulse bg-[#E8DED4] sm:h-[260px]" />
+                <div className="h-[220px] animate-pulse bg-[#E8DED4] dark:bg-[#35413A] sm:h-[260px]" />
 
                 <div className="flex flex-col justify-center space-y-3 py-3">
-                  <div className="h-3 w-24 animate-pulse bg-[#E8DED4]" />
-                  <div className="h-7 w-3/4 animate-pulse bg-[#E8DED4]" />
-                  <div className="h-12 w-full animate-pulse bg-[#E8DED4]" />
-                  <div className="h-12 w-full animate-pulse bg-[#E8DED4]" />
+                  <div className="h-3 w-24 animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
+                  <div className="h-7 w-3/4 animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
+                  <div className="h-12 w-full animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
+                  <div className="h-12 w-full animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
                 </div>
               </div>
             ))}
@@ -220,14 +220,14 @@ export default function FeaturedServices() {
           >
             <Heart
               size={28}
-              className="mx-auto mb-4 text-[#A17B61]"
+              className="mx-auto mb-4 text-[#A17B61] dark:text-[#D9A58E]"
             />
 
-            <h3 className="font-serif text-2xl text-[#382B23]">
+            <h3 className="font-serif text-2xl text-[#382B23] dark:text-[#F5FAF6]">
               Something Beautiful Is Coming
             </h3>
 
-            <p className="mt-2 text-xs text-[#82766B]">
+            <p className="mt-2 text-xs text-[#82766B] dark:text-[#B2BDB5]">
               Our featured wedding services will be available soon.
             </p>
           </motion.div>
@@ -269,7 +269,7 @@ export default function FeaturedServices() {
                       imageLeft ? "md:order-1" : "md:order-2"
                     }`}
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-[#E8DED4] sm:aspect-[5/3] md:aspect-[4/3]">
+                    <div className="relative aspect-[16/10] overflow-hidden bg-[#E8DED4] dark:bg-[#35413A] sm:aspect-[5/3] md:aspect-[4/3]">
                       <Image
                         src={
                           service.images?.[0] ||
@@ -358,30 +358,30 @@ export default function FeaturedServices() {
                       viewport={{ once: true }}
                       className="mb-2 flex items-center gap-2"
                     >
-                      <span className="h-px w-6 bg-[#B99576]" />
+                      <span className="h-px w-6 bg-[#B99576] dark:bg-[#D9A58E]" />
 
-                      <span className="text-[9px] font-semibold uppercase tracking-[2px] text-[#A17B61]">
+                      <span className="text-[9px] font-semibold uppercase tracking-[2px] text-[#A17B61] dark:text-[#D9A58E]">
                         {service.category}
                       </span>
                     </motion.div>
 
                     {/* Service Title */}
-                    <h3 className="max-w-lg font-serif text-2xl font-normal leading-tight text-[#382B23] sm:text-3xl">
+                    <h3 className="max-w-lg font-serif text-2xl font-normal leading-tight text-[#382B23] dark:text-[#F5FAF6] sm:text-3xl">
                       {service.serviceName}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-2 max-w-md text-xs leading-6 text-[#82766B]">
+                    <p className="mt-2 max-w-md text-xs leading-6 text-[#82766B] dark:text-[#B2BDB5]">
                       Discover exceptional{" "}
                       {(service.category || "wedding").toLowerCase()}{" "}
                       services crafted for your special celebration.
                     </p>
 
                     {/* Location */}
-                    <div className="mt-3 flex items-center gap-2 text-[#82766B]">
+                    <div className="mt-3 flex items-center gap-2 text-[#82766B] dark:text-[#B2BDB5]">
                       <MapPin
                         size={13}
-                        className="shrink-0 text-[#A17B61]"
+                        className="shrink-0 text-[#A17B61] dark:text-[#D9A58E]"
                       />
 
                       <span className="text-[11px] tracking-wide">
@@ -390,7 +390,7 @@ export default function FeaturedServices() {
                     </div>
 
                     {/* Vendor Information */}
-                    <div className="mt-4 flex items-center gap-3 border-y border-[#E3D7CB] py-3">
+                    <div className="mt-4 flex items-center gap-3 border-y border-[#E3D7CB] py-3 dark:border-[#414C45]">
                       {/* Vendor Avatar */}
                       <motion.div
                         whileHover={
@@ -400,7 +400,7 @@ export default function FeaturedServices() {
                                 scale: 1.08,
                               }
                         }
-                        className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8D8C9]"
+                        className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8D8C9] dark:bg-[#35413A]"
                       >
                         {service.vendor?.image ? (
                           <Image
@@ -415,18 +415,18 @@ export default function FeaturedServices() {
                         ) : (
                           <UserRound
                             size={19}
-                            className="text-[#79543F]"
+                            className="text-[#79543F] dark:text-[#D9A58E]"
                           />
                         )}
                       </motion.div>
 
                       {/* Vendor Details */}
                       <div className="min-w-0 flex-1">
-                        <p className="text-[8px] font-semibold uppercase tracking-[1.5px] text-[#A17B61]">
+                        <p className="text-[8px] font-semibold uppercase tracking-[1.5px] text-[#A17B61] dark:text-[#D9A58E]">
                           Meet Your Vendor
                         </p>
 
-                        <p className="mt-0.5 truncate text-xs font-semibold text-[#382B23]">
+                        <p className="mt-0.5 truncate text-xs font-semibold text-[#382B23] dark:text-[#F5FAF6]">
                           {service.vendor?.name || "Wedding Professional"}
                         </p>
 
@@ -434,10 +434,10 @@ export default function FeaturedServices() {
                           <div className="mt-0.5 flex items-center gap-1">
                             <Mail
                               size={10}
-                              className="shrink-0 text-[#A17B61]"
+                              className="shrink-0 text-[#A17B61] dark:text-[#D9A58E]"
                             />
 
-                            <span className="truncate text-[10px] text-[#82766B]">
+                            <span className="truncate text-[10px] text-[#82766B] dark:text-[#B2BDB5]">
                               {service.vendor.email}
                             </span>
                           </div>
@@ -448,18 +448,18 @@ export default function FeaturedServices() {
                     {/* Price and CTA */}
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="text-[8px] font-semibold uppercase tracking-[2px] text-[#A17B61]">
+                        <p className="text-[8px] font-semibold uppercase tracking-[2px] text-[#A17B61] dark:text-[#D9A58E]">
                           Starting From
                         </p>
 
-                        <p className="mt-1 font-serif text-2xl text-[#382B23]">
+                        <p className="mt-1 font-serif text-2xl text-[#382B23] dark:text-[#F5FAF6]">
                           ৳{Number(service.price).toLocaleString("en-BD")}
                         </p>
                       </div>
 
                       <Link
                         href={`/services/${service._id}`}
-                        className="group/btn inline-flex items-center gap-2 border-b border-[#A17B61] pb-1.5 text-xs font-medium text-[#79543F] transition-colors duration-300 hover:text-[#A17B61]"
+                        className="group/btn inline-flex items-center gap-2 border-b border-[#A17B61] pb-1.5 text-xs font-medium text-[#79543F] transition-colors duration-300 hover:text-[#A17B61] dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:text-[#F5FAF6]"
                       >
                         Explore Service
 
@@ -493,7 +493,7 @@ export default function FeaturedServices() {
         >
           <Link
             href="/services"
-            className="group inline-flex items-center gap-3 border border-[#B99576] px-6 py-3 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#79543F] transition-colors duration-300 hover:bg-[#79543F] hover:text-white"
+            className="group inline-flex items-center gap-3 border border-[#B99576] px-6 py-3 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#79543F] transition-colors duration-300 hover:bg-[#79543F] hover:text-white dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:bg-[#D9A58E] dark:hover:text-[#1D2421]"
           >
             Discover All Services
 

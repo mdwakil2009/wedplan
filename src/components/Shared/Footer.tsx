@@ -1,14 +1,15 @@
+
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   FiInstagram,
   FiFacebook,
   FiMail,
   FiPhone,
-  FiMapPin,
   FiHeart,
-  FiArrowRight,
+  FiArrowUpRight,
 } from "react-icons/fi";
 
 import BrandLogo from "./BrandLogo";
@@ -42,33 +43,56 @@ const socialLinks = [
   },
 ];
 
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 22,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: "easeOut" as const,
+    },
+  },
+};
+
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#211A17] text-white">
-      {/* Background Decorations */}
-      <div className="pointer-events-none absolute -left-40 top-10 h-[300px] w-[300px] rounded-full bg-[#B77B65]/10 blur-[100px]" />
+    <footer className="overflow-hidden bg-[#211A17] text-white">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
 
-      <div className="pointer-events-none absolute -right-40 bottom-5 h-[280px] w-[280px] rounded-full bg-[#D9A58E]/[0.06] blur-[100px]" />
-
-      {/* Main Footer */}
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 gap-8 border-b border-white/[0.08] py-9 sm:grid-cols-2 sm:gap-9 sm:py-10 lg:grid-cols-[1.5fr_0.85fr_1.2fr_1fr] lg:gap-10 lg:py-12">
+        {/* Main Footer */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.12 }}
+          className="grid grid-cols-1 gap-9 border-b border-white/[0.08] py-10 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.5fr_0.85fr_1.2fr_1fr] lg:gap-12 lg:py-12"
+        >
           {/* Brand Section */}
-          <div>
-            <div aria-label="WedPlan Home" className="inline-flex items-center">
-              <BrandLogo />
-            </div>
+          <motion.div variants={itemVariants}>
+            <BrandLogo />
 
-            <p className="mt-3 max-w-xs text-xs leading-6 text-[#B3A39A] sm:text-[13px]">
-              Making wedding planning feel effortless, meaningful and a little
-              more magical. Your love story deserves the most beautiful
-              beginning.
+            <p className="mt-4 max-w-xs text-xs leading-6 text-[#B3A39A] sm:text-[13px]">
+              Making wedding planning effortless, meaningful and magical.
+              Your love story deserves a beautiful beginning.
             </p>
 
             {/* Social Links */}
             <div className="mt-5">
-              <p className="mb-2.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-[#D9A58E]">
-                Follow Our Journey
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#D9A58E]">
+                Follow Us
               </p>
 
               <div className="flex items-center gap-2.5">
@@ -76,27 +100,27 @@ export default function Footer() {
                   const Icon = social.icon;
 
                   return (
-                    <a
+                    <motion.a
                       key={social.name}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.name}
-                      className="group flex h-9 w-9 items-center justify-center border border-white/10 bg-white/[0.025] text-[#D0B6A6] transition-all duration-300 hover:-translate-y-1 hover:border-[#B77B65] hover:bg-[#B77B65] hover:text-white"
+                      whileHover={{ y: -4, scale: 1.08 }}
+                      whileTap={{ scale: 0.94 }}
+                      transition={{ duration: 0.2 }}
+                      className="flex size-9 items-center justify-center border border-white/10 text-[#D0B6A6] transition-colors duration-300 hover:border-[#B77B65] hover:bg-[#B77B65] hover:text-white"
                     >
-                      <Icon
-                        size={15}
-                        className="transition-transform duration-300 group-hover:scale-110"
-                      />
-                    </a>
+                      <Icon size={15} />
+                    </motion.a>
                   );
                 })}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Quick Links */}
-          <div>
+          <motion.div variants={itemVariants}>
             <h3 className="font-serif text-base font-medium text-[#F5EAE3]">
               Explore
             </h3>
@@ -110,22 +134,19 @@ export default function Footer() {
                     href={link.href}
                     className="group inline-flex items-center gap-2 text-xs text-[#B3A39A] transition-colors duration-300 hover:text-[#D9A58E] sm:text-[13px]"
                   >
-                    <FiArrowRight
-                      size={11}
-                      className="shrink-0 text-[#B77B65] opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
+                    <FiArrowUpRight
+                      size={12}
+                      className="text-[#B77B65] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                     />
-
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">
-                      {link.name}
-                    </span>
+                    {link.name}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Wedding Services */}
-          <div>
+          <motion.div variants={itemVariants}>
             <h3 className="font-serif text-base font-medium text-[#F5EAE3]">
               Wedding Services
             </h3>
@@ -139,22 +160,19 @@ export default function Footer() {
                     href="/services"
                     className="group inline-flex items-center gap-2 text-xs text-[#B3A39A] transition-colors duration-300 hover:text-[#D9A58E] sm:text-[13px]"
                   >
-                    <FiArrowRight
-                      size={11}
-                      className="shrink-0 text-[#B77B65] opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
+                    <FiArrowUpRight
+                      size={12}
+                      className="text-[#B77B65] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                     />
-
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">
-                      {service}
-                    </span>
+                    {service}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Contact Section */}
-          <div>
+          <motion.div variants={itemVariants}>
             <h3 className="font-serif text-base font-medium text-[#F5EAE3]">
               Get in Touch
             </h3>
@@ -162,89 +180,70 @@ export default function Footer() {
             <div className="mb-4 mt-2 h-[2px] w-8 bg-[#B77B65]" />
 
             <p className="mb-4 text-xs leading-6 text-[#B3A39A]">
-              Have a question? We're here to help you plan every beautiful
-              detail.
+              Need help planning your special day? We are here for you.
             </p>
 
-            <div className="space-y-3.5">
-              {/* Email */}
-              <a
-                href="mailto:hello@wedplan.com"
-                className="group flex items-center gap-2.5"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-[#B77B65]/25 bg-[#B77B65]/10 text-[#D9A58E] transition-all duration-300 group-hover:border-[#B77B65] group-hover:bg-[#B77B65] group-hover:text-white">
-                  <FiMail size={15} />
+            <motion.a
+              href="mailto:hello@wedplan.com"
+              whileHover={{ x: 4 }}
+              className="group flex items-center gap-3"
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center border border-[#B77B65]/25 bg-[#B77B65]/10 text-[#D9A58E] transition-colors duration-300 group-hover:bg-[#B77B65] group-hover:text-white">
+                <FiMail size={15} />
+              </span>
+
+              <span>
+                <span className="block text-[9px] uppercase tracking-[0.15em] text-[#94857D]">
+                  Email Us
                 </span>
-
-                <span className="min-w-0">
-                  <span className="block text-[9px] uppercase tracking-[0.15em] text-[#94857D]">
-                    Email Us
-                  </span>
-
-                  <span className="mt-1 block break-all text-xs text-[#E7D9D0] transition-colors duration-300 group-hover:text-[#D9A58E]">
-                    hello@wedplan.com
-                  </span>
+                <span className="mt-1 block text-xs text-[#E7D9D0] transition-colors duration-300 group-hover:text-[#D9A58E]">
+                  hello@wedplan.com
                 </span>
-              </a>
+              </span>
+            </motion.a>
 
-              {/* Support */}
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-[#B77B65]/25 bg-[#B77B65]/10 text-[#D9A58E]">
-                  <FiPhone size={15} />
+            <div className="mt-4 flex items-center gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center border border-[#B77B65]/25 bg-[#B77B65]/10 text-[#D9A58E]">
+                <FiPhone size={15} />
+              </span>
+
+              <span>
+                <span className="block text-[9px] uppercase tracking-[0.15em] text-[#94857D]">
+                  Support
                 </span>
-
-                <span>
-                  <span className="block text-[9px] uppercase tracking-[0.15em] text-[#94857D]">
-                    Support
-                  </span>
-
-                  <span className="mt-1 block text-xs text-[#E7D9D0]">
-                    Wedding Planning Support
-                  </span>
+                <span className="mt-1 block text-xs text-[#E7D9D0]">
+                  Wedding Planning Support
                 </span>
-              </div>
-
-              {/* Platform */}
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-[#B77B65]/25 bg-[#B77B65]/10 text-[#D9A58E]">
-                  <FiMapPin size={15} />
-                </span>
-
-                <span>
-                  <span className="block text-[9px] uppercase tracking-[0.15em] text-[#94857D]">
-                    Our Promise
-                  </span>
-
-                  <span className="mt-1 block text-xs text-[#E7D9D0]">
-                    Your Wedding, Our Passion
-                  </span>
-                </span>
-              </div>
+              </span>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Brand Quote */}
-        <div className="relative py-6 text-center sm:py-7">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="py-7 text-center"
+        >
           <div className="mb-3 flex items-center justify-center gap-3">
             <span className="h-px w-8 bg-[#B77B65]/50" />
-
-            <FiHeart size={12} className="fill-[#B77B65] text-[#B77B65]" />
-
+            <FiHeart className="fill-[#B77B65] text-[#B77B65]" size={12} />
             <span className="h-px w-8 bg-[#B77B65]/50" />
           </div>
 
           <p className="font-serif text-base italic tracking-wide text-[#E8DDD6] sm:text-lg">
-            “Your day. Your story. Your forever.”
+            Your day. Your story. Your forever.
           </p>
 
           <p className="mt-2 text-[8px] font-medium uppercase tracking-[0.3em] text-[#94857D]">
             The WedPlan Promise
           </p>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Bottom Copyright */}
+      {/* Copyright */}
       <div className="border-t border-white/[0.07] bg-[#181311]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2.5 px-5 py-4 text-center sm:px-8 md:flex-row md:text-left lg:px-12">
           <p className="text-[10px] text-[#94857D] sm:text-[11px]">
@@ -253,7 +252,7 @@ export default function Footer() {
 
           <p className="flex items-center gap-1.5 text-[10px] text-[#94857D] sm:text-[11px]">
             Crafted with
-            <FiHeart size={11} className="fill-[#B77B65] text-[#B77B65]" />
+            <FiHeart className="fill-[#B77B65] text-[#B77B65]" size={11} />
             for every beautiful love story.
           </p>
         </div>

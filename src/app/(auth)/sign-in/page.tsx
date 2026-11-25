@@ -3,267 +3,320 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  Check,
   Eye,
   EyeOff,
   Heart,
   LockKeyhole,
   Mail,
-  Check,
+  Sparkles,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/toast";
-import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { motion } from "framer-motion";
+
+const features = [
+  "Discover trusted wedding professionals",
+  "Manage your wedding bookings easily",
+  "Plan every detail in one place",
+];
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45 },
+  },
+};
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
 
   const router = useRouter();
 
-  // Email validation
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // Email and Password Login
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     setIsLoading(true);
 
- 
-    const formData = new FormData(event.currentTarget);
-    const userData = Object.fromEntries(formData.entries());
+    try {
+      const formData = new FormData(event.currentTarget);
+      const userData = Object.fromEntries(formData.entries());
 
-    const { data, error } = await authClient.signIn.email({
-      email: userData.email as string,
-      password: userData.password as string,
+      const { data, error } = await authClient.signIn.email({
+        email: userData.email as string,
+        password: userData.password as string,
+      });
 
-    });
+      if (error) {
+        toast.add({
+          title: "Sign in failed!",
+          description: error.message ?? "Something went wrong.",
+        });
+        return;
+      }
 
-    if (error) {
+      if (data) {
+        toast.add({
+          title: "Signed in successfully!",
+          description: "Welcome back to WedPlan.",
+        });
+
+        router.replace("/");
+        router.refresh();
+      }
+    } catch {
+      toast.add({
+        title: "Something went wrong!",
+        description: "Please try again later.",
+      });
+    } finally {
       setIsLoading(false);
-
-      toast.add({
-        title: "Sign in failed!",
-        description: error.message ?? "Something went wrong.",
-      });
-      return;
-    }
-
-    if (data) {
-      const role =
-        data.user.role === "admin" || data.user.role === "vendor"
-          ? data.user.role
-          : "customer";
-
-      // If the user came from a protected page (for example service details),
-      // send them back there. Only relative paths are allowed.
-      const redirectParam = new URLSearchParams(
-        window.location.search
-      ).get("redirect");
-
-      const redirectTo =
-        redirectParam && redirectParam.startsWith("/")
-          ? redirectParam
-          : `/dashboard/${role}`;
-
-      toast.add({
-        title: "Signed in successfully!",
-        description: "Taking you to your page.",
-      });
-
-      router.push(redirectTo);
-      router.refresh();
     }
   };
+
   return (
-    <main className="min-h-screen bg-[#FFFCF9] p-2 sm:p-3">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#FFFFFF] p-3 transition-colors duration-300 dark:bg-[#1D2421] sm:p-5 lg:h-screen lg:min-h-0 lg:p-6">
+
+      {/* Background Decorations */}
+      <div className="pointer-events-none absolute -left-32 -top-32 size-80 rounded-full bg-[#D9B7A8]/20 blur-[100px] dark:bg-[#D9A58E]/10" />
+      <div className="pointer-events-none absolute -bottom-32 -right-20 size-96 rounded-full bg-[#B77B65]/10 blur-[110px] dark:bg-[#D9A58E]/10" />
+
+      {/* Main Card */}
       <motion.div
-        initial={{ opacity: 0, y: 15, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="mx-auto grid min-h-[calc(100dvh-1rem)] max-w-6xl overflow-hidden rounded-xl border border-[#EDE2E5] bg-white shadow-[0_8px_35px_rgba(75,35,48,0.07)] sm:min-h-[calc(100dvh-1.5rem)] lg:h-[calc(100dvh-1.5rem)] lg:min-h-[650px] lg:grid-cols-[0.85fr_1.15fr]"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative grid w-full max-w-5xl overflow-hidden rounded-[22px] border border-[#E9DED6] bg-white shadow-[0_20px_65px_rgba(57,43,39,0.10)] transition-colors duration-300 dark:border-[#414C45] dark:bg-[#29332E] dark:shadow-[0_20px_65px_rgba(0,0,0,0.25)] lg:h-[min(680px,calc(100vh-48px))] lg:min-h-[570px] lg:grid-cols-[0.95fr_1.05fr]"
       >
+
         {/* LEFT IMAGE SECTION */}
         <motion.section
-          initial={{ opacity: 0, x: -25 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative hidden h-full overflow-hidden lg:block"
+          variants={itemVariants}
+          className="relative hidden overflow-hidden lg:block"
         >
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/images/background.photo1.avif')",
-            }}
+          <Image
+            src="/images/background.photo11.avif"
+            alt="Beautiful wedding celebration"
+            fill
+            priority
+            sizes="(max-width: 1024px) 0px, 48vw"
+            className="object-cover object-center transition-transform duration-1000 hover:scale-105"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-b from-[#351522]/60 via-[#542335]/35 to-[#351522]/90" />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#211713]/35 via-[#39251F]/35 to-[#211713]/90" />
 
-          <div className="relative z-10 flex h-full flex-col justify-between p-6 xl:p-8">
+          <div className="relative z-10 flex h-full flex-col justify-between p-8 xl:p-10">
+
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex size-9 items-center justify-center rounded-lg border border-white/20 bg-white/10">
-                <Heart className="size-4 fill-white text-white" />
+            <Link href="/" className="group flex w-fit items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl border border-white/25 bg-white/10 backdrop-blur-md transition group-hover:bg-white/20">
+                <Heart className="size-5 fill-[#E9C5B5] text-[#E9C5B5]" />
               </div>
 
               <div>
-                <h1 className="text-lg font-semibold text-white">WedPlan</h1>
-
-                <p className="text-[8px] tracking-[0.2em] text-white/65">
+                <h1 className="font-serif text-2xl font-semibold tracking-wide text-white">
+                  WedPlan
+                </h1>
+                <p className="mt-0.5 text-[8px] tracking-[0.28em] text-white/70">
                   YOUR WEDDING JOURNEY
                 </p>
               </div>
             </Link>
 
-            {/* Main Content */}
-            <div className="max-w-sm space-y-4">
-              <div>
-                <h2 className="font-serif text-3xl leading-tight text-white xl:text-4xl">
-                  Your Dream Wedding
-                  <br />
-                  <span className="italic text-[#F1D3C6]">Starts Here.</span>
-                </h2>
+            {/* Image Content */}
+            <div className="max-w-sm">
+              <motion.div
+                variants={itemVariants}
+                className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-2 backdrop-blur-md"
+              >
+                <Sparkles className="size-3.5 text-[#E9C5B5]" />
+                <span className="text-[9px] font-medium tracking-[0.16em] text-white/90">
+                  MAKE EVERY MOMENT SPECIAL
+                </span>
+              </motion.div>
 
-                <p className="mt-2 max-w-sm text-xs leading-5 text-white/75">
-                  Discover trusted vendors, manage bookings, and bring your
-                  dream wedding to life.
-                </p>
-              </div>
+              <motion.h2
+                variants={itemVariants}
+                className="font-serif text-4xl leading-[1.15] text-white xl:text-[44px]"
+              >
+                Every Love Story
+                <br />
+                Deserves a
+                <br />
+                <span className="italic text-[#E9C5B5]">
+                  Beautiful Beginning.
+                </span>
+              </motion.h2>
 
-              {/* Feature 1 */}
-              <div className="flex items-center gap-2.5">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-white/10">
-                  <Check className="size-3.5 text-[#F1D3C6]" />
-                </div>
+              <motion.p
+                variants={itemVariants}
+                className="mt-4 max-w-[320px] text-xs leading-6 text-white/75"
+              >
+                Discover trusted professionals and bring your dream wedding to
+                life with WedPlan.
+              </motion.p>
 
-                <p className="text-xs text-white/85">
-                  Discover trusted wedding vendors
-                </p>
-              </div>
-
-              {/* Feature 2 */}
-              <div className="flex items-center gap-2.5">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-white/10">
-                  <Heart className="size-3.5 text-[#F1D3C6]" />
-                </div>
-
-                <p className="text-xs text-white/85">
-                  Organize your perfect wedding
-                </p>
-              </div>
+              <motion.div variants={itemVariants} className="mt-6 space-y-3">
+                {features.map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <div className="flex size-6 shrink-0 items-center justify-center rounded-full border border-[#E9C5B5]/40 bg-[#E9C5B5]/15">
+                      <Check className="size-3 text-[#E9C5B5]" />
+                    </div>
+                    <p className="text-[11px] font-medium text-white/90">
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </motion.div>
             </div>
 
-            {/* Footer */}
-            <p className="text-[10px] text-white/55">
-              © 2026 WedPlan · Celebrate love
-            </p>
+            {/* Bottom */}
+            <div className="flex items-center justify-between border-t border-white/20 pt-4">
+              <p className="text-[9px] text-white/60">
+                © 2026 WedPlan. All rights reserved.
+              </p>
+
+              <div className="flex items-center gap-1.5 text-white/70">
+                <Heart className="size-3 fill-[#E9C5B5] text-[#E9C5B5]" />
+                <span className="text-[9px]">Made for love</span>
+              </div>
+            </div>
           </div>
         </motion.section>
 
         {/* RIGHT SIGN IN SECTION */}
-        <motion.section
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.45, delay: 0.1 }}
-          className="flex items-center justify-center px-4 py-4 sm:px-5 lg:h-full lg:overflow-y-auto lg:px-7 xl:px-9"
-        >
-          <div className="w-full max-w-[390px]">
-            {/* Mobile Logo */}
-            <Link href="/" className="mb-2 flex items-center gap-2 lg:hidden">
-              <Heart className="size-4 fill-[#772D43] text-[#772D43]" />
+        <section className="flex items-center justify-center px-5 py-8 transition-colors duration-300 sm:px-10 lg:px-10 xl:px-14">
+          <motion.div
+            variants={containerVariants}
+            className="w-full max-w-[390px]"
+          >
 
-              <span className="text-base font-semibold text-[#772D43]">
-                WedPlan
-              </span>
-            </Link>
+            {/* Mobile Logo */}
+            <motion.div variants={itemVariants}>
+              <Link
+                href="/"
+                className="mb-7 flex w-fit items-center gap-2.5 lg:hidden"
+              >
+                <div className="flex size-9 items-center justify-center rounded-xl bg-[#772D43]">
+                  <Heart className="size-4 fill-white text-white" />
+                </div>
+                <span className="font-serif text-2xl font-semibold text-[#392B27] dark:text-[#F5FAF6]">
+                  WedPlan
+                </span>
+              </Link>
+            </motion.div>
 
             {/* Heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="mb-3"
-            >
-              <p className="text-[9px] font-semibold tracking-[0.18em] text-[#9A5269]">
-                WELCOME BACK
-              </p>
+            <motion.div variants={itemVariants} className="mb-7">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="h-px w-7 bg-[#B77B65] dark:bg-[#D9A58E]" />
+                <p className="text-[9px] font-bold tracking-[0.24em] text-[#B77B65] dark:text-[#D9A58E]">
+                  WELCOME BACK
+                </p>
+                <Sparkles className="size-3.5 text-[#B77B65] dark:text-[#D9A58E]" />
+              </div>
 
-              <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#292329] sm:text-2xl">
-                Sign in to your account
+              <h2 className="text-3xl font-semibold leading-[1.15] tracking-tight text-[#392B27] dark:text-[#F5FAF6] sm:text-[36px]">
+                Sign in to your
+                <br />
+                <span className="relative inline-block italic text-[#B77B65] dark:text-[#D9A58E]">
+                  account.
+                  <span className="absolute -bottom-1 left-0 h-[2px] w-full rounded-full bg-[#B77B65]/30 dark:bg-[#D9A58E]/30" />
+                </span>
               </h2>
 
-              <p className="mt-1 text-[11px] text-[#817780]">
-                Welcome back! Enter your details to continue.
+              <p className="mt-3 text-xs leading-6 text-[#85766F] dark:text-[#B2BDB5]">
+                Welcome back! Enter your details to continue your wedding
+                journey.
               </p>
             </motion.div>
 
             {/* Form */}
             <motion.form
               onSubmit={handleSubmit}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-              className="space-y-2.5"
+              variants={containerVariants}
+              className="space-y-4"
             >
-              {/* EMAIL */}
-              <div className="space-y-1">
-                <Label htmlFor="email" className="text-[11px]">
+
+              {/* Email */}
+              <motion.div variants={itemVariants} className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className="text-[11px] font-semibold text-[#392B27] dark:text-[#F5FAF6]"
+                >
                   Email Address
                 </Label>
 
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[#817780]" />
+                <div className="group relative">
+                  <Mail className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#A4958E] transition group-focus-within:text-[#B77B65] dark:text-[#B2BDB5] dark:group-focus-within:text-[#D9A58E]" />
 
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    autoComplete="off"
-                    className="h-8 rounded-md border-[#EDE2E5] bg-[#FFFCF9] pl-9 text-xs"
+                    autoComplete="new-email"
+                    className="h-11 rounded-xl border-[#E9DED6] bg-[#FCFAF8] pl-10 text-xs text-[#392B27] placeholder:text-[#B3A7A1] transition focus-visible:border-[#B77B65] focus-visible:ring-[#B77B65]/20 dark:border-[#414C45] dark:bg-[#303B35] dark:text-[#F5FAF6] dark:placeholder:text-[#89968D] dark:focus-visible:border-[#D9A58E] dark:focus-visible:ring-[#D9A58E]/20"
                   />
                 </div>
 
                 {email && !emailValid && (
                   <p className="text-[10px] text-red-500">
-                    Please enter a valid email.
+                    Please enter a valid email address.
                   </p>
                 )}
-              </div>
+              </motion.div>
 
-              {/* PASSWORD */}
-              <div className="space-y-1">
+              {/* Password */}
+              <motion.div variants={itemVariants} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-[11px]">
+                  <Label
+                    htmlFor="password"
+                    className="text-[11px] font-semibold text-[#392B27] dark:text-[#F5FAF6]"
+                  >
                     Password
                   </Label>
 
                   <Link
                     href="/forgot-password"
-                    className="text-[10px] font-medium text-[#772D43] hover:underline"
+                    className="text-[10px] font-semibold text-[#B77B65] transition hover:text-[#772D43] dark:text-[#D9A58E] dark:hover:text-[#E9C5B5]"
                   >
                     Forgot password?
                   </Link>
                 </div>
 
-                <div className="relative">
-                  <LockKeyhole className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[#817780]" />
+                <div className="group relative">
+                  <LockKeyhole className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#A4958E] transition group-focus-within:text-[#B77B65] dark:text-[#B2BDB5] dark:group-focus-within:text-[#D9A58E]" />
 
                   <Input
                     id="password"
@@ -274,7 +327,7 @@ export default function SignInPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="h-8 rounded-md border-[#EDE2E5] bg-[#FFFCF9] pl-9 pr-9 text-xs"
+                    className="h-11 rounded-xl border-[#E9DED6] bg-[#FCFAF8] pl-10 pr-11 text-xs text-[#392B27] placeholder:text-[#B3A7A1] transition focus-visible:border-[#B77B65] focus-visible:ring-[#B77B65]/20 dark:border-[#414C45] dark:bg-[#303B35] dark:text-[#F5FAF6] dark:placeholder:text-[#89968D] dark:focus-visible:border-[#D9A58E] dark:focus-visible:ring-[#D9A58E]/20"
                   />
 
                   <button
@@ -283,110 +336,96 @@ export default function SignInPage() {
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817780]"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A4958E] transition hover:text-[#772D43] dark:text-[#B2BDB5] dark:hover:text-[#D9A58E]"
                   >
                     {showPassword ? (
-                      <EyeOff className="size-3.5" />
+                      <EyeOff className="size-4" />
                     ) : (
-                      <Eye className="size-3.5" />
+                      <Eye className="size-4" />
                     )}
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* SIGN IN BUTTON */}
-              <motion.div
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              {/* Submit Button */}
+              <motion.div variants={itemVariants} className="pt-1">
                 <Button
                   type="submit"
                   disabled={isLoading || !emailValid || !password}
-                  className="h-8 w-full rounded-md bg-[#772D43] text-xs text-white hover:bg-[#612338] disabled:opacity-50"
+                  className="group h-11 w-full rounded-xl bg-[#772D43] text-xs font-semibold text-white shadow-[0_6px_16px_rgba(119,45,67,0.18)] transition-all duration-300 hover:bg-[#612338] hover:shadow-[0_8px_22px_rgba(119,45,67,0.25)] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#B77B65] dark:text-white dark:hover:bg-[#C58D77]"
                 >
                   {isLoading ? "Signing in..." : "Sign In"}
 
-                  {!isLoading && <ArrowRight className="ml-2 size-3.5" />}
+                  {!isLoading && (
+                    <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+                  )}
                 </Button>
               </motion.div>
 
-              {/* GOOGLE DIVIDER */}
-              <div className="flex items-center gap-2">
-                <Separator className="flex-1 bg-[#EDE2E5]" />
-
-                <span className="text-[9px] text-[#817780]">OR</span>
-
-                <Separator className="flex-1 bg-[#EDE2E5]" />
-              </div>
-
-              {/* GOOGLE BUTTON
-              <Button
-                type="button"
-                variant="outline"
-                className="h-8 w-full rounded-md border-[#EDE2E5] text-xs hover:bg-[#FFFCF9]"
+              {/* Secure Divider */}
+              <motion.div
+                variants={itemVariants}
+                className="flex items-center gap-3 py-1"
               >
-                {isGoogleLoading ? (
-                  "Connecting to Google..."
-                ) : (
-                  <>
-                    <svg viewBox="0 0 24 24" className="size-3.5">
-                      <path
-                        fill="#4285F4"
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.09-1.92 3.28-4.75 3.28-8.09Z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.85 0-5.26-1.92-6.13-4.5H2.18v2.84A11 11 0 0 0 12 23Z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M5.87 14.13A6.6 6.6 0 0 1 5.52 12c0-.74.13-1.46.35-2.13V7.03H2.18A11 11 0 0 0 1 12c0 1.78.43 3.47 1.18 4.97l3.69-2.84Z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M12 5.25c1.62 0 3.06.56 4.2 1.66l3.15-3.15C17.45 1.92 14.97 1 12 1A11 11 0 0 0 2.18 7.03l3.69 2.84C6.74 7.17 9.15 5.25 12 5.25Z"
-                      />
-                    </svg>
+                <div className="h-px flex-1 bg-[#EDE4DE] dark:bg-[#414C45]" />
+                <span className="text-[9px] font-medium tracking-[0.16em] text-[#A4958E] dark:text-[#B2BDB5]">
+                  SECURE SIGN IN
+                </span>
+                <div className="h-px flex-1 bg-[#EDE4DE] dark:bg-[#414C45]" />
+              </motion.div>
 
-                    <span className="ml-2">Continue with Google</span>
-                  </>
-                )}
-              </Button> */}
-
-              {/* TERMS */}
-              <p className="text-center text-[9px] leading-4 text-[#817780]">
+              {/* Terms */}
+              <motion.p
+                variants={itemVariants}
+                className="text-center text-[10px] leading-5 text-[#93847D] dark:text-[#B2BDB5]"
+              >
                 By continuing, you agree to our{" "}
                 <Link
                   href="/terms"
-                  className="font-medium text-[#772D43] hover:underline"
+                  className="font-semibold text-[#772D43] underline-offset-4 hover:underline dark:text-[#D9A58E]"
                 >
                   Terms
                 </Link>{" "}
                 and{" "}
                 <Link
                   href="/privacy"
-                  className="font-medium text-[#772D43] hover:underline"
+                  className="font-semibold text-[#772D43] underline-offset-4 hover:underline dark:text-[#D9A58E]"
                 >
                   Privacy Policy
                 </Link>
                 .
-              </p>
+              </motion.p>
             </motion.form>
 
-            {/* SIGN UP LINK */}
-            <div className="mt-2.5 border-t border-[#EDE2E5] pt-2.5 text-center">
-              <p className="text-[11px] text-[#817780]">
+            {/* Sign Up */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-6 border-t border-[#EDE4DE] pt-5 text-center dark:border-[#414C45]"
+            >
+              <p className="text-xs text-[#85766F] dark:text-[#B2BDB5]">
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/sign-up"
-                  className="font-semibold text-[#772D43] hover:underline"
+                  className="font-semibold text-[#772D43] transition hover:text-[#B77B65] hover:underline dark:text-[#D9A58E] dark:hover:text-[#E9C5B5]"
                 >
                   Create account
                 </Link>
               </p>
-            </div>
-          </div>
-        </motion.section>
+            </motion.div>
+
+            {/* Security Note */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-5 flex items-center justify-center gap-2 text-[#A4958E] dark:text-[#B2BDB5]"
+            >
+              <LockKeyhole className="size-3" />
+              <span className="text-[9px]">
+                Your information is protected and secure.
+              </span>
+            </motion.div>
+
+          </motion.div>
+        </section>
       </motion.div>
     </main>
   );

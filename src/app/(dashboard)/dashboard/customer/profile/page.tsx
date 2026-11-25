@@ -1,3 +1,4 @@
+export const instant = false;
 import { requireRole } from "@/lib/dashboard-auth";
 import ProfileClient from "@/components/dashboard/ProfileClient";
 

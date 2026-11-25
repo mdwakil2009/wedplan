@@ -6,15 +6,16 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Enable class-based Dark Mode */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Theme Configuration */
 @theme inline {
-  /* Global Font - Comic Neue */
   --font-heading: "Comic Neue", sans-serif;
   --font-sans: "Comic Neue", sans-serif;
   --font-dashboard: "Comic Neue", sans-serif;
 
+  /* Sidebar */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -24,12 +25,14 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
 
+  /* Charts */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
 
+  /* Theme Colors */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -50,6 +53,7 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
 
+  /* Radius */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -59,100 +63,123 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Light Theme */
+/* ========================================
+   LIGHT THEME
+======================================== */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  color-scheme: light;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  /* Main Colors */
+  --background: #F5FAF6;
+  --foreground: #392B27;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  /* Card */
+  --card: #FFFFFF;
+  --card-foreground: #392B27;
 
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  /* Popover */
+  --popover: #FFFFFF;
+  --popover-foreground: #392B27;
 
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  /* Primary - WedPlan Terracotta */
+  --primary: #B77B65;
+  --primary-foreground: #FFFFFF;
 
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  /* Secondary */
+  --secondary: #E9E0D5;
+  --secondary-foreground: #392B27;
 
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Muted */
+  --muted: #EEECE7;
+  --muted-foreground: #85766F;
 
-  --destructive: oklch(0.577 0.245 27.325);
+  /* Accent */
+  --accent: #F0E5DF;
+  --accent-foreground: #392B27;
 
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Other */
+  --destructive: #DC4545;
+  --border: #E5DDD5;
+  --input: #E5DDD5;
+  --ring: #B77B65;
 
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Charts */
+  --chart-1: #B77B65;
+  --chart-2: #D9A58E;
+  --chart-3: #85766F;
+  --chart-4: #9DAD9F;
+  --chart-5: #392B27;
 
   --radius: 0.625rem;
 
-  /* Dashboard Sidebar Palette */
-  --sidebar: #f9faff;
-  --sidebar-foreground: #252b45;
-  --sidebar-primary: #3a76ef;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef3ff;
-  --sidebar-accent-foreground: #252b45;
-  --sidebar-border: #e7ebf5;
-  --sidebar-ring: #3a76ef;
+  /* Dashboard Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #392B27;
+  --sidebar-primary: #B77B65;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F0E5DF;
+  --sidebar-accent-foreground: #392B27;
+  --sidebar-border: #E5DDD5;
+  --sidebar-ring: #B77B65;
 }
 
-/* Dark Theme */
+
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  color-scheme: dark;
 
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  /* Main Colors */
+  --background: #1D2421;
+  --foreground: #F5FAF6;
 
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  /* Card */
+  --card: #29332E;
+  --card-foreground: #F5FAF6;
 
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  /* Popover */
+  --popover: #29332E;
+  --popover-foreground: #F5FAF6;
 
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  /* Primary */
+  --primary: #D9A58E;
+  --primary-foreground: #1D2421;
 
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  /* Secondary */
+  --secondary: #35413A;
+  --secondary-foreground: #F5FAF6;
 
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Muted */
+  --muted: #303B35;
+  --muted-foreground: #B2BDB5;
 
-  --destructive: oklch(0.704 0.191 22.216);
+  /* Accent */
+  --accent: #3B443D;
+  --accent-foreground: #F5FAF6;
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  /* Other */
+  --destructive: #F87171;
+  --border: #414C45;
+  --input: #414C45;
+  --ring: #D9A58E;
 
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Charts */
+  --chart-1: #D9A58E;
+  --chart-2: #B77B65;
+  --chart-3: #A8B9A9;
+  --chart-4: #E9E0D5;
+  --chart-5: #85766F;
 
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dashboard Sidebar */
+  --sidebar: #232C27;
+  --sidebar-foreground: #F5FAF6;
+  --sidebar-primary: #D9A58E;
+  --sidebar-primary-foreground: #1D2421;
+  --sidebar-accent: #35413A;
+  --sidebar-accent-foreground: #F5FAF6;
+  --sidebar-border: #414C45;
+  --sidebar-ring: #D9A58E;
 }
 
-/* Global Base Styles */
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -160,9 +187,14 @@
 
   html {
     @apply font-sans;
+    min-height: 100%;
   }
 
   body {
     @apply bg-background text-foreground font-sans;
+    min-height: 100vh;
+    transition:
+      background-color 250ms ease,
+      color 250ms ease;
   }
 }
