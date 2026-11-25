@@ -1,6 +1,8 @@
+
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -28,12 +30,6 @@ type ServiceFilterProps = {
 const selectItemClass =
   "cursor-pointer rounded-lg text-gray-700 focus:bg-[#B76E79]/10 focus:text-[#965560] data-[highlighted]:bg-[#B76E79]/10 data-[highlighted]:text-[#965560]";
 
-export default function ServiceFilter({ services }: ServiceFilterProps) {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [location, setLocation] = useState("");
-  const [sort, setSort] = useState("recommended");
-
 const categories = [
   "Photography & Videography",
   "Wedding Venues",
@@ -43,27 +39,71 @@ const categories = [
   "Wedding Fashion",
 ];
 
-  const categoryItems = {
-    all: "All categories",
-    ...Object.fromEntries(categories.map((item) => [item, item])),
-  };
+const categoryItems = {
+  all: "All categories",
+  ...Object.fromEntries(categories.map((item) => [item, item])),
+};
 
-  const sortItems = {
-    recommended: "Recommended",
-    low: "Price: Low to High",
-    high: "Price: High to Low",
-  };
+const sortItems = {
+  recommended: "Recommended",
+  low: "Price: Low to High",
+  high: "Price: High to Low",
+};
+
+export default function ServiceFilter({ services }: ServiceFilterProps) {
+  const searchParams = useSearchParams();
+
+  const serviceSectionRef = useRef<HTMLDivElement>(null);
+
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState(
+    searchParams.get("category") || "all"
+  );
+  const [location, setLocation] = useState("");
+  const [sort, setSort] = useState("recommended");
+
+  // URL থেকে category গ্রহণ করা
+  useEffect(() => {
+    const selectedCategory = searchParams.get("category");
+
+    const matchedCategory = categories.find(
+      (item) =>
+        item.toLowerCase() ===
+        (selectedCategory || "").trim().toLowerCase()
+    );
+
+    setCategory(matchedCategory || "all");
+  }, [searchParams]);
+
+  // Category select থাকলে banner-এর নিচে service section-এ scroll
+  useEffect(() => {
+    const selectedCategory = searchParams.get("category");
+
+    if (!selectedCategory) return;
+
+    const timer = window.setTimeout(() => {
+      serviceSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParams]);
 
   const keyword = search.trim().toLowerCase();
   const locationKeyword = location.trim().toLowerCase();
 
+  // Search and category filter
   let filteredServices = services.filter((service) => {
     const matchesSearch = (service.serviceName || "")
       .toLowerCase()
       .includes(keyword);
 
     const matchesCategory =
-      category === "all" || service.category === category;
+      category === "all" ||
+      (service.category || "").trim().toLowerCase() ===
+        category.trim().toLowerCase();
 
     const matchesLocation = (service.location || "")
       .toLowerCase()
@@ -72,6 +112,7 @@ const categories = [
     return matchesSearch && matchesCategory && matchesLocation;
   });
 
+  // Sort services by price
   if (sort === "low") {
     filteredServices = [...filteredServices].sort(
       (first, second) => Number(first.price) - Number(second.price)
@@ -90,15 +131,43 @@ const categories = [
     location.trim() !== "" ||
     sort !== "recommended";
 
+  // Clear all filters
   const clearFilters = () => {
     setSearch("");
     setCategory("all");
     setLocation("");
     setSort("recommended");
+
+    window.history.replaceState(null, "", "/services");
+  };
+
+  // Category change
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+
+    const url = new URL(window.location.href);
+
+    if (value === "all") {
+      url.searchParams.delete("category");
+    } else {
+      url.searchParams.set("category", value);
+    }
+
+    window.history.replaceState(null, "", url.toString());
+
+    if (value !== "all") {
+      window.setTimeout(() => {
+        serviceSectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
   };
 
   return (
     <div>
+      {/* Filter Section */}
       <div className="rounded-3xl border border-[#F0E1E4] bg-white p-4 shadow-[0_24px_60px_rgba(87,36,51,0.09)] sm:p-6">
         <div className="flex flex-col gap-3 border-b border-[#F6ECEE] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
@@ -110,6 +179,7 @@ const categories = [
               <h2 className="text-sm font-semibold text-[#332229] sm:text-base">
                 Find your ideal service
               </h2>
+
               <p className="mt-0.5 text-[11px] text-[#9A858B]">
                 Search by name, category and location.
               </p>
@@ -161,7 +231,9 @@ const categories = [
             <Select
               value={category}
               items={categoryItems}
-              onValueChange={(value) => setCategory(value as string)}
+              onValueChange={(value) =>
+                handleCategoryChange(value as string)
+              }
             >
               <SelectTrigger className="!h-11 !w-full min-w-0 cursor-pointer rounded-xl border border-[#EDDEE0] bg-[#FFFCFC] px-3.5 text-sm text-[#5F4C52] shadow-none outline-none transition-all focus:border-[#B76E79] focus:bg-white focus:ring-4 focus:ring-[#B76E79]/10">
                 <SelectValue placeholder="All categories" />
@@ -173,7 +245,11 @@ const categories = [
                 </SelectItem>
 
                 {categories.map((item) => (
-                  <SelectItem key={item} value={item} className={selectItemClass}>
+                  <SelectItem
+                    key={item}
+                    value={item}
+                    className={selectItemClass}
+                  >
                     {item}
                   </SelectItem>
                 ))}
@@ -223,9 +299,11 @@ const categories = [
                 <SelectItem value="recommended" className={selectItemClass}>
                   Recommended
                 </SelectItem>
+
                 <SelectItem value="low" className={selectItemClass}>
                   Price: Low to High
                 </SelectItem>
+
                 <SelectItem value="high" className={selectItemClass}>
                   Price: High to Low
                 </SelectItem>
@@ -235,87 +313,95 @@ const categories = [
         </div>
       </div>
 
-      {/* Result summary */}
-      <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B76E79]">
-            The collection
-          </p>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#332229] sm:text-2xl">
-            Wedding services
-          </h2>
-        </div>
+      {/* Service Results Section */}
+      <div
+        ref={serviceSectionRef}
+        id="service-results"
+        className="scroll-mt-24"
+      >
+        {/* Result Summary */}
+        <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B76E79]">
+              The collection
+            </p>
 
-        <p className="text-xs text-[#9A858B]">
-          Showing{" "}
-          <span className="font-semibold text-[#772D43]">
-            {filteredServices.length}
-          </span>{" "}
-          of {services.length} services
-        </p>
-      </div>
-
-      {/* Cards */}
-      {filteredServices.length > 0 ? (
-        <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredServices.map((service, index) => (
-            <motion.div
-              key={service._id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.35,
-                delay: Math.min(index, 5) * 0.05,
-                ease: "easeOut",
-              }}
-              className="h-full"
-            >
-              <ServiceCard service={service} />
-            </motion.div>
-          ))}
-        </div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mt-5 rounded-3xl border border-dashed border-[#E7CFD4] bg-[#FFF8F7] px-6 py-16 text-center"
-        >
-          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-white text-[#B76E79] shadow-sm ring-1 ring-[#F0E1E4]">
-            <FiSliders className="size-7" />
+            <h2 className="mt-1 text-xl font-semibold tracking-tight text-[#332229] sm:text-2xl">
+              {category === "all" ? "Wedding services" : category}
+            </h2>
           </div>
 
-          <h3 className="mt-5 text-lg font-semibold text-[#332229]">
-            {hasFilters
-              ? "No services match your filters"
-              : "No services are available yet"}
-          </h3>
-
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#8B767C]">
-            {hasFilters
-              ? "Try a different service name, category or location. You can also clear all filters to see every available service."
-              : "Approved wedding services will appear here as soon as vendors publish them. Please check back soon."}
+          <p className="text-xs text-[#9A858B]">
+            Showing{" "}
+            <span className="font-semibold text-[#772D43]">
+              {filteredServices.length}
+            </span>{" "}
+            of {services.length} services
           </p>
+        </div>
 
-          {hasFilters ? (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#772D43] px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#5F2034]"
-            >
-              <FiX className="size-4" />
-              Clear all filters
-            </button>
-          ) : (
-            <Link
-              href="/services"
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9BCC2] px-5 py-2.5 text-xs font-semibold text-[#772D43] transition-colors hover:bg-white"
-            >
-              Check again
-            </Link>
-          )}
-        </motion.div>
-      )}
+        {/* Service Cards */}
+        {filteredServices.length > 0 ? (
+          <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredServices.map((service, index) => (
+              <motion.div
+                key={service._id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: Math.min(index, 5) * 0.05,
+                  ease: "easeOut",
+                }}
+                className="h-full"
+              >
+                <ServiceCard service={service} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-5 rounded-3xl border border-dashed border-[#E7CFD4] bg-[#FFF8F7] px-6 py-16 text-center"
+          >
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-white text-[#B76E79] shadow-sm ring-1 ring-[#F0E1E4]">
+              <FiSliders className="size-7" />
+            </div>
+
+            <h3 className="mt-5 text-lg font-semibold text-[#332229]">
+              {hasFilters
+                ? "No services match your filters"
+                : "No services are available yet"}
+            </h3>
+
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#8B767C]">
+              {hasFilters
+                ? "Try a different service name, category or location. You can also clear all filters to see every available service."
+                : "Approved wedding services will appear here as soon as vendors publish them. Please check back soon."}
+            </p>
+
+            {hasFilters ? (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#772D43] px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#5F2034]"
+              >
+                <FiX className="size-4" />
+                Clear all filters
+              </button>
+            ) : (
+              <Link
+                href="/services"
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9BCC2] px-5 py-2.5 text-xs font-semibold text-[#772D43] transition-colors hover:bg-white"
+              >
+                Check again
+              </Link>
+            )}
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

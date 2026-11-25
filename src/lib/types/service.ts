@@ -10,6 +10,7 @@ export type Service = {
   images: string[];
   status: string;
   createdAt: string;
+    isActive?: boolean;
 };
 
 export type BookingState = {

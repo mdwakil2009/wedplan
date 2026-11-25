@@ -60,7 +60,7 @@ export default function HeroBanner() {
         className="absolute inset-0 -z-30"
       >
         <Image
-          src="/images/background.photo10.avif"
+          src="/images/background.avif"
           alt="Beautiful outdoor wedding celebration"
           fill
           priority
