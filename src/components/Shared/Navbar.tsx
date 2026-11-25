@@ -113,21 +113,6 @@ export default function Navbar() {
           : "shadow-none"
       }`}
     >
-      {/* Announcement Bar */}
-      <div className="flex h-7 items-center justify-center border-b border-[#F1ECE8] bg-[#FFFFFF] px-4 text-center">
-        <div className="flex items-center gap-2 text-[10px] font-medium text-[#514047] sm:text-xs">
-          <span>
-            Your Dream Wedding Starts Here — Discover, Plan & Celebrate!
-          </span>
-
-          <Link
-            href="/services"
-            className="font-semibold text-[#B65F3A] underline underline-offset-2 transition-colors hover:text-[#772D43]"
-          >
-            Explore
-          </Link>
-        </div>
-      </div>
 
       {/* Main Navbar */}
       <div className="mx-auto flex h-[64px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
