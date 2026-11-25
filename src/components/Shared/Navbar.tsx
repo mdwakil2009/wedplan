@@ -1,7 +1,9 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -15,14 +17,13 @@ import {
   FiUser,
   FiHome,
   FiShoppingBag,
+  FiSearch,
+  FiArrowUpRight,
 } from "react-icons/fi";
 
 import { useSession, authClient } from "@/lib/auth-client";
-import Image from "next/image";
 import BrandLogo from "./BrandLogo";
 
-
-// Navigation links
 const navLinks = [
   {
     name: "Home",
@@ -39,6 +40,7 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,10 +49,13 @@ export default function Navbar() {
   const user = session?.user;
 
   const role =
-    user?.role === "admin" || user?.role === "vendor" ? user.role : "customer";
+    user?.role === "admin" || user?.role === "vendor"
+      ? user.role
+      : "customer";
 
   const dashboardHref = `/dashboard/${role}`;
   const profileHref = `/dashboard/${role}/profile`;
+
   // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -64,15 +69,15 @@ export default function Navbar() {
     };
   }, []);
 
+  // Close menus after route change
   useEffect(() => {
     setIsMobileOpen(false);
     setIsProfileOpen(false);
   }, [pathname]);
 
+  // Check active route
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
+    if (href === "/") return pathname === "/";
 
     return pathname === href || pathname.startsWith(`${href}/`);
   };
@@ -99,89 +104,107 @@ export default function Navbar() {
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -15 }}
+      initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
+      transition={{ duration: 0.4 }}
+      className={`sticky top-0 z-50 w-full bg-[#FFFFFF] transition-shadow duration-300 ${
         isScrolled
-          ? "border-[#E9DFDC] bg-white/95 shadow-md backdrop-blur-xl"
-          : "border-[#F1EAE6] bg-white"
+          ? "shadow-[0_5px_20px_rgba(56,46,41,0.08)]"
+          : "shadow-none"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* logo */}
-        <BrandLogo></BrandLogo>
+      {/* Announcement Bar */}
+      <div className="flex h-7 items-center justify-center border-b border-[#F1ECE8] bg-[#FFFFFF] px-4 text-center">
+        <div className="flex items-center gap-2 text-[10px] font-medium text-[#514047] sm:text-xs">
+          <span>
+            Your Dream Wedding Starts Here — Discover, Plan & Celebrate!
+          </span>
 
-        <nav
-          aria-label="Main navigation"
-          className="hidden items-center gap-8 lg:flex"
-        >
-          {navLinks.map((link, index) => (
-            <motion.div
-              key={link.href}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.3,
-                delay: index * 0.1,
-              }}
-            >
+          <Link
+            href="/services"
+            className="font-semibold text-[#B65F3A] underline underline-offset-2 transition-colors hover:text-[#772D43]"
+          >
+            Explore
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <div className="mx-auto flex h-[64px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
+
+        {/* Left Side: Logo + Navigation */}
+        <div className="flex min-w-0 items-center gap-7 xl:gap-10">
+
+          {/* Logo */}
+          <div className="shrink-0">
+            <BrandLogo />
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav
+            aria-label="Main navigation"
+            className="hidden items-center gap-6 lg:flex xl:gap-8"
+          >
+            {navLinks.map((link) => (
               <Link
+                key={link.href}
                 href={link.href}
-                className={`group relative py-2 text-sm font-medium transition-colors duration-200 ${
+                className={`group relative py-2 text-[12px] font-semibold transition-colors duration-200 ${
                   isActive(link.href)
-                    ? "text-[#772D43]"
-                    : "text-[#494248] hover:text-[#B87586]"
+                    ? "text-[#B65F3A]"
+                    : "text-[#514047] hover:text-[#B65F3A]"
                 }`}
               >
                 {link.name}
-                <motion.span
-                  className="absolute -bottom-1 left-0 h-[2px] rounded-full bg-[#772D43]"
-                  initial={false}
-                  animate={{
-                    width: isActive(link.href) ? "100%" : "0%",
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
 
-                {!isActive(link.href) && (
-                  <span className="absolute -bottom-1 left-0 h-[2px] w-0 rounded-full bg-[#C9A9A6] transition-all duration-300 group-hover:w-full" />
-                )}
+                <span
+                  className={`absolute bottom-0 left-0 h-[2px] rounded-full bg-[#B65F3A] transition-all duration-300 ${
+                    isActive(link.href)
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                />
               </Link>
-            </motion.div>
-          ))}
-        </nav>
-        <div className="hidden items-center gap-3 lg:flex">
+            ))}
+          </nav>
+        </div>
+
+        {/* Right Side Actions */}
+        <div className="hidden shrink-0 items-center gap-5 lg:flex">
+
           {isPending ? (
-            <div className="h-10 w-28 animate-pulse rounded-lg bg-[#F4ECEB]" />
+            <div className="h-8 w-20 animate-pulse rounded-full bg-[#F3F3F3]" />
           ) : user ? (
+
+            /* Logged In Profile */
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 aria-label="Open profile menu"
                 aria-expanded={isProfileOpen}
-                className="flex items-center gap-2 rounded-full border border-[#EFE4E2] bg-white px-2 py-1.5 transition-colors hover:bg-[#FBF5F4]"
+                className="flex items-center gap-2 rounded-full px-2 py-1 text-[#382E29] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
               >
                 {user.image ? (
                   <Image
                     src={user.image}
                     alt={user.name || "User profile"}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 rounded-full border border-[#E9DFDC] object-cover"
+                    width={30}
+                    height={30}
+                    className="size-[30px] rounded-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F8EFF0] text-[#772D43]">
+                  <span className="flex size-[30px] items-center justify-center rounded-full bg-[#F5EFEB] text-[#B65F3A]">
                     <FiUser />
-                  </div>
+                  </span>
                 )}
 
-                <span className="max-w-[120px] truncate text-sm font-medium text-[#393237]">
+                <span className="max-w-[110px] truncate text-xs font-semibold">
                   {user.name}
                 </span>
 
                 <FiChevronDown
-                  className={`text-[#772D43] transition-transform duration-200 ${
+                  className={`size-3.5 transition-transform ${
                     isProfileOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -191,48 +214,47 @@ export default function Navbar() {
               <AnimatePresence>
                 {isProfileOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                    initial={{ opacity: 0, y: 8, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.98 }}
                     transition={{ duration: 0.18 }}
-                    className="absolute right-0 top-14 w-64 overflow-hidden rounded-xl border border-[#EFE4E2] bg-white shadow-xl"
+                    className="absolute right-0 top-11 w-64 overflow-hidden rounded-xl border border-[#EEE8E4] bg-white shadow-[0_12px_35px_rgba(56,46,41,0.12)]"
                   >
                     {/* User Information */}
-                    {/* User Information */}
-                    <div className="flex items-center gap-3 border-b border-[#F1EAE6] px-4 py-4">
+                    <div className="flex items-center gap-3 border-b border-[#F1ECE8] px-4 py-4">
                       {user.image ? (
                         <Image
                           src={user.image}
                           alt={user.name || "User profile"}
-                          width={44}
-                          height={44}
-                          className="h-11 w-11 rounded-full border border-[#E9DFDC] object-cover"
+                          width={40}
+                          height={40}
+                          className="size-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F8EFF0] text-[#772D43]">
+                        <div className="flex size-10 items-center justify-center rounded-full bg-[#F5EFEB] text-[#B65F3A]">
                           <FiUser />
                         </div>
                       )}
 
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-[#393237]">
+                        <p className="truncate text-sm font-semibold text-[#382E29]">
                           {user.name}
                         </p>
 
-                        <p className="truncate text-xs text-[#999096]">
+                        <p className="truncate text-xs text-[#8C8178]">
                           {user.email}
                         </p>
                       </div>
                     </div>
 
                     {/* Dropdown Links */}
-                    <div className="p-2">
+                    <div className="space-y-1 p-2">
                       <Link
                         href={dashboardHref}
                         onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0] hover:text-[#772D43]"
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#514047] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
                       >
-                        <FiGrid className="h-4 w-4" />
+                        <FiGrid className="size-4" />
                         Dashboard
                       </Link>
 
@@ -240,22 +262,21 @@ export default function Navbar() {
                         <Link
                           href={profileHref}
                           onClick={() => setIsProfileOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0] hover:text-[#772D43]"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#514047] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
                         >
-                          <FiSettings className="h-4 w-4" />
+                          <FiSettings className="size-4" />
                           Profile Settings
                         </Link>
                       )}
 
-                      <div className="my-2 border-t border-[#F1EAE6]" />
+                      <div className="border-t border-[#F1ECE8]" />
 
-                      {/* Logout */}
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-500 transition-colors hover:bg-red-50"
                       >
-                        <FiLogOut className="h-4 w-4" />
+                        <FiLogOut className="size-4" />
                         Logout
                       </button>
                     </div>
@@ -264,33 +285,43 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           ) : (
-            /* Public User Buttons */
+
+            /* Public Actions */
             <>
-              <motion.div whileHover={{ y: -2 }}>
-                <Link
-                  href="/sign-in"
-                  className="rounded-lg px-4 py-2.5 text-sm font-semibold text-[#772D43] transition-colors hover:bg-[#F8EFF0]"
-                >
-                  Sign In
-                </Link>
-              </motion.div>
+              <Link
+                href="/sign-in"
+                className="rounded-full px-3 py-2 text-xs font-semibold text-[#382E29] transition-colors duration-200 hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
+              >
+                Log in
+              </Link>
 
               <motion.div
-                whileHover={{ scale: 1.04 }}
+                whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.97 }}
               >
                 <Link
                   href="/sign-up"
-                  className="rounded-lg bg-[#772D43] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#5F2034]"
+                  className="group inline-flex h-9 items-center gap-2 rounded-full bg-[#B65F3A] px-5 text-xs font-semibold text-white transition-all duration-300 hover:bg-[#9F4F30]"
                 >
-                  Sign Up
+                  Start planning
+
+                  <FiArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </Link>
               </motion.div>
             </>
           )}
+
+          {/* Search */}
+          <Link
+            href="/services"
+            aria-label="Browse wedding services"
+            className="flex size-8 items-center justify-center rounded-full text-[#382E29] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
+          >
+            <FiSearch className="size-[17px]" />
+          </Link>
         </div>
 
-        {/* MOBILE MENU BUTTON  */}
+        {/* Mobile Menu Button */}
         <button
           type="button"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -299,15 +330,17 @@ export default function Navbar() {
           }
           aria-expanded={isMobileOpen}
           aria-controls="mobile-navigation"
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-[#772D43] transition-colors hover:bg-[#F8EFF0] lg:hidden"
+          className="flex size-9 items-center justify-center rounded-full border border-[#EAE3DE] bg-white text-[#382E29] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A] lg:hidden"
         >
           {isMobileOpen ? (
-            <FiX className="h-6 w-6" />
+            <FiX className="size-5" />
           ) : (
-            <FiMenu className="h-6 w-6" />
+            <FiMenu className="size-5" />
           )}
         </button>
       </div>
+
+      {/* Mobile Navigation */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
@@ -315,10 +348,12 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden border-t border-[#F1EAE6] bg-white lg:hidden"
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden border-t border-[#F1ECE8] bg-white lg:hidden"
           >
-            <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-5">
+            <div className="flex flex-col gap-2 px-5 py-4 sm:px-8">
+
+              {/* Mobile Links */}
               <nav aria-label="Mobile navigation">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
@@ -328,45 +363,48 @@ export default function Navbar() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMobileOpen(false)}
-                      className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-colors ${
                         isActive(link.href)
-                          ? "bg-[#F8EFF0] text-[#772D43]"
-                          : "text-[#494248] hover:bg-[#FBF5F4] hover:text-[#772D43]"
+                          ? "bg-[#F8F2EF] text-[#B65F3A]"
+                          : "text-[#382E29] hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
                       }`}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="size-4" />
                       {link.name}
                     </Link>
                   );
                 })}
               </nav>
 
-              <div className="my-2 border-t border-[#EFE4E2]" />
+              <div className="my-2 border-t border-[#F1ECE8]" />
+
               {isPending ? (
-                <div className="h-10 animate-pulse rounded-lg bg-[#F4ECEB]" />
+                <div className="h-10 animate-pulse rounded-lg bg-[#F3F3F3]" />
               ) : user ? (
+
+                /* Mobile Logged In User */
                 <>
-                  <div className="flex items-center gap-3 px-3 py-3">
+                  <div className="flex items-center gap-3 rounded-lg bg-[#FAF9F8] px-3 py-3">
                     {user.image ? (
                       <Image
                         src={user.image}
                         alt={user.name || "User profile"}
-                        width={36}
-                        height={36}
-                        className="h-11 w-11 rounded-full border border-[#EFE4E2] object-cover"
+                        width={40}
+                        height={40}
+                        className="size-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F8EFF0] text-[#772D43]">
+                      <div className="flex size-10 items-center justify-center rounded-full bg-[#F5EFEB] text-[#B65F3A]">
                         <FiUser />
                       </div>
                     )}
 
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-[#393237]">
+                      <p className="truncate text-sm font-semibold text-[#382E29]">
                         {user.name}
                       </p>
 
-                      <p className="truncate text-xs text-[#999096]">
+                      <p className="truncate text-xs text-[#8C8178]">
                         {user.email}
                       </p>
                     </div>
@@ -375,52 +413,51 @@ export default function Navbar() {
                   <Link
                     href={dashboardHref}
                     onClick={() => setIsMobileOpen(false)}
-                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0]"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#382E29] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
                   >
-                    <FiGrid />
+                    <FiGrid className="size-4" />
                     Dashboard
                   </Link>
 
-                  {/* Profile Settings */}
                   {role !== "admin" && (
                     <Link
                       href={profileHref}
                       onClick={() => setIsMobileOpen(false)}
-                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#494248] transition-colors hover:bg-[#F8EFF0]"
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#382E29] transition-colors hover:bg-[#F8F5F3] hover:text-[#B65F3A]"
                     >
-                      <FiSettings />
+                      <FiSettings className="size-4" />
                       Profile Settings
                     </Link>
                   )}
 
-                  {/* Logout */}
-                  {/* Logout */}
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-red-500 transition-colors hover:bg-red-50"
                   >
-                    <FiLogOut className="h-4 w-4" />
+                    <FiLogOut className="size-4" />
                     Logout
                   </button>
                 </>
               ) : (
-                /* Public Mobile Buttons */
-                <div className="flex flex-col gap-3">
+
+                /* Mobile Public Actions */
+                <div className="flex flex-col gap-3 pt-1">
                   <Link
                     href="/sign-in"
                     onClick={() => setIsMobileOpen(false)}
-                    className="rounded-lg border border-[#772D43] px-4 py-3 text-center text-sm font-semibold text-[#772D43] transition-colors hover:bg-[#F8EFF0]"
+                    className="rounded-full border border-[#B65F3A] px-4 py-3 text-center text-sm font-semibold text-[#B65F3A] transition-colors hover:bg-[#F8F2EF]"
                   >
-                    Sign In
+                    Log in
                   </Link>
 
                   <Link
                     href="/sign-up"
                     onClick={() => setIsMobileOpen(false)}
-                    className="rounded-lg bg-[#772D43] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#5F2034]"
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#B65F3A] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#9F4F30]"
                   >
-                    Sign Up
+                    Start planning
+                    <FiArrowUpRight className="size-4" />
                   </Link>
                 </div>
               )}

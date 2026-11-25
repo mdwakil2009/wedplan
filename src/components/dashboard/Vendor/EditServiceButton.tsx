@@ -245,14 +245,14 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       {/* Edit Button */}
-      <DialogTrigger className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#378A88]/30 bg-[#378A88]/10 px-3 py-2 text-sm font-medium text-[#378A88] transition-colors hover:bg-[#378A88] hover:text-white">
+      <DialogTrigger className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-[#DCE6FF] bg-[#EEF4FF] px-3 text-xs font-semibold text-[#3A76EF] transition-all duration-200 hover:border-[#3A76EF] hover:bg-[#3A76EF] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A76EF]/35">
         <FiEdit2 size={16} />
         Edit
       </DialogTrigger>
 
       <DialogContent className="max-h-[90vh] overflow-y-auto border border-gray-200 bg-white sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[#193F5B]">
+          <DialogTitle className="text-xl font-bold text-[#252B45]">
             Edit Your Service
           </DialogTitle>
 
@@ -353,7 +353,7 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
 
           {/* Existing Images */}
           <div className="space-y-3">
-            <Label className="text-sm font-semibold text-[#193F5B]">
+            <Label className="text-sm font-semibold text-[#252B45]">
               Previous Images
             </Label>
 
@@ -413,11 +413,11 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
 
             <label
               htmlFor="images"
-              className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#378A88]/40 bg-[#378A88]/5 p-6 transition hover:bg-[#378A88]/10"
+              className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#3A76EF]/40 bg-[#3A76EF]/5 p-6 transition hover:bg-[#3A76EF]/10"
             >
-              <FiUploadCloud size={30} className="mb-2 text-[#378A88]" />
+              <FiUploadCloud size={30} className="mb-2 text-[#3A76EF]" />
 
-              <span className="text-sm font-medium text-[#193F5B]">
+              <span className="text-sm font-medium text-[#252B45]">
                 Click to upload images
               </span>
 
@@ -439,11 +439,11 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
             {newPreviews.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold text-[#193F5B]">
+                  <Label className="text-sm font-semibold text-[#252B45]">
                     New Images
                   </Label>
 
-                  <span className="rounded-full bg-[#378A88]/10 px-2.5 py-1 text-xs font-medium text-[#378A88]">
+                  <span className="rounded-full bg-[#3A76EF]/10 px-2.5 py-1 text-xs font-medium text-[#3A76EF]">
                     {newPreviews.length} selected
                   </span>
                 </div>
@@ -452,7 +452,7 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
                   {newPreviews.map((preview, index) => (
                     <div
                       key={preview}
-                      className="group relative overflow-hidden rounded-xl border border-[#378A88]/20 bg-gray-50 shadow-sm transition-all duration-300 hover:shadow-md"
+                      className="group relative overflow-hidden rounded-xl border border-[#3A76EF]/20 bg-gray-50 shadow-sm transition-all duration-300 hover:shadow-md"
                     >
                       {/* Image */}
                       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
@@ -463,7 +463,7 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
                         />
 
                         {/* New Badge */}
-                        <span className="absolute bottom-2 left-2 rounded-md bg-[#378A88] px-2 py-1 text-xs font-medium text-white shadow-sm">
+                        <span className="absolute bottom-2 left-2 rounded-md bg-[#3A76EF] px-2 py-1 text-xs font-medium text-white shadow-sm">
                           New Image
                         </span>
 
@@ -498,7 +498,7 @@ const EditServiceButton = ({ service }: EditServiceButtonProps) => {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#193F5B] text-white hover:bg-[#378A88]"
+              className="bg-[#252B45] text-white hover:bg-[#3A76EF]"
             >
               {loading ? "Updating..." : "Update Service"}
             </Button>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -14,6 +13,8 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+
+import StatusBadge from "@/components/dashboard/ui/StatusBadge";
 
 export type AdminUser = {
   _id: string;
@@ -38,41 +39,39 @@ export default function AdminUserDetailsDialog({
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-2xl sm:max-w-md">
-
+      <DialogContent className="rounded-2xl border-[#E7EBF5] sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[#193F5B]">
+          <DialogTitle className="text-xl font-bold text-[#252B45]">
             User Details
           </DialogTitle>
 
-          <DialogDescription>
+          <DialogDescription className="text-[#7A839B]">
             Detailed information about this platform user.
           </DialogDescription>
         </DialogHeader>
 
         {user && (
           <div className="space-y-5">
-
             {/* Profile */}
-            <div className="flex items-center gap-4 rounded-xl bg-[#EAF5F3] p-4">
-              <Avatar className="size-16">
+            <div className="flex items-center gap-4 rounded-2xl border border-[#DCE6FF] bg-[#EEF4FF] p-4">
+              <Avatar className="size-16 border-2 border-white shadow-sm">
                 <AvatarImage src={user.image} />
 
-                <AvatarFallback className="bg-[#378A88] text-white">
+                <AvatarFallback className="bg-[#3A76EF] text-white">
                   {user.name?.slice(0, 2).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
 
               <div className="min-w-0">
-                <h3 className="font-bold text-[#193F5B]">
+                <h3 className="truncate font-bold text-[#252B45]">
                   {user.name || "Unknown User"}
                 </h3>
 
-                <p className="break-all text-sm text-slate-500">
+                <p className="break-all text-sm text-[#5B6478]">
                   {user.email}
                 </p>
 
-                <span className="mt-2 inline-block rounded-full bg-white px-3 py-1 text-xs font-semibold capitalize text-[#378A88]">
+                <span className="mt-2 inline-block rounded-full border border-[#CFDDFB] bg-white px-3 py-1 text-xs font-semibold capitalize text-[#3A76EF]">
                   {user.role}
                 </span>
               </div>
@@ -80,63 +79,55 @@ export default function AdminUserDetailsDialog({
 
             {/* Information */}
             <div className="space-y-3">
-
               {/* User ID */}
-              <div className="flex justify-between gap-3 border-b pb-3">
-                <span className="text-sm text-slate-500">
+              <div className="flex justify-between gap-3 border-b border-[#EDF0F8] pb-3">
+                <span className="text-sm text-[#7A839B]">
                   User ID
                 </span>
 
-                <span className="max-w-[200px] break-all text-right text-xs font-medium text-slate-700">
+                <span className="max-w-[200px] break-all text-right text-xs font-medium text-[#252B45]">
                   {user._id}
                 </span>
               </div>
 
               {/* Role */}
-              <div className="flex justify-between border-b pb-3">
-                <span className="text-sm text-slate-500">
+              <div className="flex justify-between border-b border-[#EDF0F8] pb-3">
+                <span className="text-sm text-[#7A839B]">
                   Account Role
                 </span>
 
-                <span className="font-medium capitalize text-slate-700">
+                <span className="font-medium capitalize text-[#252B45]">
                   {user.role}
                 </span>
               </div>
 
               {/* Status */}
-              <div className="flex justify-between border-b pb-3">
-                <span className="text-sm text-slate-500">
+              <div className="flex items-center justify-between border-b border-[#EDF0F8] pb-3">
+                <span className="text-sm text-[#7A839B]">
                   Account Status
                 </span>
 
-                <span
-                  className={`font-semibold ${
-                    user.isBlocked
-                      ? "text-red-500"
-                      : "text-emerald-600"
-                  }`}
-                >
-                  {user.isBlocked ? "Blocked" : "Active"}
-                </span>
+                <StatusBadge
+                  status={user.isBlocked ? "blocked" : "active"}
+                  label={user.isBlocked ? "Blocked" : "Active"}
+                />
               </div>
 
               {/* Joined Date */}
-              <div className="flex justify-between border-b pb-3">
-                <span className="text-sm text-slate-500">
+              <div className="flex justify-between border-b border-[#EDF0F8] pb-3">
+                <span className="text-sm text-[#7A839B]">
                   Joined Date
                 </span>
 
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-sm font-medium text-[#252B45]">
                   {user.createdAt
                     ? new Date(user.createdAt).toLocaleDateString()
                     : "Not available"}
                 </span>
               </div>
-
             </div>
           </div>
         )}
-
       </DialogContent>
     </Dialog>
   );

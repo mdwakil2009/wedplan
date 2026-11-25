@@ -156,34 +156,34 @@ export default function ProfileClient({
       <div className="space-y-6">
         {/* Page Heading */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#378A88]">
-            Vendor
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3A76EF]">
+            {safeRole.charAt(0).toUpperCase() + safeRole.slice(1)}
           </p>
 
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#193F5B] sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#252B45] sm:text-3xl">
             Profile Settings
           </h1>
 
-          <p className="mt-1.5 text-sm text-[#87939E]">
+          <p className="mt-1.5 text-sm text-[#7A839B]">
             Manage your account information on WedPlan.
           </p>
         </div>
 
         {/* Success Message */}
         {successMessage && (
-          <div className="flex items-start gap-3 rounded-xl border border-[#CDE8DF] bg-[#EFFAF5] p-4">
+          <div className="flex items-start gap-3 rounded-xl border border-[#BFEFDD] bg-[#E9FBF4] p-4">
             <CheckCircle2
               size={18}
-              className="mt-0.5 shrink-0 text-[#25845F]"
+              className="mt-0.5 shrink-0 text-[#0E8A66]"
             />
 
-            <p className="text-sm leading-6 text-[#287456]">
+            <p className="text-sm leading-6 text-[#0E8A66]">
               {successMessage}
             </p>
 
             <button
               onClick={() => setSuccessMessage("")}
-              className="ml-auto shrink-0 text-[#287456] transition hover:opacity-70"
+              className="ml-auto shrink-0 text-[#0E8A66] transition hover:opacity-70"
               aria-label="Dismiss message"
             >
               <X size={16} />
@@ -192,34 +192,34 @@ export default function ProfileClient({
         )}
 
         {/* Profile Card */}
-        <div className="overflow-hidden rounded-2xl border border-[#E1E8ED] bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-[#E7EBF5] bg-white shadow-sm">
           {/* Profile Header */}
-          <div className="flex flex-col gap-4 border-b border-[#E1E8ED] bg-[#F8FAFC] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-4 border-b border-[#E7EBF5] bg-[#F9FAFF] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="flex min-w-0 items-center gap-4">
               {/* Avatar */}
               {image ? (
                 <img
                   src={image}
                   alt={profileName || "Profile"}
-                  className="h-16 w-16 shrink-0 rounded-full border-2 border-white object-cover shadow-sm ring-1 ring-[#E1E8ED]"
+                  className="h-16 w-16 shrink-0 rounded-full border-2 border-white object-cover shadow-sm ring-1 ring-[#E7EBF5]"
                 />
               ) : (
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#E4F3F1] text-xl font-semibold text-[#378A88] ring-1 ring-[#CFE7E4]">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-xl font-semibold text-[#3A76EF] ring-1 ring-[#C9D9FF]">
                   {initials}
                 </div>
               )}
 
               {/* Name & Email */}
               <div className="min-w-0">
-                <h2 className="truncate text-base font-semibold text-[#193F5B]">
+                <h2 className="truncate text-base font-semibold text-[#252B45]">
                   {profileName || "Your Name"}
                 </h2>
 
-                <p className="mt-1 truncate text-sm text-[#87939E]">
+                <p className="mt-1 truncate text-sm text-[#7A839B]">
                   {profileEmail || "No email provided"}
                 </p>
 
-                <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#E4F3F1] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#378A88]">
+                <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#EEF4FF] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#3A76EF]">
                   <ShieldCheck size={13} />
                   {safeRole}
                 </span>
@@ -230,7 +230,7 @@ export default function ProfileClient({
             <Button
               onClick={handleEdit}
               variant="outline"
-              className="h-9 gap-2 rounded-lg border-[#E1E8ED] text-[#193F5B] transition-colors hover:bg-[#E4F3F1] hover:text-[#2C7371]"
+              className="h-9 gap-2 rounded-lg border-[#E7EBF5] text-[#252B45] transition-colors hover:bg-[#EEF4FF] hover:text-[#2F63D4]"
             >
               <Edit size={14} />
               Edit Profile
@@ -240,11 +240,11 @@ export default function ProfileClient({
           {/* Personal Information */}
           <div className="p-5 sm:p-6">
             <div className="mb-5">
-              <h3 className="text-base font-semibold text-[#193F5B]">
+              <h3 className="text-base font-semibold text-[#252B45]">
                 Personal Information
               </h3>
 
-              <p className="mt-1 text-xs text-[#87939E]">
+              <p className="mt-1 text-xs text-[#7A839B]">
                 Your basic account information.
               </p>
             </div>
@@ -252,17 +252,17 @@ export default function ProfileClient({
             <div className="grid gap-5 sm:grid-cols-2">
               {/* Full Name */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#87939E]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#7A839B]">
                   Full Name
                 </p>
 
-                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-3.5">
+                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#E7EBF5] bg-[#F9FAFF] p-3.5">
                   <User
                     size={17}
-                    className="shrink-0 text-[#378A88]"
+                    className="shrink-0 text-[#3A76EF]"
                   />
 
-                  <p className="break-words text-sm font-medium text-[#193F5B]">
+                  <p className="break-words text-sm font-medium text-[#252B45]">
                     {profileName || "Not provided"}
                   </p>
                 </div>
@@ -270,17 +270,17 @@ export default function ProfileClient({
 
               {/* Email */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#87939E]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#7A839B]">
                   Email Address
                 </p>
 
-                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-3.5">
+                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#E7EBF5] bg-[#F9FAFF] p-3.5">
                   <Mail
                     size={17}
-                    className="shrink-0 text-[#378A88]"
+                    className="shrink-0 text-[#3A76EF]"
                   />
 
-                  <p className="break-all text-sm font-medium text-[#193F5B]">
+                  <p className="break-all text-sm font-medium text-[#252B45]">
                     {profileEmail || "Not provided"}
                   </p>
                 </div>
@@ -288,17 +288,17 @@ export default function ProfileClient({
 
               {/* Account Type */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#87939E]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#7A839B]">
                   Account Type
                 </p>
 
-                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#E1E8ED] bg-[#F8FAFC] p-3.5">
+                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#E7EBF5] bg-[#F9FAFF] p-3.5">
                   <ShieldCheck
                     size={17}
-                    className="shrink-0 text-[#378A88]"
+                    className="shrink-0 text-[#3A76EF]"
                   />
 
-                  <p className="text-sm font-medium capitalize text-[#193F5B]">
+                  <p className="text-sm font-medium capitalize text-[#252B45]">
                     {safeRole}
                   </p>
                 </div>
@@ -306,8 +306,8 @@ export default function ProfileClient({
             </div>
 
             {/* Information Note */}
-            <div className="mt-6 rounded-xl border border-[#D5ECE8] bg-[#E4F3F1]/60 px-4 py-3">
-              <p className="text-xs leading-5 text-[#2C7371]">
+            <div className="mt-6 rounded-xl border border-[#DCE6FF] bg-[#EEF4FF]/60 px-4 py-3">
+              <p className="text-xs leading-5 text-[#2F63D4]">
                 You can update your name and email address using
                 the Edit Profile button. Other account information
                 cannot be changed here.
@@ -330,13 +330,13 @@ export default function ProfileClient({
           }
         }}
       >
-        <DialogContent className="rounded-2xl border-[#E1E8ED] bg-white sm:max-w-md">
+        <DialogContent className="rounded-2xl border-[#E7EBF5] bg-white sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-[#193F5B]">
+            <DialogTitle className="text-lg font-semibold text-[#252B45]">
               Edit Profile
             </DialogTitle>
 
-            <DialogDescription className="text-sm text-[#87939E]">
+            <DialogDescription className="text-sm text-[#7A839B]">
               Update your name and email address.
             </DialogDescription>
           </DialogHeader>
@@ -346,7 +346,7 @@ export default function ProfileClient({
             <div className="space-y-2">
               <Label
                 htmlFor="edit-name"
-                className="text-sm font-medium text-[#193F5B]"
+                className="text-sm font-medium text-[#252B45]"
               >
                 Full Name
               </Label>
@@ -354,7 +354,7 @@ export default function ProfileClient({
               <div className="relative">
                 <User
                   size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#378A88]"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3A76EF]"
                 />
 
                 <Input
@@ -366,7 +366,7 @@ export default function ProfileClient({
                   }}
                   placeholder="Enter your name"
                   disabled={saving}
-                  className="h-11 rounded-xl border-[#E1E8ED] pl-10 focus-visible:ring-[#378A88]"
+                  className="h-11 rounded-xl border-[#E7EBF5] pl-10 focus-visible:ring-[#3A76EF]"
                 />
               </div>
             </div>
@@ -375,7 +375,7 @@ export default function ProfileClient({
             <div className="space-y-2">
               <Label
                 htmlFor="edit-email"
-                className="text-sm font-medium text-[#193F5B]"
+                className="text-sm font-medium text-[#252B45]"
               >
                 Email Address
               </Label>
@@ -383,7 +383,7 @@ export default function ProfileClient({
               <div className="relative">
                 <Mail
                   size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#378A88]"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3A76EF]"
                 />
 
                 <Input
@@ -396,7 +396,7 @@ export default function ProfileClient({
                   }}
                   placeholder="Enter your email"
                   disabled={saving}
-                  className="h-11 rounded-xl border-[#E1E8ED] pl-10 focus-visible:ring-[#378A88]"
+                  className="h-11 rounded-xl border-[#E7EBF5] pl-10 focus-visible:ring-[#3A76EF]"
                 />
               </div>
             </div>
@@ -421,7 +421,7 @@ export default function ProfileClient({
                 variant="outline"
                 onClick={handleCancel}
                 disabled={saving}
-                className="rounded-xl border-[#E1E8ED] text-[#193F5B] hover:bg-[#F8FAFC]"
+                className="rounded-xl border-[#E7EBF5] text-[#252B45] hover:bg-[#F9FAFF]"
               >
                 <X size={15} className="mr-2" />
                 Cancel
@@ -434,7 +434,7 @@ export default function ProfileClient({
                   !(editName || "").trim() ||
                   !(editEmail || "").trim()
                 }
-                className="rounded-xl bg-[#378A88] text-white hover:bg-[#2C7371]"
+                className="rounded-xl bg-[#3A76EF] text-white hover:bg-[#2F63D4]"
               >
                 <Save size={15} className="mr-2" />
 

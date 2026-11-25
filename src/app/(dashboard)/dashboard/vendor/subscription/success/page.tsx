@@ -99,18 +99,18 @@ export default async function Success({
     session.customer_email;
 
   return (
-    <main className="flex min-h-[70vh] items-center justify-center bg-[#F8FAFC] px-4 py-6">
-      <div className="w-full max-w-sm rounded-2xl border border-[#E1E8ED] bg-white p-5 shadow-lg">
+    <main className="flex min-h-[70vh] items-center justify-center bg-[#F9FAFF] px-4 py-6">
+      <div className="w-full max-w-sm rounded-2xl border border-[#E7EBF5] bg-white p-5 shadow-lg">
 
         {/* Header */}
         <div className="text-center">
-          <FiCheckCircle className="mx-auto text-4xl text-[#378A88]" />
+          <FiCheckCircle className="mx-auto text-4xl text-[#3A76EF]" />
 
-          <h1 className="mt-2 text-xl font-bold text-[#193F5B]">
+          <h1 className="mt-2 text-xl font-bold text-[#252B45]">
             Payment Successful!
           </h1>
 
-          <p className="mt-1 text-xs text-[#87939E]">
+          <p className="mt-1 text-xs text-[#7A839B]">
             Your payment has been received successfully.
           </p>
 
@@ -122,12 +122,12 @@ export default async function Success({
         </div>
 
         {/* Amount */}
-        <div className="my-4 rounded-xl bg-[#E4F3F1] p-3 text-center">
-          <p className="text-xs text-[#378A88]">
+        <div className="my-4 rounded-xl bg-[#EEF4FF] p-3 text-center">
+          <p className="text-xs text-[#3A76EF]">
             Amount Paid
           </p>
 
-          <h2 className="text-2xl font-bold text-[#193F5B]">
+          <h2 className="text-2xl font-bold text-[#252B45]">
             ৳{amount}
           </h2>
 
@@ -141,41 +141,41 @@ export default async function Success({
         <div className="space-y-3 text-xs">
 
           <div className="flex justify-between gap-3">
-            <span className="text-[#87939E]">Plan</span>
+            <span className="text-[#7A839B]">Plan</span>
 
-            <span className="font-semibold text-[#A47A28]">
+            <span className="font-semibold text-[#B47A17]">
               Premium
             </span>
           </div>
 
           <div className="flex justify-between gap-3">
-            <span className="text-[#87939E]">User Email</span>
+            <span className="text-[#7A839B]">User Email</span>
 
-            <span className="break-all text-right text-[#193F5B]">
+            <span className="break-all text-right text-[#252B45]">
               {email || "N/A"}
             </span>
           </div>
 
           <div className="flex justify-between gap-3">
-            <span className="text-[#87939E]">
+            <span className="text-[#7A839B]">
               Transaction Date
             </span>
 
-            <span className="text-right text-[#193F5B]">
+            <span className="text-right text-[#252B45]">
               {date}
             </span>
           </div>
 
           <div>
-            <p className="text-[#87939E]">Transaction ID</p>
+            <p className="text-[#7A839B]">Transaction ID</p>
 
-            <p className="mt-1 break-all text-[11px] text-[#193F5B]">
+            <p className="mt-1 break-all text-[11px] text-[#252B45]">
               {session.id}
             </p>
           </div>
 
-          <div className="flex justify-between border-t border-[#E1E8ED] pt-3">
-            <span className="text-[#87939E]">Status</span>
+          <div className="flex justify-between border-t border-[#E7EBF5] pt-3">
+            <span className="text-[#7A839B]">Status</span>
 
             <span className="font-semibold text-green-600">
               Successful
@@ -183,7 +183,7 @@ export default async function Success({
           </div>
 
           <div className="flex justify-between gap-3">
-            <span className="text-[#87939E]">
+            <span className="text-[#7A839B]">
               Premium Activation
             </span>
 
@@ -197,7 +197,7 @@ export default async function Success({
         {/* Dashboard Button */}
         <Link
           href="/dashboard/vendor"
-          className="mt-5 flex items-center justify-center gap-2 rounded-lg bg-[#378A88] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2D7472]"
+          className="mt-5 flex items-center justify-center gap-2 rounded-lg bg-[#3A76EF] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2F63D4]"
         >
           Back to Dashboard
           <FiArrowRight />

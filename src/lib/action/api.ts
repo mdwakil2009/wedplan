@@ -62,7 +62,7 @@ export async function bookingAPI(bookingData: object) {
   };
 }
 
-// Get User Info (Public API)
+// Get User Info
 export async function getUserById(userId: string) {
   const response = await fetch(
     `${BASE_URL}/users/${encodeURIComponent(userId)}`,
@@ -75,8 +75,11 @@ export async function getUserById(userId: string) {
     throw new Error("Failed to fetch user");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return data.user;
 }
+
 
 // Update Booking Status
 export async function updateBookingStatus(
@@ -298,11 +301,12 @@ export async function updateServiceActiveStatus(
   return data;
 }
 
-// Delete Admin Service
+// 
+// Admin - Delete Service
 export async function deleteAdminService(id: string) {
   const token = await getServerJWTToken();
 
-  const response = await fetch(`${BASE_URL}/services/${id}`, {
+  const response = await fetch(`${BASE_URL}/admin-services/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,

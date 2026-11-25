@@ -1,4 +1,5 @@
 
+/* Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap");
 
 @import "tailwindcss";
@@ -7,9 +8,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Theme Configuration */
 @theme inline {
+  /* Global Font - Comic Neue */
   --font-heading: "Comic Neue", sans-serif;
   --font-sans: "Comic Neue", sans-serif;
+  --font-dashboard: "Comic Neue", sans-serif;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -55,6 +59,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Light Theme */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -91,17 +96,18 @@
 
   --radius: 0.625rem;
 
-  /* Dashboard Sidebar Palette (Navy + Teal) */
-  --sidebar: #193f5b;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #378a88;
+  /* Dashboard Sidebar Palette */
+  --sidebar: #f9faff;
+  --sidebar-foreground: #252b45;
+  --sidebar-primary: #3a76ef;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #378a88;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.14);
-  --sidebar-ring: #c8f09a;
+  --sidebar-accent: #eef3ff;
+  --sidebar-accent-foreground: #252b45;
+  --sidebar-border: #e7ebf5;
+  --sidebar-ring: #3a76ef;
 }
 
+/* Dark Theme */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -146,16 +152,17 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Global Base Styles */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
   html {
     @apply font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
   }
 }

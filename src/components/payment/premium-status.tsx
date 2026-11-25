@@ -59,7 +59,7 @@ export default function PremiumStatus({
       className={`mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-bold ${
         isPremium
           ? "bg-green-50 text-green-700"
-          : "bg-[#FFF8E8] text-[#A47A28]"
+          : "bg-[#FFF8E8] text-[#B47A17]"
       }`}
     >
       <FiStar />

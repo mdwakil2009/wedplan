@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { requireRole } from "@/lib/dashboard-auth";
 import { getAdminOverview } from "@/lib/action/api";
@@ -10,12 +11,16 @@ import {
   FiBriefcase,
   FiClock,
   FiDollarSign,
+  FiArrowRight,
+  FiTrendingUp,
+  FiActivity,
 } from "react-icons/fi";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import StatCard from "@/components/dashboard/ui/StatCard";
+import SectionCard from "@/components/dashboard/ui/SectionCard";
+import MiniBarChart from "@/components/dashboard/ui/MiniBarChart";
+import QuickAction from "@/components/dashboard/ui/QuickAction";
 
 export default async function AdminDashboardPage() {
   await requireRole("admin");
@@ -41,213 +46,200 @@ export default async function AdminDashboardPage() {
     console.error("Failed to fetch admin overview:", error);
   }
 
-  const cards = [
-    {
-      title: "Total Users",
-      value: stats.totalUsers,
-      icon: FiUsers,
-      color: "bg-blue-50 text-blue-600",
-    },
-    {
-      title: "Total Vendors",
-      value: stats.totalVendors,
-      icon: FiUserCheck,
-      color: "bg-purple-50 text-purple-600",
-    },
-    {
-      title: "Total Customers",
-      value: stats.totalCustomers,
-      icon: FiUser,
-      color: "bg-emerald-50 text-emerald-600",
-    },
-    {
-      title: "Total Services",
-      value: stats.totalServices,
-      icon: FiBriefcase,
-      color: "bg-orange-50 text-orange-600",
-    },
-    {
-      title: "Pending Services",
-      value: stats.pendingServices,
-      icon: FiClock,
-      color: "bg-amber-50 text-amber-600",
-    },
-    {
-      title: "Total Transactions",
-      value: stats.totalTransactions,
-      icon: FiDollarSign,
-      color: "bg-pink-50 text-pink-600",
-    },
-  ];
+  const approvedServices = Math.max(
+    stats.totalServices - stats.pendingServices,
+    0
+  );
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
+      <PageHeader
+        eyebrow="Admin Workspace"
+        title="Platform Overview"
+        description="Monitor your wedding marketplace, review service approvals and keep the community growing from one place."
+        action={
+          <Link
+            href="/dashboard/admin/manage-services"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#3A76EF] px-4 text-sm font-semibold text-white shadow-[0_10px_22px_-12px_rgba(58,118,239,0.9)] transition-all duration-200 hover:bg-[#2F63D4] hover:shadow-[0_14px_26px_-12px_rgba(58,118,239,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A76EF]/40 focus-visible:ring-offset-2"
+          >
+            Manage Services
+            <FiArrowRight className="size-4" />
+          </Link>
+        }
+      />
 
-      {/* Header */}
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#378A88]">
-          Admin Dashboard
-        </p>
+      {/* Statistics */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StatCard
+          label="Total Users"
+          value={stats.totalUsers}
+          hint="Registered platform accounts"
+          icon={FiUsers}
+          tone="blue"
+        />
 
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#193F5B] sm:text-3xl">
-          Overview
-        </h1>
+        <StatCard
+          label="Total Vendors"
+          value={stats.totalVendors}
+          hint="Wedding businesses onboard"
+          icon={FiUserCheck}
+          tone="sky"
+        />
 
-        <p className="mt-2 text-sm text-slate-500">
-          Monitor users, services and platform activities.
-        </p>
+        <StatCard
+          label="Total Customers"
+          value={stats.totalCustomers}
+          hint="Couples planning with WedPlan"
+          icon={FiUser}
+          tone="white"
+        />
+
+        <StatCard
+          label="Total Services"
+          value={stats.totalServices}
+          hint="Listings across the marketplace"
+          icon={FiBriefcase}
+          tone="purple"
+        />
+
+        <StatCard
+          label="Pending Services"
+          value={stats.pendingServices}
+          hint="Waiting for admin review"
+          icon={FiClock}
+          tone="amber"
+        />
+
+        <StatCard
+          label="Total Transactions"
+          value={stats.totalTransactions}
+          hint="Recorded subscription payments"
+          icon={FiDollarSign}
+          tone="mint"
+        />
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card) => {
-          const Icon = card.icon;
+      <div className="grid gap-5 lg:grid-cols-3">
+        {/* Platform composition */}
+        <SectionCard
+          className="lg:col-span-2"
+          title="Platform activity"
+          description="A live snapshot built from your current platform data."
+          icon={FiActivity}
+        >
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-[#8A93A8]">
+                Community mix
+              </h3>
 
-          return (
-            <Card
-              key={card.title}
-              className="rounded-2xl border-slate-200 shadow-sm transition hover:shadow-md"
-            >
-              <CardContent className="flex items-center justify-between p-5">
-                <div>
-                  <p className="text-sm font-medium text-slate-500">
-                    {card.title}
-                  </p>
-
-                  <h2 className="mt-2 text-3xl font-bold text-[#193F5B]">
-                    {card.value}
-                  </h2>
-                </div>
-
-                <div
-                  className={`flex size-12 items-center justify-center rounded-xl ${card.color}`}
-                >
-                  <Icon className="size-5" />
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Platform Activity Overview */}
-      <Card className="overflow-hidden rounded-2xl border-0 bg-[#193F5B] text-white shadow-lg">
-        <CardContent className="p-5 sm:p-7">
-
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8BD0C8]">
-                Platform Insights
-              </p>
-
-              <h2 className="text-xl font-bold sm:text-2xl">
-                Platform Activity Overview
-              </h2>
-
-              <p className="max-w-md text-sm leading-6 text-slate-300">
-                Monitor your platform growth, user community, and service
-                approval activity from one place.
-              </p>
+              <div className="mt-4">
+                <MiniBarChart
+                  items={[
+                    {
+                      label: "Vendors",
+                      value: stats.totalVendors,
+                      color: "bg-[#62C7FF]",
+                    },
+                    {
+                      label: "Customers",
+                      value: stats.totalCustomers,
+                      color: "bg-[#6ED4B1]",
+                    },
+                  ]}
+                  emptyLabel="No community accounts yet."
+                />
+              </div>
             </div>
 
-            <div className="grid w-full grid-cols-2 gap-3 md:max-w-sm">
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                <p className="text-xs text-slate-300">
-                  Total Community
-                </p>
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-[#8A93A8]">
+                Service pipeline
+              </h3>
 
-                <h3 className="mt-2 text-2xl font-bold">
-                  {stats.totalUsers}
-                </h3>
-
-                <p className="mt-1 text-xs text-[#8BD0C8]">
-                  Registered Users
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                <p className="text-xs text-slate-300">
-                  Service Listings
-                </p>
-
-                <h3 className="mt-2 text-2xl font-bold">
-                  {stats.totalServices}
-                </h3>
-
-                <p className="mt-1 text-xs text-[#F5C77E]">
-                  Total Services
-                </p>
+              <div className="mt-4">
+                <MiniBarChart
+                  items={[
+                    {
+                      label: "Approved",
+                      value: approvedServices,
+                      color: "bg-[#3A76EF]",
+                    },
+                    {
+                      label: "Pending",
+                      value: stats.pendingServices,
+                      color: "bg-[#A66DD4]",
+                    },
+                  ]}
+                  emptyLabel="No services submitted yet."
+                />
               </div>
             </div>
           </div>
 
-          {/* Progress Overview */}
-          <div className="mt-7 grid gap-5 sm:grid-cols-2">
-
-            {/* Vendor Community */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-200">
-                  Vendor Community
-                </span>
-
-                <span className="text-sm font-semibold text-[#8BD0C8]">
-                  {stats.totalVendors}
-                </span>
-              </div>
-
-              <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="h-full rounded-full bg-[#8BD0C8] transition-all"
-                  style={{
-                    width: `${
-                      stats.totalUsers
-                        ? (stats.totalVendors / stats.totalUsers) * 100
-                        : 0
-                    }%`,
-                  }}
-                />
-              </div>
-
-              <p className="mt-2 text-xs text-slate-400">
-                Vendors registered on WedPlan
+          <div className="mt-6 grid gap-3 border-t border-[#EDF0F8] pt-5 sm:grid-cols-3">
+            <div className="rounded-xl bg-[#F9FAFF] p-3.5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8A93A8]">
+                Community
+              </p>
+              <p className="mt-1.5 text-lg font-bold text-[#252B45]">
+                {stats.totalUsers}
               </p>
             </div>
 
-            {/* Pending Services */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-200">
-                  Pending Approval
-                </span>
-
-                <span className="text-sm font-semibold text-[#F5C77E]">
-                  {stats.pendingServices}
-                </span>
-              </div>
-
-              <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="h-full rounded-full bg-[#F5C77E] transition-all"
-                  style={{
-                    width: `${
-                      stats.totalServices
-                        ? (stats.pendingServices / stats.totalServices) * 100
-                        : 0
-                    }%`,
-                  }}
-                />
-              </div>
-
-              <p className="mt-2 text-xs text-slate-400">
-                Services waiting for admin review
+            <div className="rounded-xl bg-[#F9FAFF] p-3.5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8A93A8]">
+                Listings
+              </p>
+              <p className="mt-1.5 text-lg font-bold text-[#252B45]">
+                {stats.totalServices}
               </p>
             </div>
 
+            <div className="rounded-xl bg-[#F9FAFF] p-3.5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8A93A8]">
+                Approvals due
+              </p>
+              <p className="mt-1.5 text-lg font-bold text-[#252B45]">
+                {stats.pendingServices}
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </SectionCard>
 
+        {/* Quick actions */}
+        <SectionCard
+          title="Quick actions"
+          description="Jump straight into the areas you manage most."
+          icon={FiTrendingUp}
+        >
+          <div className="space-y-3">
+            <QuickAction
+              title="Manage Users"
+              description="Review roles, activity and access."
+              href="/dashboard/admin/users"
+              icon={FiUsers}
+              tone="blue"
+            />
+
+            <QuickAction
+              title="Manage Services"
+              description="Approve, reject or update listings."
+              href="/dashboard/admin/manage-services"
+              icon={FiBriefcase}
+              tone="purple"
+            />
+
+            <QuickAction
+              title="View Transactions"
+              description="Track subscription payment records."
+              href="/dashboard/admin/transactions"
+              icon={FiDollarSign}
+              tone="mint"
+            />
+          </div>
+        </SectionCard>
+      </div>
     </div>
   );
 }

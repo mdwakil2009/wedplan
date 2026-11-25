@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { IconType } from "react-icons";
 import {
-  FiArrowUpRight,
   FiBriefcase,
   FiCalendar,
   FiCreditCard,
   FiGrid,
+  FiHome,
   FiLogOut,
   FiPlusCircle,
   FiSettings,
@@ -125,13 +125,13 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="px-3 pb-3 pt-5">
+      <SidebarHeader className="px-3 pb-2 pt-5">
         <DashboardSidebarHeader />
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup className="px-3 pt-2">
-          <SidebarGroupLabel className="mb-1 px-2 text-[10px] font-semibold tracking-[0.18em] text-white/40">
+          <SidebarGroupLabel className="mb-2 px-2 text-[10px] font-bold tracking-[0.18em] text-[#A0A8BC]">
             {role.toUpperCase()} MENU
           </SidebarGroupLabel>
 
@@ -141,10 +141,10 @@ export function DashboardSidebar() {
                 {[1, 2, 3].map((item) => (
                   <div
                     key={item}
-                    className="flex h-10 items-center gap-2 rounded-lg px-3"
+                    className="flex h-10 items-center gap-2 rounded-xl px-3"
                   >
-                    <div className="size-4 animate-pulse rounded bg-white/10" />
-                    <div className="h-2.5 w-24 animate-pulse rounded bg-white/10" />
+                    <div className="size-4 animate-pulse rounded bg-[#EEF3FF]" />
+                    <div className="h-2.5 w-24 animate-pulse rounded bg-[#EEF3FF]" />
                   </div>
                 ))}
               </div>
@@ -160,15 +160,17 @@ export function DashboardSidebar() {
                         render={<Link href={item.href} />}
                         isActive={active}
                         tooltip={item.label}
-                        className={`h-10 rounded-lg px-3 text-[13px] font-medium transition-all duration-200 ${
+                        className={`h-10 rounded-xl px-3 text-[13px] font-semibold transition-all duration-200 ${
                           active
-                            ? "bg-[#378A88] text-white shadow-[0_6px_16px_rgba(55,138,136,0.35)] hover:bg-[#378A88] hover:text-white"
-                            : "text-white/65 hover:bg-white/10 hover:text-white"
+                            ? "bg-[#3A76EF]! text-white! shadow-[0_10px_20px_-10px_rgba(58,118,239,0.9)] hover:bg-[#2F63D4]! hover:text-white!"
+                            : "text-[#5B6478] hover:bg-[#EEF3FF] hover:text-[#252B45]"
                         }`}
                       >
                         <Icon
-                          className={`size-4 ${
-                            active ? "text-white" : "text-white/60"
+                          className={`size-4 transition-colors duration-200 ${
+                            active
+                              ? "text-white"
+                              : "text-[#8A93A8] group-hover/menu-button:text-[#3A76EF]"
                           }`}
                         />
                         <span>{item.label}</span>
@@ -182,19 +184,19 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="gap-1 border-t border-white/10 p-3">
+      <SidebarFooter className="gap-1 border-t border-[#E7EBF5] p-3">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+          className="flex items-center gap-2 rounded-xl px-3 py-2 text-[11px] font-semibold text-[#5B6478] transition-colors duration-200 hover:bg-[#EEF3FF] hover:text-[#3A76EF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A76EF]/35"
         >
-          <FiArrowUpRight className="size-3.5" />
-          Back to website
+          <FiHome className="size-3.5" />
+          Home
         </Link>
 
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[11px] font-medium text-[#FCA5A5] transition-colors hover:bg-white/10 hover:text-[#FECACA]"
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-[11px] font-semibold text-[#C93B3B] transition-colors duration-200 hover:bg-[#FEF0F0] hover:text-[#B02F2F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93B3B]/25"
         >
           <FiLogOut className="size-3.5" />
           Logout

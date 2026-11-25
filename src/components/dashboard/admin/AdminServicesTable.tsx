@@ -8,6 +8,19 @@ import {
 } from "@/lib/action/api";
 import { toast } from "@/components/ui/toast";
 
+import {
+  FiSearch,
+  FiChevronDown,
+  FiCheck,
+  FiX,
+  FiTrash2,
+  FiImage,
+  FiPower,
+} from "react-icons/fi";
+
+import StatusBadge from "@/components/dashboard/ui/StatusBadge";
+import EmptyState from "@/components/dashboard/ui/EmptyState";
+
 type Service = {
   _id: string;
   serviceName: string;
@@ -34,13 +47,11 @@ type DropdownFilterProps = {
 };
 
 const buttonStyle =
-  "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-xs font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1";
 
-const primaryButton = `${buttonStyle} bg-[#378A88] text-white hover:bg-[#2D7472]`;
+const primaryButton = `${buttonStyle} bg-[#3A76EF] text-white hover:bg-[#2F63D4] focus-visible:ring-[#3A76EF]/40`;
 
-const outlineButton = `${buttonStyle} border border-slate-200 bg-white text-slate-700 hover:bg-slate-50`;
-
-const dangerButton = `${buttonStyle} border border-red-200 bg-white text-red-600 hover:bg-red-50`;
+const dangerButton = `${buttonStyle} border border-[#F8CACA] bg-white text-[#C93B3B] hover:bg-[#FEF0F0] focus-visible:ring-[#C93B3B]/30`;
 
 function DropdownFilter({
   label,
@@ -55,7 +66,7 @@ function DropdownFilter({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex h-11 w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 transition hover:border-[#378A88]"
+        className="flex h-11 w-full items-center justify-between rounded-xl border border-[#E7EBF5] bg-white px-4 text-sm font-medium text-[#252B45] transition-all duration-200 hover:border-[#C9D9FF] focus:border-[#3A76EF] focus:ring-4 focus:ring-[#3A76EF]/10"
       >
         <span className="truncate">
           {value === "all"
@@ -63,19 +74,15 @@ function DropdownFilter({
             : value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
 
-        <svg
-          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+        <FiChevronDown
+          className={`size-4 text-[#8A93A8] transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+        <div className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-[#E7EBF5] bg-white p-1.5 shadow-[0_18px_40px_-18px_rgba(37,43,69,0.3)]">
           {options.map((option) => (
             <button
               key={option}
@@ -84,10 +91,10 @@ function DropdownFilter({
                 onChange(option);
                 setOpen(false);
               }}
-              className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition ${
+              className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors duration-200 ${
                 value === option
-                  ? "bg-[#EAF5F3] font-semibold text-[#193F5B]"
-                  : "text-slate-600 hover:bg-slate-50"
+                  ? "bg-[#EEF4FF] font-semibold text-[#3A76EF]"
+                  : "text-[#5B6478] hover:bg-[#F9FAFF]"
               }`}
             >
               {option === "all"
@@ -183,7 +190,7 @@ export default function AdminServicesTable({
   // Delete Service
   const handleDelete = async (id: string) => {
     try {
-      setLoadingId(id);
+      setLoadingId(id)
 
       await deleteAdminService(id);
 
@@ -238,25 +245,16 @@ export default function AdminServicesTable({
   return (
     <div className="space-y-5">
       {/* Search & Filters */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row">
+      <div className="flex flex-col gap-3 rounded-2xl border border-[#E7EBF5] bg-white p-4 shadow-[0_1px_2px_rgba(37,43,69,0.04)] sm:flex-row">
         <div className="relative flex-1">
-          <svg
-            className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m20 20-4-4" />
-          </svg>
+          <FiSearch className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#8A93A8]" />
 
           <input
             type="text"
             placeholder="Search services or vendors..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 w-full rounded-xl border border-slate-200 py-2 pl-11 pr-4 text-sm outline-none transition focus:border-[#378A88] focus:ring-2 focus:ring-[#378A88]/10"
+            className="h-11 w-full rounded-xl border border-[#E7EBF5] bg-[#F9FAFF] pl-10 pr-4 text-sm text-[#252B45] outline-none transition-all duration-200 placeholder:text-[#A0A8BC] hover:border-[#C9D9FF] focus:border-[#3A76EF] focus:bg-white focus:ring-4 focus:ring-[#3A76EF]/10"
           />
         </div>
 
@@ -276,9 +274,9 @@ export default function AdminServicesTable({
       </div>
 
       {/* Result Count */}
-      <p className="text-sm text-slate-500">
+      <p className="text-xs font-medium text-[#7A839B]">
         Showing{" "}
-        <span className="font-bold text-[#193F5B]">
+        <span className="font-bold text-[#252B45]">
           {filteredServices.length}
         </span>{" "}
         of {serviceList.length} services
@@ -309,11 +307,11 @@ export default function AdminServicesTable({
           return (
             <div
               key={service._id}
-              className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#B8DCD5] hover:shadow-md"
+              className="group overflow-hidden rounded-2xl border border-[#E7EBF5] bg-white shadow-[0_1px_2px_rgba(37,43,69,0.04)] transition-all duration-200 hover:border-[#C9D9FF] hover:shadow-[0_16px_36px_-22px_rgba(37,43,69,0.3)]"
             >
               <div className="flex flex-col gap-5 p-4 sm:p-5 lg:flex-row lg:items-center">
                 {/* Service Image */}
-                <div className="h-48 w-full shrink-0 overflow-hidden rounded-xl bg-[#EAF5F3] sm:h-40 sm:w-48 lg:h-36 lg:w-44">
+                <div className="h-48 w-full shrink-0 overflow-hidden rounded-xl bg-[#EEF4FF] sm:h-40 sm:w-48 lg:h-36 lg:w-44">
                   {imageSrc && !imageFailed ? (
                     <img
                       src={imageSrc}
@@ -328,19 +326,10 @@ export default function AdminServicesTable({
                       }
                     />
                   ) : (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 text-[#378A88]">
-                      <svg
-                        className="h-12 w-12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={1.5}
-                      >
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <path d="m3 16 5-5 4 4 5-7 4 8" />
-                      </svg>
+                    <div className="flex h-full flex-col items-center justify-center gap-2 text-[#3A76EF]">
+                      <FiImage className="size-10" />
 
-                      <span className="text-sm font-medium">No Image</span>
+                      <span className="text-xs font-medium">No Image</span>
                     </div>
                   )}
                 </div>
@@ -349,50 +338,40 @@ export default function AdminServicesTable({
                 <div className="min-w-0 flex-1 space-y-3">
                   {/* Name & Status */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-lg font-bold leading-tight text-[#193F5B] sm:text-xl">
+                    <h3 className="text-lg font-bold leading-tight text-[#252B45] sm:text-xl">
                       {service.serviceName}
                     </h3>
 
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                        status === "approved"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : status === "rejected"
-                            ? "bg-red-50 text-red-600"
-                            : "bg-amber-50 text-amber-700"
-                      }`}
-                    >
-                      {status}
-                    </span>
+                    <StatusBadge status={status} />
                   </div>
 
                   {/* Category, Price, Location */}
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#5B6478]">
                     <span>{service.category}</span>
 
-                    <span className="text-slate-300">•</span>
+                    <span className="text-[#C9D0DE]">•</span>
 
-                    <span className="font-semibold text-[#193F5B]">
+                    <span className="font-bold text-[#252B45]">
                       ৳{Number(service.price || 0).toLocaleString()}
                     </span>
 
-                    <span className="text-slate-300">•</span>
+                    <span className="text-[#C9D0DE]">•</span>
 
                     <span>{service.location || "Location unavailable"}</span>
                   </div>
 
                   {/* Vendor */}
-                  <p className="break-all text-sm text-slate-600">
-                    <span className="font-semibold text-[#193F5B]">
+                  <p className="break-all text-sm text-[#5B6478]">
+                    <span className="font-semibold text-[#252B45]">
                       Vendor:
                     </span>{" "}
                     {vendorName}{" "}
-                    <span className="text-slate-400">({vendorEmail})</span>
+                    <span className="text-[#A0A8BC]">({vendorEmail})</span>
                   </p>
 
                   {/* Description */}
                   {service.description && (
-                    <p className="line-clamp-2 text-sm leading-6 text-slate-500">
+                    <p className="line-clamp-2 text-sm leading-6 text-[#7A839B]">
                       {service.description}
                     </p>
                   )}
@@ -402,17 +381,17 @@ export default function AdminServicesTable({
                     <div className="flex items-center gap-2">
                       <span
                         className={`h-2 w-2 rounded-full ${
-                          isActive ? "bg-emerald-500" : "bg-slate-400"
+                          isActive ? "bg-[#6ED4B1]" : "bg-[#A0A8BC]"
                         }`}
                       />
 
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-[#8A93A8]">
                         Availability:
                       </span>
 
                       <span
                         className={`text-xs font-semibold ${
-                          isActive ? "text-emerald-600" : "text-slate-500"
+                          isActive ? "text-[#0E8A66]" : "text-[#5B6478]"
                         }`}
                       >
                         {isActive ? "Active" : "Inactive"}
@@ -431,7 +410,8 @@ export default function AdminServicesTable({
                         onClick={() => handleStatus(service._id, "approved")}
                         className={primaryButton}
                       >
-                        {isLoading ? "Updating..." : "✓ Approve"}
+                        <FiCheck className="size-3.5" />
+                        {isLoading ? "Updating..." : "Approve"}
                       </button>
 
                       <button
@@ -439,7 +419,8 @@ export default function AdminServicesTable({
                         onClick={() => handleStatus(service._id, "rejected")}
                         className={dangerButton}
                       >
-                        ✕ Reject
+                        <FiX className="size-3.5" />
+                        Reject
                       </button>
                     </div>
                   )}
@@ -452,7 +433,8 @@ export default function AdminServicesTable({
                         onClick={() => handleStatus(service._id, "rejected")}
                         className={dangerButton}
                       >
-                        ✕ Reject
+                        <FiX className="size-3.5" />
+                        Reject
                       </button>
 
                       <button
@@ -460,11 +442,12 @@ export default function AdminServicesTable({
                         onClick={() => handleActive(service._id, isActive)}
                         className={primaryButton}
                       >
+                        <FiPower className="size-3.5" />
                         {isLoading
                           ? "Updating..."
                           : isActive
-                            ? "↓ Deactivate"
-                            : "↑ Activate"}
+                            ? "Deactivate"
+                            : "Activate"}
                       </button>
                     </div>
                   )}
@@ -476,7 +459,8 @@ export default function AdminServicesTable({
                       onClick={() => handleStatus(service._id, "approved")}
                       className={primaryButton}
                     >
-                      {isLoading ? "Updating..." : "✓ Approve"}
+                      <FiCheck className="size-3.5" />
+                      {isLoading ? "Updating..." : "Approve"}
                     </button>
                   )}
 
@@ -487,7 +471,8 @@ export default function AdminServicesTable({
                     onClick={() => handleDelete(service._id)}
                     className={dangerButton}
                   >
-                    🗑 Delete Service
+                    <FiTrash2 className="size-3.5" />
+                    Delete Service
                   </button>
                 </div>
               </div>
@@ -497,25 +482,12 @@ export default function AdminServicesTable({
 
         {/* Empty State */}
         {filteredServices.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 bg-white px-5 py-16 text-center">
-            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#EAF5F3] text-[#378A88]">
-              <svg
-                className="h-7 w-7"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-4-4" />
-              </svg>
-            </div>
-
-            <h3 className="font-semibold text-[#193F5B]">No services found</h3>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Try changing your search or filters.
-            </p>
+          <div className="rounded-2xl border border-[#E7EBF5] bg-white p-5">
+            <EmptyState
+              icon={FiSearch}
+              title="No services found"
+              description="Try changing your search or filters."
+            />
           </div>
         )}
       </div>

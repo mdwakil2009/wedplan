@@ -36,7 +36,7 @@ export default function UpgradeButton({
     <button
       onClick={handleUpgrade}
       disabled={loading}
-      className="mt-6 w-full rounded-xl bg-[#378A88] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#2D7472] disabled:cursor-not-allowed disabled:opacity-60"
+      className="mt-6 w-full rounded-xl bg-[#3A76EF] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_22px_-12px_rgba(58,118,239,0.9)] transition-all duration-200 hover:bg-[#2F63D4] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A76EF]/40"
     >
       {loading ? "Redirecting to Stripe..." : "Upgrade to Premium"}
     </button>

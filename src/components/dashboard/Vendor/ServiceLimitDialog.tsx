@@ -26,7 +26,7 @@ export default function ServiceLimitDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-[#E1E8ED] bg-white p-4">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-[#E7EBF5] bg-white p-4">
 
         {/* Header */}
         <DialogHeader className="text-center">
@@ -34,12 +34,12 @@ export default function ServiceLimitDialog({
             <FiAlertTriangle size={22} />
           </div>
 
-          <DialogTitle className="text-lg font-bold text-[#193F5B]">
+          <DialogTitle className="text-lg font-bold text-[#252B45]">
             Service Limit Reached
           </DialogTitle>
 
-          <DialogDescription className="text-xs leading-5 text-[#64748B]">
-            You've reached the maximum 3 services allowed
+          <DialogDescription className="text-xs leading-5 text-[#5B6478]">
+            You&apos;ve reached the maximum 3 services allowed
             on your Free Plan. Upgrade to add more services.
           </DialogDescription>
         </DialogHeader>
@@ -67,24 +67,24 @@ export default function ServiceLimitDialog({
         </div>
 
         {/* Premium Benefits */}
-        <div className="rounded-lg border border-[#CFE7E4] bg-[#F8FAFC] p-3">
-          <p className="text-xs font-semibold text-[#193F5B]">
+        <div className="rounded-lg border border-[#DCE6FF] bg-[#F9FAFF] p-3">
+          <p className="text-xs font-semibold text-[#252B45]">
             Premium Benefits
           </p>
 
-          <ul className="mt-2 space-y-1.5 text-xs text-[#64748B]">
+          <ul className="mt-2 space-y-1.5 text-xs text-[#5B6478]">
             <li className="flex items-center gap-2">
-              <FiCheck className="text-[#378A88]" />
+              <FiCheck className="text-[#3A76EF]" />
               Unlimited services
             </li>
 
             <li className="flex items-center gap-2">
-              <FiCheck className="text-[#378A88]" />
+              <FiCheck className="text-[#3A76EF]" />
               Grow your wedding business
             </li>
 
             <li className="flex items-center gap-2">
-              <FiCheck className="text-[#378A88]" />
+              <FiCheck className="text-[#3A76EF]" />
               Reach more customers
             </li>
           </ul>
@@ -97,7 +97,7 @@ export default function ServiceLimitDialog({
               onOpenChange(false);
               router.push("/dashboard/vendor/subscription");
             }}
-            className="h-9 w-full rounded-lg bg-[#378A88] text-sm text-white hover:bg-[#2C7371]"
+            className="h-9 w-full rounded-lg bg-[#3A76EF] text-sm text-white hover:bg-[#2F63D4]"
           >
             Upgrade to Premium
             <FiArrowRight className="ml-1.5" size={15} />
@@ -106,7 +106,7 @@ export default function ServiceLimitDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="h-9 w-full rounded-lg border-[#E1E8ED] text-sm"
+            className="h-9 w-full rounded-lg border-[#E7EBF5] text-sm"
           >
             Maybe Later
           </Button>

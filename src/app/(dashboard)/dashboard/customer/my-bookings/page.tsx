@@ -14,6 +14,10 @@ import {
 import { getCustomerBookings } from "@/lib/action/api";
 import type { Booking } from "@/lib/types/service";
 
+import PageHeader from "@/components/dashboard/ui/PageHeader";
+import StatusBadge from "@/components/dashboard/ui/StatusBadge";
+import EmptyState from "@/components/dashboard/ui/EmptyState";
+
 export default async function CustomerMyBookingsPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -31,43 +35,29 @@ export default async function CustomerMyBookingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6 lg:p-8">
-      {/* Page Header */}
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#378A88]">
-          Customer
-        </p>
-
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#193F5B] sm:text-3xl">
-          My Bookings
-        </h1>
-
-        <p className="mt-1.5 text-sm text-[#87939E]">
-          Follow all your booking requests in one place.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Customer Workspace"
+        title="My Bookings"
+        description="Follow all your booking requests in one place."
+      />
 
       {/* Empty State */}
       {bookings.length === 0 ? (
-        <div className="rounded-2xl border border-[#E1E8ED] bg-white p-10 text-center shadow-sm sm:p-14">
-          <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-[#E4F3F1] text-[#378A88]">
-            <FiCalendar className="size-6" />
-          </div>
-
-          <h2 className="mt-4 text-sm font-semibold text-[#193F5B]">
-            No bookings yet
-          </h2>
-
-          <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-[#87939E]">
-            Your booking requests and confirmed bookings will appear here.
-          </p>
-
-          <Link
-            href="/services"
-            className="mt-5 inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#378A88] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#2C7371]"
-          >
-            <FiShoppingBag className="size-3.5" />
-            Browse services
-          </Link>
+        <div className="rounded-2xl border border-[#E7EBF5] bg-white p-5 shadow-[0_1px_2px_rgba(37,43,69,0.04)] sm:p-6">
+          <EmptyState
+            icon={FiCalendar}
+            title="No bookings yet"
+            description="Your booking requests and confirmed bookings will appear here."
+            action={
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#3A76EF] px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-[#2F63D4]"
+              >
+                <FiShoppingBag className="size-3.5" />
+                Browse services
+              </Link>
+            }
+          />
         </div>
       ) : (
         /* Booking Cards */
@@ -75,34 +65,22 @@ export default async function CustomerMyBookingsPage() {
           {bookings.map((booking) => (
             <div
               key={booking._id}
-              className="rounded-xl border border-[#E1E8ED] bg-white p-5 shadow-sm"
+              className="overflow-hidden rounded-2xl border border-[#E7EBF5] bg-white p-5 shadow-[0_1px_2px_rgba(37,43,69,0.04)] transition-all duration-200 hover:border-[#C9D9FF] hover:shadow-[0_16px_36px_-24px_rgba(37,43,69,0.3)]"
             >
               {/* Header */}
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="font-semibold text-[#193F5B]">
+                <h2 className="text-sm font-bold text-[#252B45]">
                   Booking Request
                 </h2>
 
-                <span
-                  className={`rounded-full border px-3 py-1 text-xs font-semibold capitalize ${
-                    booking.status === "pending"
-                      ? "border-amber-200 bg-amber-50 text-amber-700"
-                      : booking.status === "accepted"
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        : booking.status === "rejected"
-                          ? "border-red-200 bg-red-50 text-red-600"
-                          : "border-slate-200 bg-slate-50 text-slate-600"
-                  }`}
-                >
-                  {booking.status}
-                </span>
+                <StatusBadge status={booking.status} />
               </div>
 
               {/* Service Information */}
               {booking.service && (
-                <div className="mt-4 flex flex-col gap-4 rounded-xl bg-slate-50 p-3 sm:flex-row">
+                <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-[#EDF0F8] bg-[#F9FAFF] p-3 sm:flex-row">
                   {/* Service Image */}
-                  <div className="h-44 w-full overflow-hidden rounded-lg bg-slate-200 sm:h-32 sm:w-44 sm:shrink-0">
+                  <div className="h-44 w-full overflow-hidden rounded-xl bg-[#EEF4FF] sm:h-32 sm:w-44 sm:shrink-0">
                     <img
                       src={booking.service.images?.[0]}
                       alt={booking.service.serviceName}
@@ -112,33 +90,33 @@ export default async function CustomerMyBookingsPage() {
 
                   {/* Service Details */}
                   <div className="flex-1 space-y-2">
-                    <p className="text-xs font-medium text-[#378A88]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A76EF]">
                       {booking.service.category}
                     </p>
 
-                    <h3 className="text-lg font-semibold text-[#193F5B]">
+                    <h3 className="text-lg font-bold text-[#252B45]">
                       {booking.service.serviceName}
                     </h3>
 
-                    <div className="flex items-center gap-1.5 text-sm font-semibold text-[#378A88]">
-                      <FiDollarSign />
+                    <div className="flex items-center gap-1.5 text-sm font-bold text-[#3A76EF]">
+                      <FiDollarSign className="size-4" />
                       {booking.service.price.toLocaleString("en-BD")} BDT
                     </div>
 
                     {/* Vendor Information */}
-                    <div className="flex items-start gap-2 border-t border-slate-200 pt-2">
-                      <FiUser className="mt-0.5 text-[#378A88]" />
+                    <div className="flex items-start gap-2 border-t border-[#E7EBF5] pt-2">
+                      <FiUser className="mt-0.5 size-3.5 text-[#3A76EF]" />
 
                       <div>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8A93A8]">
                           Service Provider
                         </p>
 
-                        <p className="text-sm font-medium text-[#193F5B]">
+                        <p className="text-sm font-semibold text-[#252B45]">
                           {booking.vendor?.name || "Vendor"}
                         </p>
 
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-[#7A839B]">
                           {booking.vendor?.email || "Email unavailable"}
                         </p>
                       </div>
@@ -148,32 +126,36 @@ export default async function CustomerMyBookingsPage() {
               )}
 
               {/* Booking Information */}
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {/* Event Date */}
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
-                    <FiCalendar />
+                <div className="flex items-center gap-3 rounded-xl border border-[#EDF0F8] p-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF4FF] text-[#3A76EF]">
+                    <FiCalendar className="size-4" />
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-400">Event Date</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8A93A8]">
+                      Event Date
+                    </p>
 
-                    <p className="text-sm font-medium text-[#193F5B]">
+                    <p className="text-sm font-semibold text-[#252B45]">
                       {booking.eventDate}
                     </p>
                   </div>
                 </div>
 
                 {/* Event Location */}
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-[#E4F3F1] text-[#378A88]">
-                    <FiMapPin />
+                <div className="flex items-center gap-3 rounded-xl border border-[#EDF0F8] p-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF4FF] text-[#3A76EF]">
+                    <FiMapPin className="size-4" />
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-400">Event Location</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8A93A8]">
+                      Event Location
+                    </p>
 
-                    <p className="text-sm font-medium text-[#193F5B]">
+                    <p className="text-sm font-semibold text-[#252B45]">
                       {booking.eventLocation}
                     </p>
                   </div>
@@ -182,22 +164,26 @@ export default async function CustomerMyBookingsPage() {
 
               {/* Message */}
               {booking.message && (
-                <div className="mt-4 flex items-start gap-3 rounded-lg bg-slate-50 p-3">
-                  <FiMessageSquare className="mt-0.5 text-[#378A88]" />
+                <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#EDF0F8] bg-[#F9FAFF] p-3">
+                  <FiMessageSquare className="mt-0.5 size-4 text-[#3A76EF]" />
 
                   <div>
-                    <p className="text-xs text-slate-400">Your Message</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8A93A8]">
+                      Your Message
+                    </p>
 
-                    <p className="text-sm text-[#193F5B]">{booking.message}</p>
+                    <p className="text-sm text-[#252B45]">{booking.message}</p>
                   </div>
                 </div>
               )}
 
               {/* Request Date */}
-              <div className="mt-4 border-t border-slate-100 pt-3">
-                <p className="text-xs text-slate-400">Booking Request Date</p>
+              <div className="mt-4 border-t border-[#EDF0F8] pt-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8A93A8]">
+                  Booking Request Date
+                </p>
 
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-[#5B6478]">
                   {booking.createdAt
                     ? new Date(booking.createdAt).toLocaleDateString("en-GB", {
                         day: "numeric",

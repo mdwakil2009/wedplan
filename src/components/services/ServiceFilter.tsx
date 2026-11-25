@@ -34,9 +34,14 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
   const [location, setLocation] = useState("");
   const [sort, setSort] = useState("recommended");
 
-  const categories = Array.from(
-    new Set(services.map((service) => service.category).filter(Boolean))
-  ).sort();
+const categories = [
+  "Photography & Videography",
+  "Wedding Venues",
+  "Decoration & Florist",
+  "Catering Services",
+  "Makeup & Styling",
+  "Wedding Fashion",
+];
 
   const categoryItems = {
     all: "All categories",

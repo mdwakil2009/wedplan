@@ -4,10 +4,10 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="font-dashboard">
       <DashboardSidebar />
 
-      <SidebarInset className="min-w-0 bg-[#E9EEF2]">
+      <SidebarInset className="min-w-0 bg-[#F9FAFF]">
         <DashboardHeader />
         <div className="flex-1">{children}</div>
       </SidebarInset>
