@@ -5,6 +5,8 @@ import PageHeader from "@/components/dashboard/ui/PageHeader";
 import SectionCard from "@/components/dashboard/ui/SectionCard";
 import StatusBadge from "@/components/dashboard/ui/StatusBadge";
 import EmptyState from "@/components/dashboard/ui/EmptyState";
+import { Suspense } from "react";
+import AdminTransactionsSkeleton from "@/components/dashboard/admin/AdminTransactionsSkeleton";
 
 type Transaction = {
   _id: string;
@@ -21,7 +23,16 @@ type Transaction = {
   };
 };
 
-export default async function AdminTransactionsPage() {
+export default function AdminTransactionsPage() {
+  return (
+    <Suspense fallback={<AdminTransactionsSkeleton />}>
+      <AdminTransactionsContent />
+    </Suspense>
+  );
+}
+
+
+ async function AdminTransactionsContent() {
   let transactions: Transaction[] = [];
   let error = false;
 

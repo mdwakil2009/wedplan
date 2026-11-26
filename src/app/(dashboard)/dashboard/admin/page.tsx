@@ -21,8 +21,17 @@ import StatCard from "@/components/dashboard/ui/StatCard";
 import SectionCard from "@/components/dashboard/ui/SectionCard";
 import MiniBarChart from "@/components/dashboard/ui/MiniBarChart";
 import QuickAction from "@/components/dashboard/ui/QuickAction";
+import { Suspense } from "react";
+import AdminOverviewSkeleton from "@/components/dashboard/admin/AdminOverviewSkeleton";
+export default function AdminDashboardPage() {
+  return (
+    <Suspense fallback={<AdminOverviewSkeleton />}>
+      <AdminDashboardContent />
+    </Suspense>
+  );
+}
 
-export default async function AdminDashboardPage() {
+async function AdminDashboardContent() {
   await requireRole("admin");
 
   const tokenData = await auth.api.getToken({
@@ -48,7 +57,7 @@ export default async function AdminDashboardPage() {
 
   const approvedServices = Math.max(
     stats.totalServices - stats.pendingServices,
-    0
+    0,
   );
 
   return (

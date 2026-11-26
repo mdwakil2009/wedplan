@@ -12,6 +12,8 @@ import {
   FiCheckCircle,
   FiArrowRight,
   FiShield,
+  FiAlertCircle,
+  FiRefreshCw,
 } from "react-icons/fi";
 
 export default async function Success({
@@ -24,7 +26,7 @@ export default async function Success({
   const { session_id } = await searchParams;
 
   if (!session_id) {
-    redirect("/");
+    redirect("/dashboard/vendor/subscription");
   }
 
   // 1. Authenticate current user
@@ -40,87 +42,129 @@ export default async function Success({
 
   const token = tokenData.token;
 
-  // 2. Retrieve Stripe session
-  let session;
+  let errorMessage = "";
+  let session: Awaited<
+    ReturnType<typeof stripe.checkout.sessions.retrieve>
+  > | null = null;
 
+  // 2. Retrieve Stripe session
   try {
     session = await stripe.checkout.sessions.retrieve(session_id);
-  } catch (error) {
-    console.error("Stripe Session Error:", error);
-    redirect("/dashboard/vendor/subscription");
-  }
-
-  // 3. Check Stripe payment
-  if (
-    session.status !== "complete" ||
-    session.payment_status !== "paid" ||
-    session.mode !== "payment"
-  ) {
-    redirect("/dashboard/vendor/subscription");
-  }
-
-  // 4. Verify payment and activate Premium in MongoDB
-  let verificationResult;
-
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          sessionId: session_id,
-        }),
-        cache: "no-store",
-      }
-    );
-
-    verificationResult = await response.json();
 
     if (
-      !response.ok ||
-      !verificationResult.success ||
-      verificationResult.premiumActivated !== true
+      session.status !== "complete" ||
+      session.payment_status !== "paid" ||
+      session.mode !== "payment"
     ) {
-      console.error(
-        "Payment Verification Failed:",
-        verificationResult
-      );
-
-      throw new Error(
-        verificationResult.message ||
-          "Premium activation could not be confirmed."
-      );
+      errorMessage = "Your payment has not been completed yet.";
     }
   } catch (error) {
-    console.error("Premium Activation Error:", error);
-
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Premium activation failed."
-    );
+    console.error("Stripe Session Error:", error);
+    errorMessage = "Unable to verify your payment session.";
   }
 
-  // 5. Confirm latest subscription from MongoDB
-  let isPremium = false;
+  // 3. Verify payment and activate Premium
+  if (!errorMessage && session) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/verify-payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            sessionId: session_id,
+          }),
+          cache: "no-store",
+        }
+      );
 
-  try {
-    const subscriptionResult = await getMySubscription(token);
+      const verificationResult = await response.json().catch(() => null);
 
-    isPremium =
-      subscriptionResult.success &&
-      subscriptionResult.isPremium === true;
-  } catch (error) {
-    console.error("Subscription Status Error:", error);
+      if (
+        !response.ok ||
+        !verificationResult?.success ||
+        verificationResult.premiumActivated !== true
+      ) {
+        throw new Error(
+          verificationResult?.message ||
+            "Premium activation could not be confirmed."
+        );
+      }
+    } catch (error) {
+      console.error("Payment Verification Error:", error);
+
+      errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Payment verification failed. Please try again.";
+    }
   }
 
-  if (!isPremium) {
-    throw new Error(
-      "Payment was successful, but Premium status could not be confirmed. Please refresh or contact support."
+  // 4. Confirm latest subscription from database
+  if (!errorMessage) {
+    try {
+      const subscriptionResult = await getMySubscription(token);
+
+      if (
+        !subscriptionResult.success ||
+        subscriptionResult.isPremium !== true
+      ) {
+        throw new Error("Premium activation could not be confirmed.");
+      }
+    } catch (error) {
+      console.error("Subscription Status Error:", error);
+
+      errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Unable to confirm your Premium subscription.";
+    }
+  }
+
+  // 5. Show error UI
+  if (errorMessage || !session) {
+    return (
+      <main className="flex min-h-[70vh] items-center justify-center bg-[#F9FAFF] px-4 py-6">
+        <div className="w-full max-w-sm rounded-2xl border border-[#E7EBF5] bg-white p-6 text-center shadow-lg">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-red-50">
+            <FiAlertCircle className="size-7 text-red-500" />
+          </div>
+
+          <h1 className="mt-4 text-xl font-bold text-[#252B45]">
+            Verification Pending
+          </h1>
+
+          <p className="mt-2 text-xs leading-5 text-[#7A839B]">
+            {errorMessage ||
+              "We could not confirm your payment. Please try again."}
+          </p>
+
+          <div className="mt-5 space-y-3">
+            <Link
+              href={`/dashboard/vendor/subscription/success?session_id=${encodeURIComponent(session_id)}`}
+              className="flex h-10 items-center justify-center gap-2 rounded-lg bg-[#3A76EF] px-4 text-xs font-semibold text-white transition hover:bg-[#2F63D4]"
+            >
+              <FiRefreshCw className="size-3.5" />
+              Try Again
+            </Link>
+
+            <Link
+              href="/dashboard/vendor/subscription"
+              className="flex h-10 items-center justify-center rounded-lg border border-[#E7EBF5] text-xs font-semibold text-[#7A839B] transition hover:bg-[#F9FAFF]"
+            >
+              Back to Subscription
+            </Link>
+          </div>
+
+          <p className="mt-4 text-[10px] leading-4 text-[#A0A8B8]">
+            If your payment was successful but Premium is not activated,
+            please contact support.
+          </p>
+        </div>
+      </main>
     );
   }
 

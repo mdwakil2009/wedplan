@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -12,6 +11,7 @@ import {
   FiSliders,
   FiX,
   FiArrowDown,
+  FiRefreshCw,
 } from "react-icons/fi";
 
 import ServiceCard from "@/components/services/ServiceCard";
@@ -26,6 +26,7 @@ import type { Service } from "@/lib/types/service";
 
 type ServiceFilterProps = {
   services: Service[];
+  hasError?: boolean;
 };
 
 const selectItemClass =
@@ -60,32 +61,32 @@ const selectTriggerClass =
 const labelClass =
   "mb-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.17em] text-white/90";
 
-export default function ServiceFilter({ services }: ServiceFilterProps) {
+export default function ServiceFilter({
+  services,
+  hasError = false,
+}: ServiceFilterProps) {
   const searchParams = useSearchParams();
 
   const serviceSectionRef = useRef<HTMLDivElement>(null);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(
-    searchParams.get("category") || "all"
+    searchParams.get("category") || "all",
   );
   const [location, setLocation] = useState("");
   const [sort, setSort] = useState("recommended");
 
-  
   useEffect(() => {
     const selectedCategory = searchParams.get("category");
 
     const matchedCategory = categories.find(
       (item) =>
-        item.toLowerCase() ===
-        (selectedCategory || "").trim().toLowerCase()
+        item.toLowerCase() === (selectedCategory || "").trim().toLowerCase(),
     );
 
     setCategory(matchedCategory || "all");
   }, [searchParams]);
 
-  
   useEffect(() => {
     const selectedCategory = searchParams.get("category");
 
@@ -104,7 +105,6 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
   const keyword = search.trim().toLowerCase();
   const locationKeyword = location.trim().toLowerCase();
 
-  
   let filteredServices = services.filter((service) => {
     const matchesSearch = (service.serviceName || "")
       .toLowerCase()
@@ -125,13 +125,13 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
   // Sort services by price
   if (sort === "low") {
     filteredServices = [...filteredServices].sort(
-      (first, second) => Number(first.price) - Number(second.price)
+      (first, second) => Number(first.price) - Number(second.price),
     );
   }
 
   if (sort === "high") {
     filteredServices = [...filteredServices].sort(
-      (first, second) => Number(second.price) - Number(first.price)
+      (first, second) => Number(second.price) - Number(first.price),
     );
   }
 
@@ -229,8 +229,8 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
               </h1>
 
               <p className="mx-auto mt-2 max-w-lg text-xs leading-5 text-white/75 sm:text-[13px]">
-                Discover trusted professionals to bring your dream wedding
-                to life.
+                Discover trusted professionals to bring your dream wedding to
+                life.
               </p>
             </div>
 
@@ -351,10 +351,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
                   </SelectTrigger>
 
                   <SelectContent className="rounded-xl border-[#EDDEE0] bg-white p-1 shadow-xl dark:border-[#414C45] dark:bg-[#29332E]">
-                    <SelectItem
-                      value="recommended"
-                      className={selectItemClass}
-                    >
+                    <SelectItem value="recommended" className={selectItemClass}>
                       Recommended
                     </SelectItem>
 
@@ -373,9 +370,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
             {/* Bottom Hint */}
             <div className="mt-5 flex items-center justify-center gap-2 text-[10px] text-white/65">
               <FiArrowDown className="size-3.5" />
-              <span>
-                Explore our collection of wedding professionals
-              </span>
+              <span>Explore our collection of wedding professionals</span>
             </div>
           </motion.div>
         </div>
@@ -438,25 +433,42 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-5 rounded-3xl border border-dashed border-[#E7CFD4] bg-[#FFF8F7] px-6 py-16 text-center transition-colors duration-300 dark:border-[#414C45] dark:bg-[#29332E]"
+            className="mt-5 rounded-3xl border border-dashed border-[#E7CFD4] bg-white px-6 py-16 text-center dark:border-[#414C45] dark:bg-[#29332E]"
           >
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-white text-[#B76E79] shadow-sm ring-1 ring-[#F0E1E4] dark:bg-[#35413A] dark:text-[#D9A58E] dark:ring-[#414C45]">
-              <FiSliders className="size-7" />
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-[#FFF5F5] text-[#B76E79] dark:bg-[#35413A] dark:text-[#D9A58E]">
+              {hasError ? (
+                <FiRefreshCw className="size-7" />
+              ) : (
+                <FiSliders className="size-7" />
+              )}
             </div>
 
             <h3 className="mt-5 text-lg font-semibold text-[#332229] dark:text-[#F5FAF6]">
-              {hasFilters
-                ? "No services match your filters"
-                : "No services are available yet"}
+              {hasError
+                ? "Unable to load services"
+                : hasFilters
+                  ? "No services match your filters"
+                  : "No services are available yet"}
             </h3>
 
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#8B767C] dark:text-[#B2BDB5]">
-              {hasFilters
-                ? "Try a different service name, category or location. You can also clear all filters to see every available service."
-                : "Approved wedding services will appear here as soon as vendors publish them. Please check back soon."}
+              {hasError
+                ? "Something went wrong while loading wedding services. Please try again."
+                : hasFilters
+                  ? "Try a different service name, category or location. You can also clear all filters to see every available service."
+                  : "Approved wedding services will appear here as soon as vendors publish them. Please check back soon."}
             </p>
 
-            {hasFilters ? (
+            {hasError ? (
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#772D43] px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-[#5F2034] dark:bg-[#D9A58E] dark:text-[#1D2421] dark:hover:bg-[#E8B9A5]"
+              >
+                <FiRefreshCw className="size-3.5" />
+                Try Again
+              </button>
+            ) : hasFilters ? (
               <button
                 type="button"
                 onClick={clearFilters}
@@ -468,7 +480,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
             ) : (
               <Link
                 href="/services"
-                className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9BCC2] px-5 py-2.5 text-xs font-semibold text-[#772D43] transition-colors hover:bg-white dark:border-[#59665D] dark:text-[#D9A58E] dark:hover:bg-[#35413A]"
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D9BCC2] px-5 py-2.5 text-xs font-semibold text-[#772D43] transition-colors hover:bg-[#FFF8F7] dark:border-[#59665D] dark:text-[#D9A58E] dark:hover:bg-[#35413A]"
               >
                 Check again
               </Link>

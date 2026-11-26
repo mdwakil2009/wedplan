@@ -24,7 +24,8 @@ import StatusBadge from "@/components/dashboard/ui/StatusBadge";
 import EmptyState from "@/components/dashboard/ui/EmptyState";
 import MiniBarChart from "@/components/dashboard/ui/MiniBarChart";
 import QuickAction from "@/components/dashboard/ui/QuickAction";
-
+import VendorOverviewSkeleton from "@/components/dashboard/Vendor/VendorOverviewSkeleton";
+import { Suspense } from "react";
 export const instant = false;
 
 interface Service {
@@ -35,8 +36,14 @@ interface Service {
   price?: number;
   createdAt?: string;
 }
-
-export default async function VendorOverviewPage() {
+export default function VendorOverviewPage() {
+  return (
+    <Suspense fallback={<VendorOverviewSkeleton />}>
+      <VendorOverviewContent />
+    </Suspense>
+  );
+}
+async function VendorOverviewContent() {
   const session = await requireRole("vendor");
 
   // Get JWT token from Better Auth

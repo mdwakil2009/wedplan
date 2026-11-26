@@ -10,7 +10,15 @@ export type Service = {
   images: string[];
   status: string;
   createdAt: string;
-    isActive?: boolean;
+  isActive?: boolean;
+  userName?: string;
+  userImage?: string;
+  vendorName?:string
+  vendor?: {
+  name?: string;
+  email?: string;
+  image?: string;
+} | null;
 };
 
 export type BookingState = {
@@ -37,6 +45,4 @@ export type Booking = {
   customer?: Customer | null;
   service?: Service | null;
   vendor?: Customer | null;
-
-  
 };

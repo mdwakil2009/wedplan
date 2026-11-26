@@ -14,8 +14,17 @@ import BookingStatusButtons from "@/components/dashboard/Vendor/BookingStatusBut
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import StatusBadge from "@/components/dashboard/ui/StatusBadge";
 import EmptyState from "@/components/dashboard/ui/EmptyState";
-
-export default async function VendorBookingRequestsPage() {
+import { Suspense } from "react";
+import BookingRequestsSkeleton from "@/components/dashboard/Vendor/BookingRequestsSkeleton";
+ 
+export default function VendorBookingRequestsPage() {
+  return (
+    <Suspense fallback={<BookingRequestsSkeleton />}>
+      <VendorBookingRequestsContent />
+    </Suspense>
+  );
+}
+async function  VendorBookingRequestsContent() {
   const requestHeaders = await headers();
 
   const session = await auth.api.getSession({

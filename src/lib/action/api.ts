@@ -1,12 +1,10 @@
-
 "use server";
 
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // Check logged-in user and blocked status
 async function checkActiveUser() {
@@ -44,6 +42,10 @@ async function getServerJWTToken() {
 export async function bookingAPI(bookingData: object) {
   const token = await getServerJWTToken();
 
+  if (!token) {
+    throw new Error("Authentication token not found. Please sign in again.");
+  }
+
   const response = await fetch(`${BASE_URL}/bookings`, {
     method: "POST",
     headers: {
@@ -54,7 +56,10 @@ export async function bookingAPI(bookingData: object) {
     cache: "no-store",
   });
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({
+    success: false,
+    message: "Invalid server response. Please try again.",
+  }));
 
   return {
     response,
@@ -68,7 +73,7 @@ export async function getUserById(userId: string) {
     `${BASE_URL}/users/${encodeURIComponent(userId)}`,
     {
       cache: "no-store",
-    }
+    },
   );
 
   if (!response.ok) {
@@ -80,11 +85,10 @@ export async function getUserById(userId: string) {
   return data.user;
 }
 
-
 // Update Booking Status
 export async function updateBookingStatus(
   bookingId: string,
-  status: "accepted" | "rejected"
+  status: "accepted" | "rejected",
 ) {
   const token = await getServerJWTToken();
 
@@ -128,15 +132,12 @@ export async function getCustomerBookings() {
 export async function getVendorBookingsWithService() {
   const token = await getServerJWTToken();
 
-  const response = await fetch(
-    `${BASE_URL}/vendor-bookings-with-service`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${BASE_URL}/vendor-bookings-with-service`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     throw new Error("Failed to fetch vendor bookings");
@@ -200,10 +201,7 @@ export async function getAdminUsers() {
 }
 
 // Block / Unblock User
-export async function updateUserStatus(
-  id: string,
-  isBlocked: boolean
-) {
+export async function updateUserStatus(id: string, isBlocked: boolean) {
   const token = await getServerJWTToken();
 
   const response = await fetch(`${BASE_URL}/admin-users/${id}`, {
@@ -246,22 +244,19 @@ export async function getAdminServices() {
 // Approve / Reject Service
 export async function updateServiceStatus(
   id: string,
-  status: "pending" | "approved" | "rejected"
+  status: "pending" | "approved" | "rejected",
 ) {
   const token = await getServerJWTToken();
 
-  const response = await fetch(
-    `${BASE_URL}/admin-services/${id}/status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${BASE_URL}/admin-services/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+    cache: "no-store",
+  });
 
   const data = await response.json();
 
@@ -273,24 +268,18 @@ export async function updateServiceStatus(
 }
 
 // Active / Inactive Service
-export async function updateServiceActiveStatus(
-  id: string,
-  isActive: boolean
-) {
+export async function updateServiceActiveStatus(id: string, isActive: boolean) {
   const token = await getServerJWTToken();
 
-  const response = await fetch(
-    `${BASE_URL}/admin-services/${id}/active`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ isActive }),
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${BASE_URL}/admin-services/${id}/active`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isActive }),
+    cache: "no-store",
+  });
 
   const data = await response.json();
 
@@ -301,7 +290,7 @@ export async function updateServiceActiveStatus(
   return data;
 }
 
-// 
+//
 // Admin - Delete Service
 export async function deleteAdminService(id: string) {
   const token = await getServerJWTToken();
@@ -327,6 +316,10 @@ export async function deleteAdminService(id: string) {
 export async function createCheckoutSession() {
   const token = await getServerJWTToken();
 
+  if (!token) {
+    throw new Error("Please sign in again to continue.");
+  }
+
   const response = await fetch(`${BASE_URL}/create-checkout-session`, {
     method: "POST",
     headers: {
@@ -335,10 +328,15 @@ export async function createCheckoutSession() {
     cache: "no-store",
   });
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({
+    success: false,
+    message: "Invalid server response. Please try again.",
+  }));
 
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to create checkout session");
+  if (!response.ok || !data.success || !data.url) {
+    throw new Error(
+      data.message || "Failed to create checkout session."
+    );
   }
 
   return data;
@@ -404,6 +402,7 @@ export async function getMyServices() {
 }
 
 // Get Vendor Subscription Status
+// Get Vendor Subscription Status
 export async function getMySubscription(token: string) {
   const response = await fetch(`${BASE_URL}/my-subscription`, {
     method: "GET",
@@ -413,11 +412,18 @@ export async function getMySubscription(token: string) {
     cache: "no-store",
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to get subscription status");
+  const data = await response.json().catch(() => ({
+    success: false,
+    message: "Invalid server response.",
+  }));
+
+  if (!response.ok || !data.success) {
+    throw new Error(
+      data.message || "Failed to get subscription status."
+    );
   }
 
-  return response.json();
+  return data;
 }
 //6 data featured services
 export const getFeaturedServices = async () => {

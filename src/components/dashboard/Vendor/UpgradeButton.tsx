@@ -3,9 +3,9 @@
 
 import { useState } from "react";
 import { createCheckoutSession } from "@/lib/action/api";
+import { toast } from "@/components/ui/toast";
 
 export default function UpgradeButton({
- 
 }: {
   userId: string;
   email: string;
@@ -13,21 +13,36 @@ export default function UpgradeButton({
   const [loading, setLoading] = useState(false);
 
   const handleUpgrade = async () => {
-    try {
-      setLoading(true);
+    if (loading) return;
 
+    setLoading(true);
+
+    try {
       const data = await createCheckoutSession();
 
-      if (data.success && data.url) {
-        window.location.href = data.url;
-      } else {
-        console.log("Checkout Error:", data);
-        alert(data.message || "Failed to start payment");
+      if (!data.success || !data.url) {
+        throw new Error(
+          data.message || "Failed to start payment."
+        );
       }
+
+      toast.add({
+        title: "Redirecting to Stripe",
+        description: "Please wait while we prepare your payment.",
+      });
+
+      window.location.href = data.url;
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong!");
-    } finally {
+      console.error("Checkout Error:", error);
+
+      toast.add({
+        title: "Payment Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+      });
+
       setLoading(false);
     }
   };

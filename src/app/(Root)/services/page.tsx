@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { FiCheckCircle, FiShield } from "react-icons/fi";
@@ -60,7 +59,7 @@ async function ServicesContent() {
         </div>
       )}
 
-      <ServiceFilter services={liveServices} />
+      <ServiceFilter services={liveServices} hasError={hasError} />
     </>
   );
 }

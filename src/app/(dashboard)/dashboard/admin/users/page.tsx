@@ -1,10 +1,21 @@
+import { Suspense } from "react";
+
 import { requireRole } from "@/lib/dashboard-auth";
 import { getAdminUsers } from "@/lib/action/api";
 
 import AdminUsersTable from "@/components/dashboard/admin/AdminUsersTable";
+import AdminUsersSkeleton from "@/components/dashboard/admin/AdminUsersSkeleton";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 
-export default async function AdminUsersPage() {
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={<AdminUsersSkeleton />}>
+      <AdminUsersContent />
+    </Suspense>
+  );
+}
+
+async function AdminUsersContent() {
   await requireRole("admin");
 
   let users = [];
@@ -22,8 +33,6 @@ export default async function AdminUsersPage() {
         title="Manage Users"
         description="Manage customers, vendors and platform users from one place."
       />
-
-      {/* Users Table */}
       <AdminUsersTable users={users} />
     </div>
   );

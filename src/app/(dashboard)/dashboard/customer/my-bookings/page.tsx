@@ -17,8 +17,18 @@ import type { Booking } from "@/lib/types/service";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 import StatusBadge from "@/components/dashboard/ui/StatusBadge";
 import EmptyState from "@/components/dashboard/ui/EmptyState";
+import { Suspense } from "react";
+import CustomerMyBookingsSkeleton from "@/components/dashboard/customer/CustomerMyBookingsSkeleton";
 
-export default async function CustomerMyBookingsPage() {
+export default function CustomerMyBookingsPage() {
+  return (
+    <Suspense fallback={<CustomerMyBookingsSkeleton />}>
+      <CustomerMyBookingsContent />
+    </Suspense>
+  );
+}
+
+async function CustomerMyBookingsContent() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });

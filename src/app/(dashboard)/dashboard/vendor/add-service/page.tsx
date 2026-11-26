@@ -48,8 +48,8 @@ export default function AddServicePage() {
   const router = useRouter();
   const [images, setImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLimitDialog, setShowLimitDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Prevent multiple submissions
   const submitLock = useRef(false);

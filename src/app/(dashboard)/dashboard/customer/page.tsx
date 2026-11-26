@@ -1,6 +1,4 @@
 export const instant = false;
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import Link from "next/link";
 import {
   FiArrowRight,
@@ -25,15 +23,18 @@ import StatusBadge from "@/components/dashboard/ui/StatusBadge";
 import EmptyState from "@/components/dashboard/ui/EmptyState";
 import MiniBarChart from "@/components/dashboard/ui/MiniBarChart";
 import QuickAction from "@/components/dashboard/ui/QuickAction";
+import { Suspense } from "react";
+import CustomerOverviewSkeleton from "@/components/dashboard/customer/CustomerOverviewSkeleton";
 
-export default async function CustomerOverviewPage() {
+export default function CustomerOverviewPage() {
+  return (
+    <Suspense fallback={<CustomerOverviewSkeleton />}>
+      <CustomerOverviewContent />
+    </Suspense>
+  );
+}
+ async function CustomerOverviewContent() {
   const session = await requireRole("customer");
-
-  const tokenData = await auth.api.getToken({
-    headers: await headers(),
-  });
-
-  console.log("CUSTOMER JWT TOKEN:", tokenData.token);
 
   let bookings: Booking[] = [];
 

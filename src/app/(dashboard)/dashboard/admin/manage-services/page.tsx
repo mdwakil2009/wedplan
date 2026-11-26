@@ -1,9 +1,21 @@
+import { Suspense } from "react";
+
 import { requireRole } from "@/lib/dashboard-auth";
 import { getAdminServices } from "@/lib/action/api";
+
 import AdminServicesTable from "@/components/dashboard/admin/AdminServicesTable";
+import AdminServicesSkeleton from "@/components/dashboard/admin/AdminServicesSkeleton";
 import PageHeader from "@/components/dashboard/ui/PageHeader";
 
-export default async function AdminServicesPage() {
+export default function AdminServicesPage() {
+  return (
+    <Suspense fallback={<AdminServicesSkeleton />}>
+      <AdminServicesContent />
+    </Suspense>
+  );
+}
+
+async function AdminServicesContent() {
   await requireRole("admin");
 
   let services = [];
@@ -22,7 +34,6 @@ export default async function AdminServicesPage() {
         description="Review, approve, reject and manage vendor services."
       />
 
-      {/* Services Table */}
       <AdminServicesTable services={services} />
     </div>
   );
