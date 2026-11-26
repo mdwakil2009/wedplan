@@ -43,7 +43,6 @@ export default async function ServiceDetailsPage({
     service = await getServiceById(id);
   } catch (error) {
     console.error("Service Details Fetch Error:", error);
-    return <DetailsError />;
   }
 
   if (!service) {
@@ -194,36 +193,6 @@ export default async function ServiceDetailsPage({
             </section>
           </div>
         </div>
-      </div>
-    </main>
-  );
-}
-
-// Error UI
-function DetailsError() {
-  return (
-    <main className="flex min-h-[70vh] items-center justify-center bg-[#FFFCF9] px-4">
-      <div className="w-full max-w-md rounded-3xl border border-[#F0E1E4] bg-white p-8 text-center shadow-[0_18px_45px_rgba(72,31,44,0.08)]">
-        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-[#FBF1F2] text-[#772D43]">
-          <FiShield className="size-6" />
-        </div>
-
-        <h1 className="mt-4 text-lg font-semibold text-[#332229]">
-          We could not load this service
-        </h1>
-
-        <p className="mt-2 text-sm leading-6 text-[#8B767C]">
-          Please check your connection and try again. If the problem continues,
-          the service may no longer be available.
-        </p>
-
-        <Link
-          href="/services"
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#772D43] px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-[#5F2034]"
-        >
-          <FiArrowLeft className="size-4" />
-          Back to services
-        </Link>
       </div>
     </main>
   );

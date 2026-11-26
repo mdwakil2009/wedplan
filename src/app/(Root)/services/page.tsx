@@ -16,7 +16,7 @@ export const metadata = {
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-[#FFFCF9] transition-colors duration-300 dark:bg-[#1D2421]">
+    <div className="min-h-screen bg-[#FFFFFF] transition-colors duration-300 dark:bg-[#1D2421]">
       <Suspense fallback={<ServicesSkeleton />}>
         <ServicesContent />
       </Suspense>

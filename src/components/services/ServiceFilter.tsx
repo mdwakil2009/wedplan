@@ -72,7 +72,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
   const [location, setLocation] = useState("");
   const [sort, setSort] = useState("recommended");
 
-  // URL থেকে category গ্রহণ করা
+  
   useEffect(() => {
     const selectedCategory = searchParams.get("category");
 
@@ -85,7 +85,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
     setCategory(matchedCategory || "all");
   }, [searchParams]);
 
-  // URL-এ category থাকলে service results-এ scroll
+  
   useEffect(() => {
     const selectedCategory = searchParams.get("category");
 
@@ -104,7 +104,7 @@ export default function ServiceFilter({ services }: ServiceFilterProps) {
   const keyword = search.trim().toLowerCase();
   const locationKeyword = location.trim().toLowerCase();
 
-  // Search and category filter
+  
   let filteredServices = services.filter((service) => {
     const matchesSearch = (service.serviceName || "")
       .toLowerCase()

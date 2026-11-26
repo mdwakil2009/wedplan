@@ -92,9 +92,6 @@ export const getServiceById = async (
     cache: "no-store",
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch service");
-  }
 
   return response.json();
 };

@@ -18,7 +18,7 @@ export default function ServiceCard({ service }: { service: Service }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#F0E1E4] bg-white shadow-[0_10px_30px_rgba(72,31,44,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#DDBEC4] hover:shadow-[0_24px_48px_rgba(72,31,44,0.12)]">
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#F7EDEE]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#FFFFFF]">
         {image ? (
           <Image
             src={image}
