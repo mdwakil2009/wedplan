@@ -48,20 +48,29 @@ export default function BookingForm({
 
   const isOwner =
     role === "vendor" &&
-    userEmail?.toLowerCase() === vendorEmail?.toLowerCase() &&
-    Boolean(userEmail && vendorEmail);
+    Boolean(userEmail && vendorEmail) &&
+    userEmail.toLowerCase() === vendorEmail.toLowerCase();
+
+  // Get today's local date without UTC timezone conversion
+  const today = new Date();
+  const minDate = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0"),
+  ].join("-");
 
   const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
+    event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
     if (isSubmitting) return;
 
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
     setIsSubmitting(true);
     setResult(null);
-
-    const formData = new FormData(event.currentTarget);
 
     try {
       const response = await createBooking(formData);
@@ -74,6 +83,10 @@ export default function BookingForm({
           : "Booking Request Failed",
         description: response.message,
       });
+
+      if (response.success) {
+        form.reset();
+      }
     } catch (error) {
       console.error("Booking Submission Error:", error);
 
@@ -96,6 +109,7 @@ export default function BookingForm({
     }
   };
 
+  // Admin notice
   if (isAdmin) {
     return (
       <Notice
@@ -106,6 +120,7 @@ export default function BookingForm({
     );
   }
 
+  // Vendor owner notice
   if (isOwner) {
     return (
       <Notice
@@ -118,6 +133,7 @@ export default function BookingForm({
     );
   }
 
+  // Successful booking
   if (result?.success) {
     return (
       <div className="rounded-2xl border border-[#CFE7D9] bg-[#F1FAF4] p-6 text-center">
@@ -158,60 +174,66 @@ export default function BookingForm({
   return (
     <div className="space-y-4">
       {/* Vendor Information */}
-     
-{/* Vendor Information */}
-<div className="rounded-2xl border border-[#F0E1E4] bg-[#FFFAF8] p-4 dark:border-[#46534B] dark:bg-[#29332E]">
-  <div className="mb-4 flex items-center justify-between">
-    <h3 className="text-xs font-semibold text-[#332229] dark:text-[#F5FAF6]">
-      Vendor Information
-    </h3>
+      <div className="rounded-2xl border border-[#F0E1E4] bg-[#FFFAF8] p-4 dark:border-[#46534B] dark:bg-[#29332E]">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-[#332229] dark:text-[#F5FAF6]">
+            Vendor Information
+          </h3>
 
-    <span className="inline-flex items-center gap-1 rounded-full bg-[#F1FAF4] px-2 py-1 text-[9px] font-semibold text-[#2F8A57] dark:bg-[#244333] dark:text-[#9BD5AE]">
-      <FiCheckCircle className="size-3" />
-      Verified
-    </span>
-  </div>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#F1FAF4] px-2 py-1 text-[9px] font-semibold text-[#2F8A57] dark:bg-[#244333] dark:text-[#9BD5AE]">
+            <FiCheckCircle className="size-3" />
+            Verified
+          </span>
+        </div>
 
-  {/* Vendor Profile */}
-  <div className="flex items-center gap-3">
-    {/* Vendor Avatar */}
-    <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8D8C9] dark:bg-[#35413A]">
-      {vendorImage ? (
-        <img
-          src={vendorImage}
-          alt={vendorName || "Wedding Vendor"}
-          className="size-full object-cover"
-        />
-      ) : (
-        <span className="text-lg font-semibold text-[#79543F] dark:text-[#D9A58E]">
-          {vendorName?.charAt(0)?.toUpperCase() || "V"}
-        </span>
-      )}
-    </div>
+        <div className="flex items-center gap-3">
+          <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8D8C9] dark:bg-[#35413A]">
+            {vendorImage ? (
+              <Image
+                src={vendorImage}
+                alt={vendorName || "Wedding Vendor"}
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
+            ) : (
+              <span className="text-lg font-semibold text-[#79543F] dark:text-[#D9A58E]">
+                {vendorName?.charAt(0)?.toUpperCase() || "V"}
+              </span>
+            )}
+          </div>
 
-    {/* Vendor Details */}
-    <div className="min-w-0 flex-1">
-      <p className="text-[9px] font-semibold uppercase tracking-[1.5px] text-[#A17B61] dark:text-[#D9A58E]">
-        Meet Your Vendor
-      </p>
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] font-semibold uppercase tracking-[1.5px] text-[#A17B61] dark:text-[#D9A58E]">
+              Meet Your Vendor
+            </p>
 
-      <p className="mt-0.5 truncate text-sm font-semibold text-[#382B23] dark:text-[#F5FAF6]">
-        {vendorName || "Wedding Professional"}
-      </p>
+            <p className="mt-0.5 truncate text-sm font-semibold text-[#382B23] dark:text-[#F5FAF6]">
+              {vendorName || "Wedding Professional"}
+            </p>
 
-      <p className="mt-0.5 break-all text-xs text-[#82766B] dark:text-[#B2BDB5]">
-        {vendorEmail || "Email unavailable"}
-      </p>
-    </div>
-  </div>
-</div>
-
+            <p className="mt-0.5 break-all text-xs text-[#82766B] dark:text-[#B2BDB5]">
+              {vendorEmail || "Email unavailable"}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Booking Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="hidden" name="serviceId" value={serviceId} />
-        <input type="hidden" name="vendorId" value={vendorId} />
+        <input
+          type="hidden"
+          name="serviceId"
+          value={serviceId}
+        />
 
+        <input
+          type="hidden"
+          name="vendorId"
+          value={vendorId}
+        />
+
+        {/* Service Information */}
         <div className="rounded-xl border border-[#F0E1E4] bg-[#FFF8F7] px-4 py-3 dark:border-[#46534B] dark:bg-[#29332E]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A38E94] dark:text-[#9EADA3]">
             Booking request for
@@ -237,7 +259,7 @@ export default function BookingForm({
             name="eventDate"
             type="date"
             required
-            min={new Date().toISOString().split("T")[0]}
+            min={minDate}
             className="h-11 w-full rounded-xl border border-[#EDDEE0] bg-white px-3.5 text-sm text-[#332229] outline-none transition-all focus:border-[#B76E79] focus:ring-4 focus:ring-[#B76E79]/10 dark:border-[#46534B] dark:bg-[#1D2421] dark:text-white"
           />
         </div>
@@ -309,8 +331,8 @@ export default function BookingForm({
         </button>
 
         <p className="text-center text-[10px] leading-4 text-[#A38E94] dark:text-[#9EADA3]">
-          No payment is taken now. The vendor will accept or reject your
-          request from their dashboard.
+          No payment is taken now. The vendor will accept or reject
+          your request from their dashboard.
         </p>
       </form>
     </div>

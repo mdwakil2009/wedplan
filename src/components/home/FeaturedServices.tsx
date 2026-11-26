@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { getFeaturedServices } from "@/lib/action/api";
+import FeaturedServicesSkeleton from "./FeaturedServicesSkeleton";
 
 import {
   ArrowUpRight,
@@ -15,6 +16,7 @@ import {
   Mail,
   Sparkles,
   UserRound,
+  Star,
 } from "lucide-react";
 
 type Vendor = {
@@ -35,69 +37,6 @@ type Service = {
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const headingVariants = {
-  hidden: {
-    opacity: 0,
-    y: 25,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.75,
-      ease,
-    },
-  },
-};
-
-const imageVariants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.94,
-    y: 20,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      duration: 0.85,
-      ease,
-    },
-  },
-};
-
-const contentVariants = {
-  hidden: {
-    opacity: 0,
-    x: 25,
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.75,
-      ease,
-      staggerChildren: 0.09,
-    },
-  },
-};
-
-const childVariants = {
-  hidden: {
-    opacity: 0,
-    y: 15,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease,
-    },
-  },
-};
-
 export default function FeaturedServices() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,137 +44,167 @@ export default function FeaturedServices() {
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
+    let isMounted = true;
+
     getFeaturedServices()
-      .then((data) => setServices(data))
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (isMounted) {
+          setServices(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch((error) => {
+        console.error("Featured Services Error:", error);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const getAnimation = (variants: typeof headingVariants) => {
-    if (shouldReduceMotion) {
-      return {
-        initial: false as const,
-        whileInView: "visible",
-        variants,
-      };
-    }
+  const reveal = (delay = 0) => ({
+    initial: shouldReduceMotion
+      ? false
+      : {
+          opacity: 0,
+          y: 30,
+        },
+    whileInView: {
+      opacity: 1,
+      y: 0,
+    },
+    viewport: {
+      once: true,
+      amount: 0.15,
+    },
+    transition: {
+      duration: shouldReduceMotion ? 0 : 0.75,
+      delay: shouldReduceMotion ? 0 : delay,
+      ease,
+    },
+  });
 
-    return {
-      initial: "hidden" as const,
-      whileInView: "visible",
-      viewport: {
-        once: true,
-        amount: 0.2,
-      },
-      variants,
-    };
-  };
+  if (loading) {
+    return <FeaturedServicesSkeleton />;
+  }
 
   return (
-    <section className="relative overflow-hidden bg-[#FFFFFF] px-4 py-12 transition-colors duration-300 dark:bg-[#1D2421] sm:px-6 sm:py-16 lg:px-12">
-      {/* Background Decorations */}
-      <div className="pointer-events-none absolute -left-40 top-40 h-[300px] w-[300px] rounded-full bg-[#E7D6C5]/30 blur-[100px] dark:bg-[#B77B65]/10" />
+    <section className="relative isolate overflow-hidden bg-[#FFFFFF] px-4 py-16 transition-colors duration-500 dark:bg-[#1D2421] sm:px-6 sm:py-20 lg:px-12 lg:py-24">
 
-      <div className="pointer-events-none absolute -right-40 bottom-20 h-[300px] w-[300px] rounded-full bg-[#E3CFC0]/30 blur-[100px] dark:bg-[#D9A58E]/10" />
+      {/* Background Decorations */}
+      <div className="pointer-events-none absolute -left-40 top-40 -z-10 h-[380px] w-[380px] rounded-full bg-[#E7D6C5]/30 blur-[110px] dark:bg-[#B77B65]/10" />
+
+      <div className="pointer-events-none absolute -right-40 bottom-20 -z-10 h-[380px] w-[380px] rounded-full bg-[#E3CFC0]/30 blur-[110px] dark:bg-[#D9A58E]/10" />
 
       <div className="relative mx-auto max-w-7xl">
+
         {/* Section Heading */}
         <motion.div
-          {...getAnimation(headingVariants)}
-          className="mb-9 text-center sm:mb-11"
+          {...reveal()}
+          className="mb-12 text-center sm:mb-16"
         >
-          <div className="mb-3 inline-flex items-center gap-2 text-[#A17B61] dark:text-[#D9A58E]">
+          <div className="mb-4 inline-flex items-center gap-2.5">
             <motion.span
               animate={
                 shouldReduceMotion
-                  ? {}
-                  : {
-                      rotate: [0, 12, -12, 0],
-                    }
+                  ? undefined
+                  : { rotate: [0, 15, -15, 0] }
               }
               transition={{
-                duration: 3,
+                duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
+              className="text-[#A17B61] dark:text-[#D9A58E]"
             >
-              <Sparkles size={13} />
+              <Sparkles size={15} />
             </motion.span>
 
-            <span className="text-[9px] font-semibold uppercase tracking-[2.5px]">
+            <span className="text-[9px] font-semibold uppercase tracking-[3px] text-[#A17B61] dark:text-[#D9A58E]">
               Curated For Your Celebration
             </span>
+
+            <motion.span
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : { rotate: [0, -15, 15, 0] }
+              }
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="text-[#A17B61] dark:text-[#D9A58E]"
+            >
+              <Sparkles size={15} />
+            </motion.span>
           </div>
 
-          <h2 className="font-serif text-3xl font-normal leading-tight text-[#382B23] dark:text-[#F5FAF6] sm:text-4xl md:text-5xl">
-            The Art of a{" "}
+          <h2 className="font-serif text-3xl font-normal leading-[1.2] tracking-tight text-[#382B23] dark:text-[#F5FAF6] sm:text-4xl md:text-5xl lg:text-[54px]">
+            The Art of a
+            <br className="sm:hidden" />{" "}
             <span className="italic text-[#A17B61] dark:text-[#D9A58E]">
               Beautiful Wedding
             </span>
           </h2>
 
-          <p className="mx-auto mt-3 max-w-lg text-xs leading-6 text-[#82766B] dark:text-[#B2BDB5] sm:text-sm">
+          <p className="mx-auto mt-4 max-w-xl text-xs leading-7 text-[#82766B] dark:text-[#B2BDB5] sm:text-sm">
             Thoughtfully selected wedding services and exceptional
-            professionals for your special celebration.
+            professionals to turn your dream celebration into
+            beautiful memories.
           </p>
 
-          <div className="mt-5 flex items-center justify-center gap-3">
-            <span className="h-px w-9 bg-[#CBB29B] dark:bg-[#65756A]" />
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <span className="h-px w-10 bg-[#CBB29B] dark:bg-[#65756A]" />
 
-            <Heart
-              size={12}
-              className="fill-[#A17B61] text-[#A17B61] dark:fill-[#D9A58E] dark:text-[#D9A58E]"
-            />
+            <motion.span
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : { scale: [1, 1.18, 1] }
+              }
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+              }}
+            >
+              <Heart
+                size={13}
+                className="fill-[#A17B61] text-[#A17B61] dark:fill-[#D9A58E] dark:text-[#D9A58E]"
+              />
+            </motion.span>
 
-            <span className="h-px w-9 bg-[#CBB29B] dark:bg-[#65756A]" />
+            <span className="h-px w-10 bg-[#CBB29B] dark:bg-[#65756A]" />
           </div>
         </motion.div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="space-y-9 md:space-y-12">
-            {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-9"
-              >
-                <div className="h-[220px] animate-pulse bg-[#E8DED4] dark:bg-[#35413A] sm:h-[260px]" />
-
-                <div className="flex flex-col justify-center space-y-3 py-3">
-                  <div className="h-3 w-24 animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
-                  <div className="h-7 w-3/4 animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
-                  <div className="h-12 w-full animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
-                  <div className="h-12 w-full animate-pulse bg-[#E8DED4] dark:bg-[#35413A]" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* Empty State */}
-        {!loading && services.length === 0 && (
+        {services.length === 0 && (
           <motion.div
-            {...getAnimation(headingVariants)}
-            className="py-14 text-center"
+            {...reveal()}
+            className="py-16 text-center"
           >
-            <Heart
-              size={28}
-              className="mx-auto mb-4 text-[#A17B61] dark:text-[#D9A58E]"
-            />
+            <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full border border-[#E9DCD0] bg-white text-[#A17B61] dark:border-[#46534B] dark:bg-[#29332E] dark:text-[#D9A58E]">
+              <Heart size={26} />
+            </div>
 
             <h3 className="font-serif text-2xl text-[#382B23] dark:text-[#F5FAF6]">
               Something Beautiful Is Coming
             </h3>
 
-            <p className="mt-2 text-xs text-[#82766B] dark:text-[#B2BDB5]">
+            <p className="mt-3 text-xs leading-6 text-[#82766B] dark:text-[#B2BDB5]">
               Our featured wedding services will be available soon.
             </p>
           </motion.div>
         )}
 
         {/* Featured Services */}
-        {!loading && services.length > 0 && (
-          <div className="space-y-9 md:space-y-12">
+        {services.length > 0 && (
+          <div className="space-y-16 sm:space-y-20 lg:space-y-28">
+
             {services.map((service, index) => {
               const imageLeft = index % 2 !== 0;
 
@@ -245,7 +214,10 @@ export default function FeaturedServices() {
                   initial={
                     shouldReduceMotion
                       ? false
-                      : { opacity: 0, y: 35 }
+                      : {
+                          opacity: 0,
+                          y: 35,
+                        }
                   }
                   whileInView={{
                     opacity: 1,
@@ -253,73 +225,113 @@ export default function FeaturedServices() {
                   }}
                   viewport={{
                     once: true,
-                    amount: 0.15,
+                    amount: 0.12,
                   }}
                   transition={{
-                    duration: 0.8,
-                    delay: shouldReduceMotion ? 0 : 0.05,
+                    duration: shouldReduceMotion ? 0 : 0.85,
                     ease,
                   }}
-                  className="group grid grid-cols-1 items-center gap-5 md:grid-cols-2 md:gap-9 lg:gap-12"
+                  className="group grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10 lg:gap-16"
                 >
-                  {/* Service Image */}
+
+                  {/* Image Side */}
                   <motion.div
-                    {...getAnimation(imageVariants)}
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            x: imageLeft ? -35 : 35,
+                          }
+                    }
+                    whileInView={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    viewport={{
+                      once: true,
+                      amount: 0.15,
+                    }}
+                    transition={{
+                      duration: shouldReduceMotion ? 0 : 0.9,
+                      ease,
+                    }}
                     className={`relative ${
                       imageLeft ? "md:order-1" : "md:order-2"
                     }`}
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-[#E8DED4] dark:bg-[#35413A] sm:aspect-[5/3] md:aspect-[4/3]">
-                      <Image
-                        src={
-                          service.images?.[0] ||
-                          "/images/service-placeholder.jpg"
-                        }
-                        alt={service.serviceName}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                      />
+                    {/* Decorative Frame */}
+                    <div
+                      className={`pointer-events-none absolute -bottom-3 -top-3 hidden w-[82%] border border-[#DCC8B5] dark:border-[#65756A] sm:block ${
+                        imageLeft
+                          ? "-left-3"
+                          : "-right-3"
+                      }`}
+                    />
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent opacity-60" />
-                    </div>
-
-                    {/* Image Index */}
-                    <motion.div
-                      initial={
-                        shouldReduceMotion
-                          ? false
-                          : { opacity: 0, scale: 0.7 }
-                      }
-                      whileInView={{
-                        opacity: 1,
-                        scale: 1,
-                      }}
-                      viewport={{ once: true }}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.3,
-                      }}
-                      className="absolute bottom-3 left-3 flex h-9 w-9 items-center justify-center bg-[#F8F5F0]/95 backdrop-blur-sm"
-                    >
-                      <span className="font-serif text-sm text-[#79543F]">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </motion.div>
-
-                    {/* Favorite Decoration */}
+                    {/* Main Image */}
                     <motion.div
                       whileHover={
                         shouldReduceMotion
-                          ? {}
-                          : {
-                              scale: 1.12,
-                              rotate: 12,
-                            }
+                          ? undefined
+                          : { y: -4 }
                       }
-                      className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#F8F5F0]/90 text-[#A17B61] backdrop-blur-sm"
+                      transition={{
+                        duration: 0.4,
+                        ease,
+                      }}
+                      className="relative"
                     >
-                      <Heart size={14} />
+                      <div className="relative aspect-[5/4] overflow-hidden bg-[#E8DED4] shadow-[0_16px_45px_rgba(75,51,35,0.09)] dark:bg-[#35413A] sm:aspect-[16/11] md:aspect-[5/4]">
+
+                        <Image
+                          src={
+                            service.images?.[0] ||
+                            "/images/service-placeholder.jpg"
+                          }
+                          alt={service.serviceName}
+                          fill
+                          priority={index === 0}
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.07]"
+                        />
+
+                        {/* Image Index */}
+                        <div className="absolute bottom-4 left-4 flex size-10 items-center justify-center border border-white/50 bg-white/90 backdrop-blur-md sm:bottom-5 sm:left-5">
+                          <span className="font-serif text-sm text-[#79543F]">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                        </div>
+
+                        {/* Bottom Image Label */}
+                        <div className="absolute bottom-5 right-5 hidden items-center gap-2 text-white sm:flex">
+                          <span className="h-px w-7 bg-white/70" />
+                          <span className="text-[8px] font-medium uppercase tracking-[2px]">
+                            Your Special Moment
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Floating Favorite Decoration */}
+                      <motion.div
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scale: 1.12,
+                                rotate: 12,
+                              }
+                        }
+                        whileTap={{ scale: 0.92 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 350,
+                          damping: 15,
+                        }}
+                        className="absolute -right-3 -top-3 flex size-10 items-center justify-center rounded-full border border-[#E8D9CB] bg-[#FFFCFA] text-[#A17B61] shadow-md dark:border-[#52635A] dark:bg-[#29332E] dark:text-[#D9A58E]"
+                      >
+                        <Heart size={16} />
+                      </motion.div>
                     </motion.div>
                   </motion.div>
 
@@ -330,7 +342,7 @@ export default function FeaturedServices() {
                         ? false
                         : {
                             opacity: 0,
-                            x: imageLeft ? 25 : -25,
+                            x: imageLeft ? 35 : -35,
                           }
                     }
                     whileInView={{
@@ -339,48 +351,45 @@ export default function FeaturedServices() {
                     }}
                     viewport={{
                       once: true,
-                      amount: 0.2,
+                      amount: 0.15,
                     }}
                     transition={{
-                      duration: 0.75,
+                      duration: shouldReduceMotion ? 0 : 0.85,
                       delay: shouldReduceMotion ? 0 : 0.12,
                       ease,
                     }}
-                    className={`flex flex-col justify-center py-1 ${
+                    className={`flex flex-col justify-center py-2 ${
                       imageLeft ? "md:order-2" : "md:order-1"
                     }`}
                   >
-                    {/* Category */}
-                    <motion.div
-                      variants={childVariants}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      className="mb-2 flex items-center gap-2"
-                    >
-                      <span className="h-px w-6 bg-[#B99576] dark:bg-[#D9A58E]" />
 
-                      <span className="text-[9px] font-semibold uppercase tracking-[2px] text-[#A17B61] dark:text-[#D9A58E]">
+                    {/* Category */}
+                    <div className="mb-4 flex items-center gap-3">
+                      <span className="h-px w-8 bg-[#B99576] dark:bg-[#D9A58E]" />
+
+                      <span className="text-[9px] font-semibold uppercase tracking-[2.2px] text-[#A17B61] dark:text-[#D9A58E]">
                         {service.category}
                       </span>
-                    </motion.div>
+                    </div>
 
-                    {/* Service Title */}
-                    <h3 className="max-w-lg font-serif text-2xl font-normal leading-tight text-[#382B23] dark:text-[#F5FAF6] sm:text-3xl">
+                    {/* Title */}
+                    <h3 className="max-w-lg font-serif text-3xl font-normal leading-[1.2] tracking-tight text-[#382B23] dark:text-[#F5FAF6] sm:text-4xl lg:text-[42px]">
                       {service.serviceName}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-2 max-w-md text-xs leading-6 text-[#82766B] dark:text-[#B2BDB5]">
+                    <p className="mt-4 max-w-md text-xs leading-7 text-[#82766B] dark:text-[#B2BDB5] sm:text-sm">
                       Discover exceptional{" "}
                       {(service.category || "wedding").toLowerCase()}{" "}
-                      services crafted for your special celebration.
+                      services crafted with care, creativity and
+                      attention to every little detail of your
+                      special celebration.
                     </p>
 
                     {/* Location */}
-                    <div className="mt-3 flex items-center gap-2 text-[#82766B] dark:text-[#B2BDB5]">
+                    <div className="mt-5 flex items-center gap-2 text-[#82766B] dark:text-[#B2BDB5]">
                       <MapPin
-                        size={13}
+                        size={14}
                         className="shrink-0 text-[#A17B61] dark:text-[#D9A58E]"
                       />
 
@@ -390,31 +399,35 @@ export default function FeaturedServices() {
                     </div>
 
                     {/* Vendor Information */}
-                    <div className="mt-4 flex items-center gap-3 border-y border-[#E3D7CB] py-3 dark:border-[#414C45]">
+                    <div className="mt-6 flex items-center gap-3 border-y border-[#E3D7CB] py-4 dark:border-[#414C45]">
+
                       {/* Vendor Avatar */}
                       <motion.div
                         whileHover={
                           shouldReduceMotion
-                            ? {}
-                            : {
-                                scale: 1.08,
-                              }
+                            ? undefined
+                            : { scale: 1.08 }
                         }
-                        className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8D8C9] dark:bg-[#35413A]"
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                        }}
+                        className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#E5D5C6] bg-[#E8D8C9] dark:border-[#52635A] dark:bg-[#35413A]"
                       >
                         {service.vendor?.image ? (
                           <Image
                             src={service.vendor.image}
                             alt={
-                              service.vendor.name || "Wedding Vendor"
+                              service.vendor.name ||
+                              "Wedding Vendor"
                             }
                             fill
-                            sizes="40px"
+                            sizes="44px"
                             className="object-cover"
                           />
                         ) : (
                           <UserRound
-                            size={19}
+                            size={20}
                             className="text-[#79543F] dark:text-[#D9A58E]"
                           />
                         )}
@@ -422,16 +435,17 @@ export default function FeaturedServices() {
 
                       {/* Vendor Details */}
                       <div className="min-w-0 flex-1">
-                        <p className="text-[8px] font-semibold uppercase tracking-[1.5px] text-[#A17B61] dark:text-[#D9A58E]">
-                          Meet Your Vendor
+                        <p className="text-[8px] font-semibold uppercase tracking-[1.7px] text-[#A17B61] dark:text-[#D9A58E]">
+                          Your Wedding Professional
                         </p>
 
-                        <p className="mt-0.5 truncate text-xs font-semibold text-[#382B23] dark:text-[#F5FAF6]">
-                          {service.vendor?.name || "Wedding Professional"}
+                        <p className="mt-1 truncate text-xs font-semibold text-[#382B23] dark:text-[#F5FAF6]">
+                          {service.vendor?.name ||
+                            "Wedding Professional"}
                         </p>
 
                         {service.vendor?.email && (
-                          <div className="mt-0.5 flex items-center gap-1">
+                          <div className="mt-1 flex items-center gap-1.5">
                             <Mail
                               size={10}
                               className="shrink-0 text-[#A17B61] dark:text-[#D9A58E]"
@@ -443,35 +457,52 @@ export default function FeaturedServices() {
                           </div>
                         )}
                       </div>
+
+                      <div className="hidden items-center gap-1 text-[#A17B61] dark:text-[#D9A58E] sm:flex">
+                        <Star
+                          size={12}
+                          className="fill-current"
+                        />
+                        <span className="text-[8px] font-semibold uppercase tracking-wider">
+                          Selected
+                        </span>
+                      </div>
                     </div>
 
                     {/* Price and CTA */}
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="mt-6 flex flex-wrap items-end justify-between gap-5">
+
+                      {/* Price */}
                       <div>
                         <p className="text-[8px] font-semibold uppercase tracking-[2px] text-[#A17B61] dark:text-[#D9A58E]">
                           Starting From
                         </p>
 
-                        <p className="mt-1 font-serif text-2xl text-[#382B23] dark:text-[#F5FAF6]">
-                          ৳{Number(service.price).toLocaleString("en-BD")}
+                        <p className="mt-1 font-serif text-3xl text-[#382B23] dark:text-[#F5FAF6]">
+                          ৳
+                          {Number(service.price).toLocaleString(
+                            "en-BD"
+                          )}
                         </p>
                       </div>
 
+                      {/* CTA */}
                       <Link
                         href={`/services/${service._id}`}
-                        className="group/btn inline-flex items-center gap-2 border-b border-[#A17B61] pb-1.5 text-xs font-medium text-[#79543F] transition-colors duration-300 hover:text-[#A17B61] dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:text-[#F5FAF6]"
+                        className="group/btn inline-flex items-center gap-3 border-b border-[#A17B61] pb-2 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#79543F] transition-colors duration-300 hover:border-[#79543F] hover:text-[#A17B61] dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:text-[#F5FAF6]"
                       >
                         Explore Service
 
                         <motion.span
                           animate={
                             shouldReduceMotion
-                              ? {}
-                              : undefined
+                              ? undefined
+                              : { x: [0, 3, 0], y: [0, -3, 0] }
                           }
-                          whileHover={{
-                            x: 3,
-                            y: -3,
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatDelay: 1,
                           }}
                           className="inline-flex"
                         >
@@ -488,30 +519,32 @@ export default function FeaturedServices() {
 
         {/* Explore All Services */}
         <motion.div
-          {...getAnimation(headingVariants)}
-          className="mt-12 flex justify-center sm:mt-16"
+          {...reveal()}
+          className="mt-16 flex justify-center sm:mt-20"
         >
           <Link
             href="/services"
-            className="group inline-flex items-center gap-3 border border-[#B99576] px-6 py-3 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#79543F] transition-colors duration-300 hover:bg-[#79543F] hover:text-white dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:bg-[#D9A58E] dark:hover:text-[#1D2421]"
+            className="group relative inline-flex items-center gap-3 overflow-hidden border border-[#B99576] px-7 py-3.5 text-[9px] font-semibold uppercase tracking-[1.8px] text-[#79543F] transition-colors duration-500 hover:text-white dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:text-[#1D2421]"
           >
-            Discover All Services
+            <span className="absolute inset-0 origin-left scale-x-0 bg-[#79543F] transition-transform duration-500 ease-out group-hover:scale-x-100 dark:bg-[#D9A58E]" />
+
+            <span className="relative z-10">
+              Discover All Services
+            </span>
 
             <motion.span
               whileHover={
                 shouldReduceMotion
-                  ? {}
-                  : {
-                      x: 4,
-                      y: -4,
-                    }
+                  ? undefined
+                  : { x: 4, y: -4 }
               }
-              className="inline-flex"
+              className="relative z-10 inline-flex"
             >
               <ArrowUpRight size={15} />
             </motion.span>
           </Link>
         </motion.div>
+
       </div>
     </section>
   );
