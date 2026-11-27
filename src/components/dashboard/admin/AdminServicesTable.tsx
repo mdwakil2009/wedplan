@@ -37,6 +37,11 @@ type Service = {
   userEmail?: string;
   status: string;
   isActive?: boolean;
+  vendor?: {
+    name?: string;
+    email?: string;
+    image?: string;
+  } | null;
 };
 
 type DropdownFilterProps = {
@@ -190,7 +195,7 @@ export default function AdminServicesTable({
   // Delete Service
   const handleDelete = async (id: string) => {
     try {
-      setLoadingId(id)
+      setLoadingId(id);
 
       await deleteAdminService(id);
 
@@ -221,9 +226,12 @@ export default function AdminServicesTable({
     const searchText = search.toLowerCase();
 
     const vendorName =
-      service.vendorName || service.userName || "Unknown Vendor";
+      service.vendor?.name ||
+      service.vendorName ||
+      service.userName ||
+      "Unknown Vendor";
 
-    const vendorEmail = service.vendorEmail || service.userEmail || "";
+    const vendorEmail = service.vendor?.email || service.vendorEmail || "";
 
     const matchesSearch =
       service.serviceName?.toLowerCase().includes(searchText) ||
@@ -289,13 +297,14 @@ export default function AdminServicesTable({
             service.images?.find((image) => image?.trim()) ||
             service.image ||
             service.imageUrl;
-
           const vendorName =
-            service.vendorName || service.userName || "Unknown Vendor";
+            service.vendor?.name ||
+            service.vendorName ||
+            service.userName ||
+            "Unknown Vendor";
 
           const vendorEmail =
-            service.vendorEmail || service.userEmail || "No email";
-
+            service.vendor?.email || service.vendorEmail || "";
           const status = (service.status || "pending").toLowerCase();
 
           const isActive = service.isActive === true;

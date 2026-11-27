@@ -232,11 +232,19 @@ export async function getAdminServices() {
   });
 
   if (!response.ok) {
+    const errorMessage = await response.text();
+
+    console.error("Admin Services API Error:", {
+      status: response.status,
+      message: errorMessage,
+    });
+
     throw new Error("Failed to fetch admin services");
   }
 
   return response.json();
 }
+
 
 // Approve / Reject Service
 export async function updateServiceStatus(
