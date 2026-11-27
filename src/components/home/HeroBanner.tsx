@@ -62,15 +62,8 @@ export default function HeroBanner() {
         />
       </motion.div>
 
-      {/* Overlays: even on small screens, directional on desktop so the photo stays open */}
       <div className="absolute inset-0 -z-20 bg-[#24121A]/65 lg:bg-transparent lg:bg-gradient-to-r lg:from-[#24121A]/90 lg:via-[#24121A]/55 lg:to-[#24121A]/5" />
       <div className="absolute inset-0 -z-20 bg-gradient-to-t from-[#24121A]/55 via-transparent to-transparent dark:bg-[#1D2421]/25" />
-
-      {/* Fine editorial frame */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-3 -z-10 border border-[#E8C7D1]/25 sm:inset-4"
-      />
 
       {/* Main Content */}
       <div className="relative mx-auto flex w-full max-w-[1440px] items-center px-7 pb-16 pt-12 sm:px-12 lg:px-16 lg:pb-16 lg:pt-10 xl:px-20">

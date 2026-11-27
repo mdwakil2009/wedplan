@@ -519,30 +519,34 @@ export default function FeaturedServices() {
 
         {/* Explore All Services */}
         <motion.div
-          {...reveal()}
-          className="mt-16 flex justify-center sm:mt-20"
+          className="mt-12 flex items-center justify-center gap-6 lg:mt-14"
         >
+          <span
+            aria-hidden="true"
+            className="hidden h-px flex-1 bg-[#E8C7D1] dark:bg-[#3D4842] sm:block"
+          />
+
           <Link
             href="/services"
-            className="group relative inline-flex items-center gap-3 overflow-hidden border border-[#B99576] px-7 py-3.5 text-[9px] font-semibold uppercase tracking-[1.8px] text-[#79543F] transition-colors duration-500 hover:text-white dark:border-[#D9A58E] dark:text-[#D9A58E] dark:hover:text-[#1D2421]"
+            className="group relative inline-flex min-h-[52px] w-full items-center justify-center gap-3 overflow-hidden border border-[#772D43] px-9 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#772D43] transition-colors duration-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#772D43] dark:border-[#E8C7D1] dark:text-[#E8C7D1] dark:hover:text-[#392B32] dark:focus-visible:outline-[#E8C7D1] sm:w-auto"
           >
-            <span className="absolute inset-0 origin-left scale-x-0 bg-[#79543F] transition-transform duration-500 ease-out group-hover:scale-x-100 dark:bg-[#D9A58E]" />
-
-            <span className="relative z-10">
-              Discover All Services
-            </span>
-
-            <motion.span
-              whileHover={
-                shouldReduceMotion
-                  ? undefined
-                  : { x: 4, y: -4 }
-              }
-              className="relative z-10 inline-flex"
-            >
-              <ArrowUpRight size={15} />
-            </motion.span>
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 origin-left scale-x-0 bg-[#772D43] transition-transform duration-500 ease-out group-hover:scale-x-100 motion-reduce:transition-none dark:bg-[#E8C7D1]"
+            />
+            <span className="relative z-10">Discover All Services</span>
+            <ArrowUpRight
+              size={15}
+              strokeWidth={1.5}
+              aria-hidden="true"
+              className="relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none"
+            />
           </Link>
+
+          <span
+            aria-hidden="true"
+            className="hidden h-px flex-1 bg-[#E8C7D1] dark:bg-[#3D4842] sm:block"
+          />
         </motion.div>
 
       </div>
