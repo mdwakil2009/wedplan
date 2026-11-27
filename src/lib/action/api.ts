@@ -108,9 +108,7 @@ export async function updateBookingStatus(
     success: response.ok && data.success,
     message: data.message,
   };
-}
-
-// Get Customer Bookings
+}// Get Customer Bookings
 export async function getCustomerBookings() {
   const token = await getServerJWTToken();
 
@@ -127,7 +125,6 @@ export async function getCustomerBookings() {
 
   return response.json();
 }
-
 // Get Vendor Bookings With Service
 export async function getVendorBookingsWithService() {
   const token = await getServerJWTToken();
