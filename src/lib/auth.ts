@@ -4,8 +4,19 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 import { jwt } from "better-auth/plugins";
 
-const client = new MongoClient(process.env.MONGODB_URL as string);
-const db = client.db("WedPlan");
+const uri = process.env.MONGODB_URL as string;
+
+if (!uri) {
+  throw new Error("Missing MONGO_URI environment variable");
+}
+
+const client = new MongoClient(uri, {
+  maxPoolSize: 10,
+});
+
+const clientPromise = client.connect();
+
+const db = (await clientPromise).db("WedPlan");
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
