@@ -1,6 +1,8 @@
+
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+
 import {
   FiArrowLeft,
   FiCheckCircle,
@@ -12,6 +14,8 @@ import {
 
 import BookingForm from "@/components/services/BookingForm";
 import ServiceGallery from "@/components/services/ServiceGallery";
+import ServiceDetailsFeatures from "@/components/services/ServiceDetailsFeatures";
+
 import { getServiceById } from "@/lib/action/service";
 import { auth } from "@/lib/auth";
 import type { Service } from "@/lib/types/service";
@@ -25,31 +29,27 @@ export default async function ServiceDetailsPage({
 }) {
   const { id } = await params;
 
-  // Authentication
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    redirect(`/sign-in?redirect=${encodeURIComponent(`/services/${id}`)}`);
+    redirect(
+      `/sign-in?redirect=${encodeURIComponent(`/services/${id}`)}`
+    );
   }
 
-  // Fetch service
   let service: Service | null = null;
 
   try {
     const data = await getServiceById(id);
-
     service = data as Service | null;
   } catch (error) {
     console.error("Service Details Error:", error);
   }
 
-  if (!service) {
-    notFound();
-  }
+  if (!service) notFound();
 
-  // Service availability
   const status = String(service.status || "").toLowerCase();
 
   if (status !== "approved" && status !== "active") {
@@ -64,9 +64,9 @@ export default async function ServiceDetailsPage({
   const price = Number(service.price || 0);
 
   return (
-    <main className="min-h-screen bg-[#FFFCF9] pb-16 transition-colors duration-300 dark:bg-[#1D2421]">
+    <main className="min-h-screen bg-white pb-16 transition-colors duration-300 dark:bg-[#1D2421]">
       {/* Header */}
-      <div className="border-b border-[#F1E4E6] bg-[#FBF3F2] dark:border-[#34413A] dark:bg-[#29332E]">
+      <div className="border-b border-[#F1E4E6] bg-white dark:border-[#34413A] dark:bg-[#29332E]">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <Link
             href="/services"
@@ -81,14 +81,13 @@ export default async function ServiceDetailsPage({
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
         <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
-          {/* Left Section */}
+          {/* Left Content */}
           <div>
             <ServiceGallery
               images={service.images || []}
               name={service.serviceName}
             />
 
-            {/* Service Details */}
             <section className="mt-8 rounded-3xl border border-[#F0E1E4] bg-white p-6 shadow-[0_12px_35px_rgba(72,31,44,0.05)] dark:border-[#34413A] dark:bg-[#29332E] sm:p-8">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FBF1F2] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#772D43] dark:bg-[#49313A] dark:text-[#F0C3CF]">
@@ -125,10 +124,9 @@ export default async function ServiceDetailsPage({
             </section>
           </div>
 
-          {/* Right Section */}
+          {/* Right Content - Booking */}
           <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <section className="rounded-3xl border border-[#F0E1E4] bg-white p-6 shadow-[0_18px_45px_rgba(72,31,44,0.08)] dark:border-[#34413A] dark:bg-[#29332E]">
-              {/* Price */}
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A38E94] dark:text-[#9EADA3]">
                 Starting from
               </p>
@@ -137,7 +135,6 @@ export default async function ServiceDetailsPage({
                 ৳{price.toLocaleString("en-US")}
               </p>
 
-              {/* Information */}
               <div className="mt-4 space-y-2 border-y border-[#F6ECEE] py-4 text-[11px] text-[#7C686E] dark:border-[#46534B] dark:text-[#B2BDB5]">
                 <p className="flex items-start gap-2">
                   <FiCheckCircle className="mt-0.5 size-3.5 shrink-0 text-[#2F8A57]" />
@@ -155,7 +152,6 @@ export default async function ServiceDetailsPage({
                 </p>
               </div>
 
-              {/* Booking Form */}
               <div className="mt-5">
                 <h2 className="mb-3 text-sm font-semibold text-[#332229] dark:text-[#F5FAF6]">
                   Request a booking
@@ -175,6 +171,9 @@ export default async function ServiceDetailsPage({
             </section>
           </div>
         </div>
+
+ 
+        <ServiceDetailsFeatures />
       </div>
     </main>
   );

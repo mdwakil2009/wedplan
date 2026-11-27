@@ -1,99 +1,123 @@
+
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FiArrowUpRight,
-  FiCheckCircle,
-  FiImage,
-  FiMapPin,
-  FiTag,
-  FiUser,
-} from "react-icons/fi";
+import { FiArrowUpRight, FiCheck, FiImage, FiMapPin } from "react-icons/fi";
 
 import type { Service } from "@/lib/types/service";
 
 export default function ServiceCard({ service }: { service: Service }) {
   const image = service.images?.[0];
   const price = Number(service.price || 0);
+  const href = `/services/${service._id}`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#F0E1E4] bg-white shadow-[0_10px_30px_rgba(72,31,44,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#DDBEC4] hover:shadow-[0_24px_48px_rgba(72,31,44,0.12)]">
+    <article className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#EFE3E3] bg-white transition duration-300 ease-out hover:-translate-y-1 hover:border-[#B99576]/70 hover:shadow-[0_16px_35px_rgba(57,43,50,0.09)] focus-within:border-[#772D43] motion-reduce:transform-none motion-reduce:transition-none dark:border-[#38433D] dark:bg-[#242D29] dark:hover:border-[#B99576]/70 dark:hover:shadow-[0_16px_35px_rgba(0,0,0,0.25)] dark:focus-within:border-[#E8C7D1]"
+    >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#FFFFFF]">
-        {image ? (
-          <Image
-            src={image}
-            alt={service.serviceName || "Wedding service"}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-[#B39CA1]">
-            <FiImage className="size-7" />
-            <span className="text-xs">No image available</span>
-          </div>
-        )}
+      <div className="p-2 pb-0">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-[#FBF8F4] dark:bg-[#2E3833]">
+          {image ? (
+            <Image
+              src={image}
+              alt={service.serviceName || "Wedding service"}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none dark:brightness-90 dark:group-hover:brightness-100"
+            />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-[#9A5269] dark:text-[#E8C7D1]">
+              <FiImage aria-hidden="true" className="size-5" />
+              <span className="font-serif text-xs italic">
+                No image available
+              </span>
+            </div>
+          )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2D111B]/45 via-transparent to-transparent" />
-
-        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#772D43] shadow-sm backdrop-blur-sm">
-          <FiTag className="size-3" />
-          {service.category}
-        </span>
-
-        <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[#2D111B]/70 px-2.5 py-1.5 text-[10px] font-semibold text-white backdrop-blur-sm">
-          <FiCheckCircle className="size-3 text-[#F0C9CF]" />
-          Approved
-        </span>
+          <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 bg-white/95 px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#772D43] dark:bg-[#1D2421]/90 dark:text-[#E8C7D1]">
+            <FiCheck aria-hidden="true" className="size-3" />
+            Approved
+          </span>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="line-clamp-2 text-lg font-semibold leading-snug tracking-tight text-[#332229]">
-            {service.serviceName}
-          </h3>
+      <div className="flex flex-1 flex-col px-4 pb-3.5 pt-4 sm:px-5">
+        {service.category && (
+          <p className="flex items-center gap-2.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9A5269] dark:text-[#E8C7D1]">
+            <span aria-hidden="true" className="h-px w-5 shrink-0 bg-[#B99576]" />
+            <span className="min-w-0 truncate">{service.category}</span>
+          </p>
+        )}
 
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] uppercase tracking-[0.1em] text-[#A38E94]">
-              From
-            </p>
-            <p className="mt-0.5 text-lg font-bold text-[#772D43]">
-              ৳{price.toLocaleString("en-US")}
-            </p>
-          </div>
-        </div>
-
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#8B767C]">
-          {service.description}
-        </p>
-
-        <div className="mt-4 flex flex-col gap-2 text-xs text-[#7C686E]">
-          <span className="inline-flex items-center gap-1.5">
-            <FiMapPin className="size-3.5 shrink-0 text-[#B76E79]" />
-            <span className="truncate">{service.location}</span>
-          </span>
-
-          <span className="inline-flex min-w-0 items-center gap-1.5">
-            <FiUser className="size-3.5 shrink-0 text-[#B76E79]" />
-            <span className="truncate" title={service.userEmail}>
-              {service.userEmail}
-            </span>
-          </span>
-        </div>
-
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#F6ECEE] pt-4">
-          <span className="text-[10px] font-medium uppercase tracking-[0.08em] text-[#A38E94]">
-            Verified vendor
-          </span>
-
+        <h3 className="mt-2.5 line-clamp-2 break-words font-serif text-xl font-normal leading-[1.3] tracking-tight text-[#392B32] dark:text-[#F7F0F2]">
           <Link
-            href={`/services/${service._id}`}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#772D43] px-4 py-2 text-[11px] font-semibold text-white transition-colors hover:bg-[#5F2034] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B76E79]/50"
+            href={href}
+            className="transition-colors duration-300 hover:text-[#772D43] focus-visible:underline focus-visible:underline-offset-4 focus-visible:outline-none dark:hover:text-[#E8C7D1]"
           >
-            View Details
-            <FiArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            {service.serviceName}
           </Link>
+        </h3>
+
+        {service.description && (
+          <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#7D696F] dark:text-[#BCC5BF]">
+            {service.description}
+          </p>
+        )}
+
+        {service.location && (
+          <p className="mt-2.5 flex items-center gap-2 text-[11px] text-[#7D696F] dark:text-[#BCC5BF]">
+            <FiMapPin
+              aria-hidden="true"
+              className="size-3.5 shrink-0 text-[#9A5269] dark:text-[#E8C7D1]"
+            />
+            <span className="min-w-0 truncate" title={service.location}>
+              {service.location}
+            </span>
+          </p>
+        )}
+
+        {/* Footer */}
+        <div className="mt-auto pt-4">
+          {/* Vendor */}
+          <div className="border-t border-[#E8C7D1]/70 py-3 dark:border-[#3D4842]">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#7D696F] dark:text-[#BCC5BF]">
+              Verified vendor
+            </p>
+
+            {service.userEmail && (
+              <p
+                className="mt-1 truncate text-[11px] text-[#392B32] dark:text-[#F7F0F2]"
+                title={service.userEmail}
+              >
+                {service.userEmail}
+              </p>
+            )}
+          </div>
+
+          {/* Price and CTA */}
+          <div className="flex flex-wrap items-end justify-between gap-2 border-t border-[#E8C7D1]/70 pt-3 dark:border-[#3D4842]">
+            <div>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.17em] text-[#7D696F] dark:text-[#BCC5BF]">
+                Starting from
+              </p>
+
+              <p className="mt-0.5 font-serif text-xl text-[#772D43] dark:text-[#E8C7D1]">
+                ৳{price.toLocaleString("en-US")}
+              </p>
+            </div>
+
+            <Link
+              href={href}
+              aria-label={`View details: ${service.serviceName}`}
+              className="group/cta ml-auto inline-flex min-h-9 items-center gap-2 rounded-md bg-[#772D43] px-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-white transition-colors duration-300 hover:bg-[#9A5269] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#772D43] dark:bg-[#E8C7D1] dark:text-[#392B32] dark:hover:bg-white dark:focus-visible:outline-[#E8C7D1]"
+            >
+              View Details
+              <FiArrowUpRight
+                aria-hidden="true"
+                className="size-3.5 transition-transform duration-300 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+              />
+            </Link>
+          </div>
         </div>
       </div>
     </article>
