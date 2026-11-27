@@ -1,179 +1,275 @@
-WedPlan — Wedding Planning Platform
-A full-stack wedding planning platform where customers can discover wedding services and request bookings, vendors can publish and manage their services, and administrators can manage users, services, and platform transactions.
+# 💍 WedPlan — Wedding Planning Platform
 
-🌐 Live Website: https://wedplan-brown.vercel.app/
-✨ Features
-👤 Authentication & Authorization
-- Sign up and sign in with email and password.
-- Google authentication.
-- Role-based access for Customers, Vendors, and Admins.
-- Protected dashboard routes and server-side role verification.
-- Profile management.
-- Blocked-user access protection.
-💍 Customer Features
-- Browse approved and active wedding services.
-- Search services by name.
-- Filter services by category and location.
-- View service details and vendor information.
-- Submit booking requests with event date, location, and message.
-- Track booking status.
+<p align="center">
+  **Plan Your Perfect Wedding, All in One Place.**
+</p>
+
+<p align="center">
+  A modern, full-stack wedding planning platform that connects customers with trusted wedding service vendors.
+</p>
+
+<p align="center">
+  🌐 **Live Website:** https://wedplan-brown.vercel.app/
+</p>
+
+---
+
+## 📖 About The Project
+
+**WedPlan** is a full-stack wedding planning platform designed to make wedding planning easier and more organized. It connects customers with wedding service providers through a single platform.
+
+Customers can explore wedding services, search and filter providers, view service details, and submit booking requests. Vendors can create their profiles, publish and manage services, and handle customer booking requests. Vendors can also upgrade to a Premium subscription to unlock additional benefits.
+
+The platform includes a dedicated Admin Dashboard where administrators can manage users, review services, and monitor transactions.
+
+WedPlan provides a role-based experience for Customers, Vendors, and Admins with secure authentication and a responsive user interface.
+
+## ✨ Key Features
+
+### 👰 Customer Features
+- Browse all available wedding services.
+- Search and filter services by category and location.
+- Sort services by price.
+- View detailed service information.
+- Submit wedding service booking requests.
+- Track booking request status.
 - Cancel pending booking requests.
-- View booking statistics from the customer dashboard.
-🏪 Vendor Features
-- Create and manage a vendor profile.
-- Add, update, and delete wedding services.
-- Upload service images.
-- Track service approval status.
-- Manage service availability.
-- View, accept, or reject customer booking requests.
-- View subscription plan information.
-- Upgrade to Premium for unlimited active services.
-🛡️ Admin Features
-- View platform statistics.
-- View, search, and manage registered users.
-- Filter users by role.
-- Block and unblock users.
-- Review, approve, reject, and manage submitted services.
-- View platform transactions.
-💳 Subscription & Payments
-- Stripe Checkout integration for Premium subscriptions.
-- Payment success and cancel pages.
-- Transaction records.
-- Premium access is activated after verified payment events.
-🎨 User Experience
-- Responsive layout for desktop, tablet, and mobile.
-- Wedding-themed interface.
-- Loading and empty states.
-- Toast notifications for success and error feedback.
-- Smooth animations with Framer Motion.
-🧰 Technology Stack
-Frontend
-- Next.js
-- TypeScript
-- Tailwind CSS
-- Shadcn UI
-- Framer Motion
-- Better Auth
-Backend
-- Node.js
-- Express.js
-- MongoDB
-- JWT authentication and role-based middleware
-Services & Tools
-- Stripe — subscription payments
-- ImgBB — image hosting
-- Vercel — frontend deployment
-- GitHub — version control
-📁 Project Structure
-The project is maintained in separate client and server repositories.
-WedPlan/
-├── wedplan-client/
-│   ├── public/
-│   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   └── lib/
-│   └── package.json
-│
-└── wedplan-server/
-    ├── middleware/
-    ├── routes/
-    ├── index.js
-    └── package.json
-The folder names above describe the general client/server separation. Your actual folders may differ.
+- Manage personal profile.
+- Access a personalized customer dashboard.
 
-⚙️ Installation & Setup
-Prerequisites
-- Node.js 20 or later
+### 💼 Vendor Features
+- Create and manage vendor profiles.
+- Add new wedding services.
+- Update and delete existing services.
+- Manage service information and images.
+- View customer booking requests.
+- Accept or reject booking requests.
+- Track service approval status.
+- Manage subscription plans.
+- Upgrade to Premium membership.
+- Access a dedicated vendor dashboard.
+
+### 🛡️ Admin Features
+- Access the Admin Dashboard.
+- View and manage registered users.
+- Manage customers and vendors.
+- Block or unblock user accounts.
+- Review submitted wedding services.
+- Approve or reject service requests.
+- Manage published services.
+- View platform transactions.
+- Monitor platform activities.
+
+### 💳 Subscription & Payment
+- Integrated Stripe Checkout for secure payments.
+- Free and Premium subscription plans.
+- Premium subscription benefits for vendors.
+- Payment transaction tracking.
+- Premium access activation through verified Stripe webhook events.
+
+### 🎨 UI/UX & Experience
+- Fully responsive design for mobile, tablet, and desktop.
+- Modern and professional user interface.
+- Smooth animations and transitions.
+- Reusable UI components.
+- Loading states and error handling.
+- User-friendly navigation and dashboards.
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Next.js** – React framework for building the application.
+- **React** – Component-based user interface.
+- **TypeScript** – Type-safe development.
+- **Tailwind CSS** – Utility-first styling.
+- **Shadcn UI** – Reusable UI components.
+- **Framer Motion** – Smooth animations.
+- **Lucide React / React Icons** – Icons and visual elements.
+
+### Backend
+- **Node.js** – JavaScript runtime.
+- **Express.js** – Backend API development.
+- **MongoDB** – NoSQL database.
+- **Better Auth** – Authentication and session management.
+- **Jose** – JWT verification.
+
+### Payment & Image Hosting
+- **Stripe** – Payment processing and subscription management.
+- **ImgBB** – Image hosting.
+
+### Deployment & Tools
+- **Vercel** – Frontend deployment.
+- **Git & GitHub** – Version control and source code management.
+- **Postman** – API testing.
+
+## ⚙️ Installation & Setup
+
+Follow these steps to run WedPlan locally.
+
+### Prerequisites
+
+Make sure you have installed:
+
+- Node.js (LTS version recommended)
 - npm
-- MongoDB database
-- Stripe account (Test Mode for local testing)
-- ImgBB API key
-- Google OAuth credentials (if using Google sign-in)
-1. Clone the repositories
-# Clone the client repository
+- Git
+- MongoDB account or MongoDB local server
+
+### 1. Clone the Repositories
+
+**Frontend:**
+
+```bash
 git clone YOUR_CLIENT_REPOSITORY_URL
 cd YOUR_CLIENT_PROJECT_FOLDER
-npm install
-Open another terminal:
-# Clone the server repository
+```
+
+**Backend:**
+
+```bash
 git clone YOUR_SERVER_REPOSITORY_URL
 cd YOUR_SERVER_PROJECT_FOLDER
+```
+
+### 2. Install Dependencies
+
+Run this command in both frontend and backend project directories:
+
+```bash
 npm install
-2. Configure environment variables
-Create a .env.local file in the client project and a .env file in the server project. Add the required values using the variable names expected by your application.
+```
 
-Client — .env.local
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+### 3. Configure Environment Variables
 
-# Add the Better Auth and Google OAuth variables
-# required by your client configuration.
-Server — .env
-PORT=5000
-CLIENT_URL=http://localhost:3000
+Create a `.env.local` file in the frontend project and a `.env` file in the backend project.
 
-MONGODB_URI=your_mongodb_connection_string
-DB_NAME=WedPlan
+Add the required environment variables according to your project configuration.
 
-BETTER_AUTH_SECRET=your_better_auth_secret
-BETTER_AUTH_URL=http://localhost:3000
+**Frontend `.env.local`:**
 
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+```env
+NEXT_PUBLIC_API_URL=YOUR_BACKEND_API_URL
 
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+BETTER_AUTH_SECRET=YOUR_BETTER_AUTH_SECRET
+BETTER_AUTH_URL=YOUR_FRONTEND_URL
 
-IMGBB_API_KEY=your_imgbb_api_key
-Environment variable names can differ depending on your source code. If your application uses different names, keep the names consistent with your actual configuration. Never commit .env or .env.local files or expose secret keys in client-side code.
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
 
-3. Run the backend
+NEXT_PUBLIC_IMGBB_API_KEY=YOUR_IMGBB_API_KEY
+```
+
+**Backend `.env`:**
+
+```env
+PORT=8000
+
+MONGODB_URI=YOUR_MONGODB_CONNECTION_STRING
+
+CLIENT_URL=YOUR_FRONTEND_URL
+
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET=YOUR_STRIPE_WEBHOOK_SECRET
+```
+
+**Important:** These are environment variable examples. Use the exact variable names required by your actual frontend and backend configuration.
+
+Never upload `.env` or `.env.local` files containing secret credentials to GitHub.
+
+### 4. Run the Backend Server
+
+Navigate to the backend project directory:
+
+```bash
 npm run dev
-Make sure the backend is running at the API URL configured in the client.
-4. Run the frontend
-In the client project terminal:
+```
+
+The backend API will run on:
+
+```text
+http://localhost:8000
+```
+
+### 5. Run the Frontend Application
+
+Open another terminal and navigate to the frontend project directory:
+
+```bash
 npm run dev
-Open http://localhost:3000 in your browser.
-🗄️ Database Collections
-WedPlan uses MongoDB for application data. Better Auth manages its authentication-related collections.
-Collection	Purpose
-users	User profiles, roles, account status, and subscription information
-services	Vendor services, images, pricing, location, and approval status
-bookings	Customer booking requests and their statuses
-transactions	Subscription payment and transaction records
+```
 
+Open your browser and visit:
 
-🔐 Security
+```text
+http://localhost:3000
+```
+
+## 🔐 Security
+
+WedPlan follows security practices to protect users and application data.
+
+- Authentication is handled using Better Auth.
+- Role-based access control is implemented for Customers, Vendors, and Admins.
+- Protected backend APIs verify user authentication and authorization.
 - Sensitive credentials are stored in environment variables.
-- Protected API routes use JWT verification.
-- Admin, Vendor, and Customer permissions are verified on the server.
-- Resource ownership is checked before protected updates and deletions.
-- Admin accounts are not created through public registration.
-- Stripe payment events are verified on the server before Premium access is activated.
-- Secret keys and database credentials must never be exposed in frontend code or committed to Git.
-💎 Subscription Plans
-Feature	Free Plan	Premium Plan
-Active Services	Up to 3	Unlimited
-Vendor Dashboard	✓	✓
-Booking Request Management	✓	✓
-Premium Vendor Badge	—	✓
+- MongoDB credentials are kept private.
+- Stripe payments are processed securely.
+- Premium access is activated through verified webhook events.
+- Unauthorized users cannot access restricted dashboard features.
 
+## 📂 Project Structure
 
-🔗 Project Links
-- Live Website: WedPlan
-- Client Repository:[ Add Client GitHub Repository URL](https://github.com/mdwakil2009/wedplan)
-- Server Repository: [Add Server GitHub Repository URL](https://github.com/mdwakil2009/wedplan-backend)
-🧪 Payment Testing
-Use Stripe Test Mode credentials when testing payments locally. Configure the Stripe webhook endpoint in your Stripe dashboard or local Stripe CLI so the backend can verify payment events.
+The application is organized into separate frontend and backend projects.
 
-Do not activate a Premium subscription only from the frontend success redirect.
-📌 Notes
-- Use your own environment variables before running the project.
-- Keep client and server repositories separate.
-- Do not upload credentials or .env files to GitHub.
-- Test role permissions, booking flows, and payment verification before deployment.
-👨‍💻 Author
-WedPlan — Wedding Planning Platform
+### Frontend
 
-Built as a full-stack role-based wedding service and booking application.
+```text
+client/
+├── public/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   └── types/
+├── .env.local
+├── package.json
+└── README.md
+```
+
+### Backend
+
+```text
+server/
+├── middleware/
+├── routes/
+├── index.js
+├── .env
+└── package.json
+```
+
+*Note: The structure above represents the main organization of the project.*
+
+## 🌐 Live Website
+
+**WedPlan:** https://wedplan-brown.vercel.app/
+
+## 🔗 GitHub Repositories
+
+- **Frontend Repository:** [Add Your Client GitHub Repository URL](https://github.com/mdwakil2009/wedplan)
+- **Backend Repository:** [Add Your Server GitHub Repository URL](https://github.com/mdwakil2009/wedplan-backend)
+
+## 🎯 Project Goal
+
+The main goal of WedPlan is to simplify wedding planning by bringing customers and professional wedding service providers together on one platform.
+
+It demonstrates practical implementation of full-stack development concepts, including authentication, role-based authorization, REST APIs, database management, payment integration, subscription handling, and responsive UI design.
+
+---
+
+<p align="center">
+  **Made with ❤️ for making wedding planning easier.**
+</p>
+
+<p align="center">
+  © 2026 WedPlan. All Rights Reserved.
+</p>
